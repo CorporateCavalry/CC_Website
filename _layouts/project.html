@@ -1,0 +1,26 @@
+---
+layout: default
+---
+<div class="project-page narrow-page">
+  <div class="section">
+    {% if page.youtubeID != "none" %}
+      {% include youtube.html id=page.youtubeID %}
+    {% else %}
+      <img class="hero" src="/assets/{{ page.id }}_hero.png">
+    {% endif %}
+
+    <div class="summary-block">
+      <div class="title-and-dates">
+        <h2 class="title">{{page.title}}</h2>
+        <h1 class="dates">{{page.dates}}</h1>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="content">
+      {{ content }}
+    </div>
+  </div>
+  {% include related-blog-section.html project=page.slug %}
+  {% include games-section.html %}
+</div>

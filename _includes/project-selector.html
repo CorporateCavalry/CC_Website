@@ -1,0 +1,21 @@
+<div class="selector">
+	{% assign sorted = (site.projects | sort: 'order') %}
+	{% for project in sorted %}
+		{% unless page.url == project.url %}
+		<a href="{{project.url}}" title="View project">
+			<div class="selector-preview">
+        <img class="preview-image" src="/assets/{{ project.id }}_hero.png">
+				<img class="platform-icon" src="/assets/icon_{{project.platform}}.png">
+				<div class="title">{{project.title}}</div>
+				<!-- <div class="project-summary-block"> -->
+					<!-- <div class="title-and-dates">
+						<h2 class="title">{{project.title}}</h2>
+						<p class="dates">{{project.dates}}</p>
+					</div> -->
+					<!-- <p>{{project.roles}}</p> -->
+				<!-- </div> -->
+			</div>
+		</a>
+		{% endunless %}
+	{% endfor %}
+</div>

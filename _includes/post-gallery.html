@@ -1,0 +1,10 @@
+<div class="gallery">
+	{% for image in include.set %}
+	<div class="image-with-caption">
+		<img src="/assets/blog/{{ page.date-path }}/{{ image.filename }}"> 
+		{% unless image.caption == null %}
+			<p class="caption">{{ image.caption }}</p>
+		{% endunless %}
+	</div>
+	{% endfor %}
+</div>

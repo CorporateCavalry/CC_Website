@@ -1,0 +1,22 @@
+<div class="section">
+	<div class="section-header">
+		<div class="section-title">
+			<img src="/assets/sectionLine.svg">
+			<a href="/#games" title="View all games">Related Game</a>
+			<img src="/assets/sectionLine.svg">
+		</div>
+	</div>
+	<div class="selector">
+		{% for project in site.projects %}
+			{% if project.slug == include.project %}
+				<a href="{{project.url}}" title="View project">
+					<div class="selector-preview">
+		        <img class="preview-image" src="/assets/{{ project.id }}_hero.png">
+						<img class="platform-icon" src="/assets/icon_{{project.platform}}.png">
+						<div class="title">{{project.title}}</div>
+					</div>
+				</a>
+			{% endif %}
+		{% endfor %}
+	</div>
+</div>

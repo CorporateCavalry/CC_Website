@@ -1,0 +1,6 @@
+name: Jack Southard, hhh
+markdown: kramdown
+permalink: /blog/:year/:month/:day/:title
+collections:
+  projects:
+    output: true

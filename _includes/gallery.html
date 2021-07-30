@@ -1,0 +1,8 @@
+<div class="gallery">
+	{% for image in page.images %}
+	<div class="image-with-caption">
+		<img src="/assets/projects/{{ image.filename }}">  
+		<p class="caption">{{image.caption}}</p>
+	</div>
+	{% endfor %}
+</div>

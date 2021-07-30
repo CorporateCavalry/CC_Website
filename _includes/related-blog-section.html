@@ -1,0 +1,20 @@
+{% assign shouldShow = false %}
+{% for post in site.posts %}
+	{% if include.project == post.project %}
+		{% assign shouldShow = true %}
+		{% break %}
+	{% endif %}
+{% endfor %}
+
+{% if shouldShow %}
+	<div class="section">
+		<div class="section-header">
+			<div class="section-title">
+				<img src="/assets/sectionLine.svg">
+				<a href="/blog" title="View all blogs">Related Posts</a>
+				<img src="/assets/sectionLine.svg">
+			</div>
+		</div>
+		{% include post-selector.html count=2 project=include.project %}
+	</div>
+{% endif %}

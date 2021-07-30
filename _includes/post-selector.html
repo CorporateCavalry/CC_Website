@@ -1,0 +1,18 @@
+{% assign shownCount = 0 %}
+<ul class="selector">
+	{% for post in site.posts %}
+		{% if include.count == null or shownCount < include.count %}
+			{% if include.project == null or include.project == post.project %}
+			 {% assign shownCount = shownCount|plus:1 %}
+				<!-- <li><span>{{ post.date | date_to_string }}</span> » <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a></li> -->
+				<a href="{{post.url}}" title="View post">
+					<div class="selector-preview">
+		        <img class="preview-image" src="/assets/{{ post.id }}_hero.png">
+						<div class="title">{{post.title}}</div>
+						<div class="date">{{ post.date | date_to_string }}</div>
+					</div>
+				</a>
+			{% endif %}
+		{% endif %}
+	{% endfor %}
+</ul>
