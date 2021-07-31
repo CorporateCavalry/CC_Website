@@ -9,13 +9,19 @@ function getProfAcct(email) {
     return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
 }
 
-function getCallback(onFound, onNotFound, onErr) {
+function onError(err) {
+    console.log("Error: " + JSON.stringify(err, undefined, 2));
+}
+
+function isNullOrEmpty(str) { return !str || str === ""; }
+
+function getCallback(onFound, onNotFound) {
     return function(err, data) {
         if (err) {
             onErr(err);
         } else {
             if (data.hasOwnProperty("Item")) {
-                onFound(data);
+                onFound(data["Item"]);
             } else {
                 onNotFound();
             }
@@ -23,7 +29,7 @@ function getCallback(onFound, onNotFound, onErr) {
     }
 }
 
-function putCallback(onSuccess, onErr) {
+function putCallback(onSuccess) {
     return function(err, data) {
         if (err) {
             onErr(err);
@@ -31,6 +37,24 @@ function putCallback(onSuccess, onErr) {
             onSuccess();
         }
     }
+}
+
+function validateLogin(onValid, onInvalid) {
+    if (isNullOrEmpty(cachedEmail) || isNullOrEmpty(cachedPassword)) {
+        onInvalid();
+        return;
+    }
+
+    docClient.get(getProfAcct(cachedEmail), getCallback(
+        function(data) {
+            if (data["Password"] === cachedPassword) {
+                onValid();
+            } else {
+                onInvalid();
+            }
+        },
+        onInvalid
+    ));
 }
 
 function createProfAccount(email, password) {
@@ -42,15 +66,16 @@ function createProfAccount(email, password) {
         }
     };
 
-    var onCreateFail = function(err) { console.log("Create account failed: " + JSON.stringify(err, undefined, 2)); }
-
     var onCreateSuccess = function() { console.log("Account created!"); };
     var onAccountTaken = function(data) { console.log("This email is already taken!"); };
-    var onAccountOpen = function() { docClient.put(putParams, putCallback(onCreateSuccess, onCreateFail)); }
+    var onAccountOpen = function() { docClient.put(putParams, putCallback(onCreateSuccess)); }
 
-    docClient.get(getProfAcct(email), getCallback(onAccountTaken, onAccountOpen, onCreateFail));
+    docClient.get(getProfAcct(email), getCallback(onAccountTaken, onAccountOpen));
 }
 
+function loginProfAccount(email, password) {
+    var onFail = function(err) { }
+}
 
 function getAccount(accountID) {
     var returnStr = "Error";
@@ -71,4 +96,8 @@ function getAccount(accountID) {
     });
 }
 
-createProfAccount("somethingtrass@gmail.com", "yape");
+// createProfAccount("somethingtrass@gmail.com", "yape");
+
+// function onInvalid() { console.log("Invalid credentials!"); }
+// function onValid() { console.log("Credentials valid!"); }
+// validateLogin(onValid, onInvalid);
