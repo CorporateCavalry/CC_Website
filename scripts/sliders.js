@@ -18,7 +18,7 @@ function isNullOrEmpty(str) { return !str || str === ""; }
 function getCallback(onFound, onNotFound) {
     return function(err, data) {
         if (err) {
-            onErr(err);
+            onError(err);
         } else {
             if (data.hasOwnProperty("Item")) {
                 onFound(data["Item"]);
@@ -32,7 +32,7 @@ function getCallback(onFound, onNotFound) {
 function putCallback(onSuccess) {
     return function(err, data) {
         if (err) {
-            onErr(err);
+            onError(err);
         } else {
             onSuccess();
         }
@@ -73,8 +73,31 @@ function createProfAccount(email, password) {
     docClient.get(getProfAcct(email), getCallback(onAccountTaken, onAccountOpen));
 }
 
+function logoutProfAccount() {
+    cachedEmail = "";
+    cachedPassword = "";
+}
+
 function loginProfAccount(email, password) {
-    var onFail = function(err) { }
+    if (isNullOrEmpty(email) || isNullOrEmpty(password)) {
+        console.log("All fields must be filled out!");
+        return;
+    }
+
+    docClient.get(getProfAcct(email), getCallback(
+        function(data) {
+            if (data["Password"] === password) {
+                cachedEmail = email;
+                cachedPassword = password;
+                console.log("Successfully logged in!");
+            } else {
+                console.log("Password is incorrect.");
+            }
+        },
+        function() {
+            console.log("No account was found for this email.");
+        }
+    ));
 }
 
 function getAccount(accountID) {
@@ -95,6 +118,8 @@ function getAccount(accountID) {
         }
     });
 }
+
+loginProfAccount("somethingtrass@gmail.com", "yape")
 
 // createProfAccount("somethingtrass@gmail.com", "yape");
 
