@@ -2,10 +2,11 @@ AWS.config.update(getCredentials());
 var docClient = new AWS.DynamoDB.DocumentClient();
 
 var PROF_TABLE_NAME = "Professors";
+
 var cachedEmail = "";
 var cachedPassword = "";
 
-function getProfAcct(email) {
+function getProfKey(email) {
     return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
 }
 
@@ -45,7 +46,7 @@ function validateLogin(onValid, onInvalid) {
         return;
     }
 
-    docClient.get(getProfAcct(cachedEmail), getCallback(
+    docClient.get(getProfKey(cachedEmail), getCallback(
         function(data) {
             if (data["Password"] === cachedPassword) {
                 onValid();
@@ -70,7 +71,7 @@ function createProfAccount(email, password) {
     var onAccountTaken = function(data) { console.log("This email is already taken!"); };
     var onAccountOpen = function() { docClient.put(putParams, putCallback(onCreateSuccess)); }
 
-    docClient.get(getProfAcct(email), getCallback(onAccountTaken, onAccountOpen));
+    docClient.get(getProfKey(email), getCallback(onAccountTaken, onAccountOpen));
 }
 
 function logoutProfAccount() {
@@ -84,7 +85,7 @@ function loginProfAccount(email, password) {
         return;
     }
 
-    docClient.get(getProfAcct(email), getCallback(
+    docClient.get(getProfKey(email), getCallback(
         function(data) {
             if (data["Password"] === password) {
                 cachedEmail = email;
