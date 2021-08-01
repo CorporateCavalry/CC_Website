@@ -14,7 +14,7 @@ profCommands = function(){
             return;
         }
 
-        docClient.get(getProfKey(cachedEmail), getCallback(
+        docClient.get(getKey(cachedEmail), getCallback(
             function(data) {
                 if (data["Password"] === cachedPassword) {
                     onValid();
@@ -40,7 +40,7 @@ profCommands = function(){
         var onAccountTaken = function(data) { printer("This email is already taken!"); };
         var onAccountOpen = function() { docClient.put(putParams, putCallback(onCreateSuccess, printer)); }
 
-        docClient.get(getProfKey(email), getCallback(onAccountTaken, onAccountOpen, printer));
+        docClient.get(getKey(email), getCallback(onAccountTaken, onAccountOpen, printer));
     }
 
     function logout() {
@@ -49,12 +49,17 @@ profCommands = function(){
     }
 
     function login(email, password, printer) {
+        if (!isString(email) || !isString(password)) {
+            printer("Invalid data type.");
+            return;
+        }
+
         if (isNullOrEmpty(email) || isNullOrEmpty(password)) {
             printer("All fields must be filled out!");
             return;
         }
 
-        docClient.get(getProfKey(email), getCallback(
+        docClient.get(getKey(email), getCallback(
             function(data) {
                 if (data["Password"] === password) {
                     cachedEmail = email;
