@@ -10,16 +10,20 @@ function getProfKey(email) {
     return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
 }
 
-function onError(err) {
-    console.log("Error: " + JSON.stringify(err, undefined, 2));
+function consolePrinter(msg) {
+    console.log(msg);
+}
+
+function onError(err, printer) {
+    printer("Error: " + JSON.stringify(err, undefined, 2));
 }
 
 function isNullOrEmpty(str) { return !str || str === ""; }
 
-function getCallback(onFound, onNotFound) {
+function getCallback(onFound, onNotFound, printer) {
     return function(err, data) {
         if (err) {
-            onError(err);
+            onError(err, printer);
         } else {
             if (data.hasOwnProperty("Item")) {
                 onFound(data["Item"]);
@@ -30,17 +34,17 @@ function getCallback(onFound, onNotFound) {
     }
 }
 
-function putCallback(onSuccess) {
+function putCallback(onSuccess, printer) {
     return function(err, data) {
         if (err) {
-            onError(err);
+            onError(err, printer);
         } else {
             onSuccess();
         }
     }
 }
 
-function validateLogin(onValid, onInvalid) {
+function validateLogin(onValid, onInvalid, printer) {
     if (isNullOrEmpty(cachedEmail) || isNullOrEmpty(cachedPassword)) {
         onInvalid();
         return;
@@ -54,11 +58,12 @@ function validateLogin(onValid, onInvalid) {
                 onInvalid();
             }
         },
-        onInvalid
+        onInvalid,
+        printer
     ));
 }
 
-function createProfAccount(email, password) {
+function createProfAccount(email, password, printer) {
     var putParams = {
         TableName: PROF_TABLE_NAME,
         Item: {
@@ -67,11 +72,11 @@ function createProfAccount(email, password) {
         }
     };
 
-    var onCreateSuccess = function() { console.log("Account created!"); };
-    var onAccountTaken = function(data) { console.log("This email is already taken!"); };
-    var onAccountOpen = function() { docClient.put(putParams, putCallback(onCreateSuccess)); }
+    var onCreateSuccess = function() { printer("Account created!"); };
+    var onAccountTaken = function(data) { printer("This email is already taken!"); };
+    var onAccountOpen = function() { docClient.put(putParams, putCallback(onCreateSuccess, printer)); }
 
-    docClient.get(getProfKey(email), getCallback(onAccountTaken, onAccountOpen));
+    docClient.get(getProfKey(email), getCallback(onAccountTaken, onAccountOpen, printer));
 }
 
 function logoutProfAccount() {
@@ -79,9 +84,9 @@ function logoutProfAccount() {
     cachedPassword = "";
 }
 
-function loginProfAccount(email, password) {
+function loginProfAccount(email, password, printer) {
     if (isNullOrEmpty(email) || isNullOrEmpty(password)) {
-        console.log("All fields must be filled out!");
+        printer("All fields must be filled out!");
         return;
     }
 
@@ -90,14 +95,15 @@ function loginProfAccount(email, password) {
             if (data["Password"] === password) {
                 cachedEmail = email;
                 cachedPassword = password;
-                console.log("Successfully logged in!");
+                printer("Successfully logged in!");
             } else {
-                console.log("Password is incorrect.");
+                printer("Password is incorrect.");
             }
         },
         function() {
-            console.log("No account was found for this email.");
-        }
+            printer("No account was found for this email.");
+        },
+        printer
     ));
 }
 
@@ -120,7 +126,7 @@ function getAccount(accountID) {
     });
 }
 
-loginProfAccount("somethingtrass@gmail.com", "yape")
+// loginProfAccount("somethingtrass@gmail.co", "yape", consolePrinter)
 
 // createProfAccount("somethingtrass@gmail.com", "yape");
 
