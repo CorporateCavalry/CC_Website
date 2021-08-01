@@ -1,0 +1,24 @@
+studentCommands = function(){
+    function getAccount(accountID) {
+        var returnStr = "Error";
+        var params = {
+            TableName: "Accounts",
+            Key: { "AccountID": accountID }
+        };
+
+        docClient.get(params, function (err, data) {
+            if (err) {
+                returnStr = "Error:" + JSON.stringify(err, undefined, 2);
+                console.log(returnStr)
+            } else {
+                console.log(data["Item"]["Name"])
+                returnStr = "Data Found:" + JSON.stringify(data, undefined, 2);
+                console.log(returnStr)
+            }
+        });
+    }
+
+    return {
+        getAccount:getAccount
+    }
+}();

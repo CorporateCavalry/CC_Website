@@ -10,12 +10,14 @@
 	<p id="log"></p>
 </div>
 
+<script src="/scripts/prof_commands.js"></script>
 <script>
 function processLogin() {
 	var elements = document.getElementById("login_form").elements;
 	var email = elements["login_email"].value;
 	var password = elements["login_password"].value;
-	loginProfAccount(email, password, logPrinter);
+	
+	profCommands.login(email, password, logPrinter);
 }
 
 function logPrinter(msg) {
