@@ -3,8 +3,8 @@ profCommands = function(){
     var CACHED_EMAIL_KEY = "prof_email";
     var CACHED_PASSWORD_KEY = "prof_password";
 
-    var cachedEmail = loadSringFromStorage(CACHED_EMAIL_KEY);
-    var cachedPassword = loadSringFromStorage(CACHED_EMAIL_KEY);
+    var cachedEmail = loadStringFromStorage(CACHED_EMAIL_KEY);
+    var cachedPassword = loadStringFromStorage(CACHED_EMAIL_KEY);
 
     function getKey(email) {
         return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
