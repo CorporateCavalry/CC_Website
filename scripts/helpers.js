@@ -9,3 +9,12 @@ function onError(err, printer) {
 function isNullOrEmpty(str) { return !str || str === ""; }
 
 function isString(obj) { return typeof obj === 'string' || obj instanceof String; }
+
+function loadSringFromStorage(key) {
+    var val = localStorage.getItem(key);
+    if (isString(val)) {
+        return val;
+    }
+
+    return "";
+}

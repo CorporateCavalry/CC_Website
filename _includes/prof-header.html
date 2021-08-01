@@ -1,0 +1,24 @@
+<script src="/scripts/prof_commands.js"></script>
+
+<div class="section">
+	<div id="prof_login_header">loading...</div>
+	<br>
+	<input type="button" onclick="processLogout()" value="Logout">
+</div>
+
+<script>
+function refreshHeader() {
+	profCommands.printLoginStatus(headerPrinter)
+}
+
+function headerPrinter(msg) {
+	document.getElementById("prof_login_header").innerHTML = msg;
+}
+
+function processLogout() {
+	profCommands.logout();
+	refreshHeader();
+}
+
+refreshHeader();
+</script>

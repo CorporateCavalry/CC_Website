@@ -1,8 +1,11 @@
 profCommands = function(){
     var PROF_TABLE_NAME = "Professors";
+    var CACHED_EMAIL_KEY = "prof_email";
+    var CACHED_PASSWORD_KEY = "prof_password";
 
-    var cachedEmail = "";
-    var cachedPassword = "";
+    var cachedEmail = loadSringFromStorage(CACHED_EMAIL_KEY);
+    var cachedPassword = loadSringFromStorage(CACHED_EMAIL_KEY);
+
 
     function getKey(email) {
         return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
@@ -27,6 +30,14 @@ profCommands = function(){
         ));
     }
 
+    function cacheLogin(email, password) {
+        cachedEmail = email;
+        localStorage.setItem(CACHED_EMAIL_KEY, email);
+
+        cachedPassword = password;
+        localStorage.setItem(CACHED_PASSWORD_KEY, password);
+    }
+
     function createAccount(email, password, printer) {
         var putParams = {
             TableName: PROF_TABLE_NAME,
@@ -43,11 +54,6 @@ profCommands = function(){
         docClient.get(getKey(email), getCallback(onAccountTaken, onAccountOpen, printer));
     }
 
-    function logout() {
-        cachedEmail = "";
-        cachedPassword = "";
-    }
-
     function login(email, password, printer) {
         if (!isString(email) || !isString(password)) {
             printer("Invalid data type.");
@@ -62,8 +68,7 @@ profCommands = function(){
         docClient.get(getKey(email), getCallback(
             function(data) {
                 if (data["Password"] === password) {
-                    cachedEmail = email;
-                    cachedPassword = password;
+                    cacheLogin(email, password);
                     printer("Successfully logged in!");
                 } else {
                     printer("Password is incorrect.");
@@ -76,8 +81,22 @@ profCommands = function(){
         ));
     }
 
+    function printLoginStatus(printer) {
+        if (isNullOrEmpty(cachedEmail)) {
+            printer("Not logged in.");
+        } else {
+            printer("Logged in as " + cachedEmail + "!");
+        }
+    }
+
+    function logout() {
+        cacheLogin("", "");
+    }
+
     return {
-        login:login
+        login:login,
+        logout:logout,
+        printLoginStatus:printLoginStatus
     }
 }();
 
