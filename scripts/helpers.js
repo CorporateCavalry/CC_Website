@@ -1,10 +1,8 @@
-function consolePrinter(msg) {
-    console.log(msg);
-}
+// printers are used to display information
+function consolePrinter() { return function(msg) { console.log(msg); } }
+function htmlPrinter(elementId) { return function(msg) { $("#" + elementId).html(msg); } }
 
-function onError(err, printer) {
-    printer("Error: " + JSON.stringify(err, undefined, 2));
-}
+function onError(err, printer) { printer("Error: " + JSON.stringify(err, undefined, 2)); }
 
 function isNullOrEmpty(str) { return !str || str === ""; }
 

@@ -6,7 +6,6 @@ profCommands = function(){
     var cachedEmail = loadSringFromStorage(CACHED_EMAIL_KEY);
     var cachedPassword = loadSringFromStorage(CACHED_EMAIL_KEY);
 
-
     function getKey(email) {
         return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
     }
@@ -54,7 +53,7 @@ profCommands = function(){
         docClient.get(getKey(email), getCallback(onAccountTaken, onAccountOpen, printer));
     }
 
-    function login(email, password, printer) {
+    function login(email, password, printer, onLogIn) {
         if (!isString(email) || !isString(password)) {
             printer("Invalid data type.");
             return;
@@ -70,6 +69,7 @@ profCommands = function(){
                 if (data["Password"] === password) {
                     cacheLogin(email, password);
                     printer("Successfully logged in!");
+                    onLogIn();
                 } else {
                     printer("Password is incorrect.");
                 }
@@ -81,12 +81,12 @@ profCommands = function(){
         ));
     }
 
-    function printLoginStatus(printer) {
-        if (isNullOrEmpty(cachedEmail)) {
-            printer("Not logged in.");
-        } else {
-            printer("Logged in as " + cachedEmail + "!");
-        }
+    function isLoggedIn() {
+        return !isNullOrEmpty(cachedEmail);
+    }
+
+    function getCurrentUser() {
+        return cachedEmail;
     }
 
     function logout() {
@@ -96,14 +96,7 @@ profCommands = function(){
     return {
         login:login,
         logout:logout,
-        printLoginStatus:printLoginStatus
+        isLoggedIn:isLoggedIn,
+        getCurrentUser:getCurrentUser
     }
 }();
-
-// loginProfAccount("somethingtrass@gmail.co", "yape", consolePrinter)
-
-// createProfAccount("somethingtrass@gmail.com", "yape");
-
-// function onInvalid() { console.log("Invalid credentials!"); }
-// function onValid() { console.log("Credentials valid!"); }
-// validateLogin(onValid, onInvalid);

@@ -1,12 +1,14 @@
 <div class="section">
-	<p>Log in to your account</p>
-	<form id="prof_login_form">
-		Email: <input type="text" name="email", size="50"><br>
-		Password: <input type="password" name="password", size="50"><br><br>
-		<input type="button" onclick="processLogin()" value="Submit">
-	</form>
-	<br>
-	<p id="log"></p>
+	<div class="logged_out">
+		<p>Log in to your account</p>
+		<form id="prof_login_form">
+			Email: <input type="text" name="email", size="50"><br>
+			Password: <input type="password" name="password", size="50"><br><br>
+			<input type="button" onclick="processLogin()" value="Submit">
+		</form>
+		<br>
+		<p id="log"></p>
+	</div>
 </div>
 
 <script>
@@ -15,11 +17,6 @@ function processLogin() {
 	var email = elements["email"].value;
 	var password = elements["password"].value;
 
-	profCommands.login(email, password, logPrinter);
-}
-
-function logPrinter(msg) {
-	document.getElementById("log").innerHTML = msg;
-	refreshHeader();
+	profCommands.login(email, password, htmlPrinter("log"), loginRefresh);
 }
 </script>
