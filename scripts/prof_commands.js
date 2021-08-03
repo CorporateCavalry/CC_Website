@@ -46,7 +46,7 @@ profCommands = function() {
         localStorage.setItem(CACHED_PASSWORD_KEY, password);
     }
 
-    function createAccount(email, password, onComplete) {
+    function createAccount(email, password, onLogIn, onComplete) {
         if (isProcessing) return;
         isProcessing = true;
 
@@ -63,7 +63,12 @@ profCommands = function() {
             onComplete(msg);
         }
 
-        const onCreateSuccess = function() { resultPrinter("Account created!"); };
+        const onCreateSuccess = function() {
+            cacheLogin(email, password);
+            resultPrinter("Successfully logged in!");
+            onLogIn();
+        };
+
         const onAccountTaken = function(data) { resultPrinter("This email is already taken!"); };
         const onAccountOpen = function() { awsManager.put(putParams, onCreateSuccess, resultPrinter); }
 
@@ -196,6 +201,7 @@ profCommands = function() {
 
     return {
         getIsProcessing:getIsProcessing,
+        createAccount:createAccount,
         login:login,
         logout:logout,
         isLoggedIn:isLoggedIn,

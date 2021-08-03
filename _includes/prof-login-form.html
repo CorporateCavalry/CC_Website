@@ -2,15 +2,15 @@
 	<div class="logged_out">
 		<p>Log in to your account</p>
 		<form id="prof_login_form">
-			<label for="input_email">Email:</label>
-			<input type="email" name="email" id="input_email" size="50"><br>
+			<label for="prof_login_email">Email:</label>
+			<input type="email" name="email" id="prof_login_email" size="50"><br>
 
-			<label for="input_password">Password:</label>
-			<input type="password" name="password" id="input_password" size="50"><br><br>
-			<input type="button" onclick="processLogin()" value="Log in" id="button_login">
+			<label for="prof_login_password">Password:</label>
+			<input type="password" name="password" id="prof_login_password" size="50"><br><br>
+			<input type="button" onclick="processLogin()" value="Log in" id="button_prof_login">
 		</form>
 		<br>
-		<p id="login_printer"></p>
+		<p id="prof_login_printer"></p>
 	</div>
 </div>
 
@@ -21,7 +21,7 @@ function processLogin() {
 	const elements = document.getElementById("prof_login_form").elements;
 	const email = elements["email"].value;
 	const password = elements["password"].value;
-	const printer = getHtmlPrinter("login_printer");
+	const printer = getHtmlPrinter("prof_login_printer");
 
 	if (!isString(email) || !isString(password)) {
 		printer("Invalid data type.");
@@ -38,7 +38,7 @@ function processLogin() {
 		return;
 	}
 
-	const submitButton = $("#button_login");
+	const submitButton = $("#button_prof_login");
 	submitButton.prop("disabled", true);
 	printer("");
 
