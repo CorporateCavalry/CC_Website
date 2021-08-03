@@ -3,7 +3,7 @@
 		<p>Log in to your account</p>
 		<form id="prof_login_form">
 			<label for="input_email">Email:</label>
-			<input type="text" name="email" id="input_email" size="50"><br>
+			<input type="email" name="email" id="input_email" size="50"><br>
 
 			<label for="input_password">Password:</label>
 			<input type="password" name="password" id="input_password" size="50"><br><br>
@@ -18,10 +18,10 @@
 function processLogin() {
 	if (profCommands.getIsProcessing()) return;
 
-	let elements = document.getElementById("prof_login_form").elements;
-	let email = elements["email"].value;
-	let password = elements["password"].value;
-	let printer = getHtmlPrinter("login_printer");
+	const elements = document.getElementById("prof_login_form").elements;
+	const email = elements["email"].value;
+	const password = elements["password"].value;
+	const printer = getHtmlPrinter("login_printer");
 
 	if (!isString(email) || !isString(password)) {
 		printer("Invalid data type.");
@@ -33,11 +33,16 @@ function processLogin() {
 		return;
 	}
 
-	let submitButton = $("#button_login");
+	if (elements["email"].validity.typeMismatch) {
+		printer("Please enter a valid email address!");
+		return;
+	}
+
+	const submitButton = $("#button_login");
 	submitButton.prop("disabled", true);
 	printer("");
 
-	let onComplete = function(msg) {
+	const onComplete = function(msg) {
 		submitButton.prop("disabled", false);
 		printer(msg);
 	}

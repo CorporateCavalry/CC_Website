@@ -50,7 +50,7 @@ profCommands = function() {
         if (isProcessing) return;
         isProcessing = true;
 
-        let putParams = {
+        const putParams = {
             TableName: PROF_TABLE_NAME,
             Item: {
                 "Email": email,
@@ -58,14 +58,14 @@ profCommands = function() {
             }
         };
 
-        let resultPrinter = function(msg) {
+        const resultPrinter = function(msg) {
             completeProcessing();
             onComplete(msg);
         }
 
-        let onCreateSuccess = function() { resultPrinter("Account created!"); };
-        let onAccountTaken = function(data) { resultPrinter("This email is already taken!"); };
-        let onAccountOpen = function() { awsManager.put(putParams, onCreateSuccess, resultPrinter); }
+        const onCreateSuccess = function() { resultPrinter("Account created!"); };
+        const onAccountTaken = function(data) { resultPrinter("This email is already taken!"); };
+        const onAccountOpen = function() { awsManager.put(putParams, onCreateSuccess, resultPrinter); }
 
         awsManager.get(getProfKey(email), onAccountTaken, onAccountOpen, resultPrinter);
     }
@@ -74,7 +74,7 @@ profCommands = function() {
         if (isProcessing) return;
         isProcessing = true;
 
-        let resultPrinter = function(msg) {
+        const resultPrinter = function(msg) {
             completeProcessing();
             onComplete(msg);
         }
@@ -120,18 +120,18 @@ profCommands = function() {
         if (isProcessing) return;
         isProcessing = true;
 
-        let resultPrinter = function(msg) {
+        const resultPrinter = function(msg) {
             completeProcessing();
             onComplete(msg);
         }
 
-        let onInvalid = function() { resultPrinter("Login credentials invalid."); };
+        const onInvalid = function() { resultPrinter("Login credentials invalid."); };
 
         let numAttempts = 0;
         let classCode;
 
-        let onClassCodeAvailable = function() {
-            let putParams = {
+        const onClassCodeAvailable = function() {
+            const putParams = {
                 TableName: CLASS_TABLE_NAME,
                 Item: {
                     "ClassCode": classCode,
@@ -142,8 +142,8 @@ profCommands = function() {
                 }
             };
 
-            let onClassCreated = function() {
-                let updateParams = {
+            const onClassCreated = function() {
+                const updateParams = {
                     TableName: PROF_TABLE_NAME,
                     Key: { "Email": cachedEmail },
                     UpdateExpression: "set Classes = list_append(if_not_exists(Classes, :emptyList), :newClass)",
@@ -159,7 +159,7 @@ profCommands = function() {
             awsManager.put(putParams, onClassCreated, resultPrinter);
         };
 
-        let testClassCode = function() {
+        const testClassCode = function() {
             if (numAttempts === MAX_CREATE_ATTEMPTS) {
                 onInvalid();
                 return;

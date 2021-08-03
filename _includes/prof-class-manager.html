@@ -19,11 +19,11 @@
 var isCreatingClass = false;
 
 (function(){
-	let startDateInput = $("#input_start_date");
-	let endDateInput = $("#input_end_date");
+	const startDateInput = $("#input_start_date");
+	const endDateInput = $("#input_end_date");
 
 	let date = new Date();
-	let todayStr = getWebFormattedDateString(date);
+	const todayStr = getWebFormattedDateString(date);
 	startDateInput.attr("value", todayStr); // default value of start date is today
 	startDateInput.attr("min", todayStr);
 	endDateInput.attr("min", todayStr);
@@ -34,7 +34,7 @@ var isCreatingClass = false;
 
 function parseInputDate(str) {
 	// by default, because there's no timestamp, it treats it as UTC
-	let parsed = new Date(Date.parse(str));
+	const parsed = new Date(Date.parse(str));
 	// so, use the "UTC" values to generate a new date which is in the correct timezone
 	let utcValDate = new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate(), parsed.getUTCHours(), parsed.getUTCMinutes(), parsed.getUTCSeconds());
     // finally, set it to midnight for our current timezone
@@ -45,10 +45,10 @@ function parseInputDate(str) {
 function processCreateClass() {
 	if (profCommands.getIsProcessing()) return;
 
-	let elements = document.getElementById("prof_create_class_form").elements;
-	let startDateStr = elements["start_date"].value;
-	let endDateStr = elements["end_date"].value;
-	let printer = getHtmlPrinter("create_class_printer");
+	const elements = document.getElementById("prof_create_class_form").elements;
+	const startDateStr = elements["start_date"].value;
+	const endDateStr = elements["end_date"].value;
+	const printer = getHtmlPrinter("create_class_printer");
 
 	if (!isString(startDateStr) || !isString(endDateStr)) {
 		printer("Invalid data type.");
@@ -76,11 +76,11 @@ function processCreateClass() {
 		return;
 	}
 
-	let submitButton = $("#button_create_class");
+	const submitButton = $("#button_create_class");
 	submitButton.prop("disabled", true);
 	printer("");
 
-	let onComplete = function(msg) {
+	const onComplete = function(msg) {
 		submitButton.prop("disabled", false);
 		printer(msg);
 	}
