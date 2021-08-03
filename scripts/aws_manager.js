@@ -1,36 +1,44 @@
-AWS.config.update(getCredentials());
-var docClient = new AWS.DynamoDB.DocumentClient();
+awsManager = function() {
+    AWS.config.update(getCredentials());
+    var docClient = new AWS.DynamoDB.DocumentClient();
 
-function getCallback(onFound, onNotFound, printer) {
-    return function(err, data) {
-        if (err) {
-            onError(err, printer);
-        } else {
-            if (data.hasOwnProperty("Item")) {
-                onFound(data["Item"]);
+    function get(params, onFound, onNotFound, printer) {
+        docClient.get(params, function(err, data) {
+            if (err) {
+                onError(err, printer);
             } else {
-                onNotFound();
+                if (data.hasOwnProperty("Item")) {
+                    onFound(data["Item"]);
+                } else {
+                    onNotFound();
+                }
             }
-        }
+        });
     }
-}
 
-function putCallback(onSuccess, printer) {
-    return function(err, data) {
-        if (err) {
-            onError(err, printer);
-        } else {
-            onSuccess();
-        }
+    function put(params, onSuccess, printer) {
+        docClient.put(params, function(err, data) {
+            if (err) {
+                onError(err, printer);
+            } else {
+                onSuccess();
+            }
+        });
     }
-}
 
-function updateCallback(onSuccess, printer) {
-    return function(err, data) {
-        if (err) {
-            onError(err, printer);
-        } else {
-            onSuccess();
-        }
+    function update(params, onSuccess, printer) {
+        docClient.update(params, function(err, data) {
+            if (err) {
+                onError(err, printer);
+            } else {
+                onSuccess();
+            }
+        });
     }
-}
+
+    return {
+        get:get,
+        put:put,
+        update:update
+    }
+}();

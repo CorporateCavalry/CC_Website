@@ -1,4 +1,4 @@
-profCommands = function(){
+profCommands = function() {
     var PROF_TABLE_NAME = "Professors";
     var CLASS_TABLE_NAME = "Classes";
     var CACHED_EMAIL_KEY = "prof_email";
@@ -23,7 +23,7 @@ profCommands = function(){
             return;
         }
 
-        docClient.get(getProfKey(cachedEmail), getCallback(
+        awsManager.get(getProfKey(cachedEmail),
             function(data) {
                 if (data["Password"] === cachedPassword) {
                     onValid();
@@ -33,7 +33,7 @@ profCommands = function(){
             },
             onInvalid,
             printer
-        ));
+        );
     }
 
     function cacheLogin(email, password) {
@@ -55,13 +55,13 @@ profCommands = function(){
 
         var onCreateSuccess = function() { printer("Account created!"); };
         var onAccountTaken = function(data) { printer("This email is already taken!"); };
-        var onAccountOpen = function() { docClient.put(putParams, putCallback(onCreateSuccess, printer)); }
+        var onAccountOpen = function() { awsManager.put(putParams, onCreateSuccess, printer); }
 
-        docClient.get(getProfKey(email), getCallback(onAccountTaken, onAccountOpen, printer));
+        awsManager.get(getProfKey(email), onAccountTaken, onAccountOpen, printer);
     }
 
     function login(email, password, printer, onLogIn) {
-        docClient.get(getProfKey(email), getCallback(
+        awsManager.get(getProfKey(email),
             function(data) {
                 if (data["Password"] === password) {
                     cacheLogin(email, password);
@@ -75,7 +75,7 @@ profCommands = function(){
                 printer("No account was found for this email.");
             },
             printer
-        ));
+        );
     }
 
     function logout() {
@@ -119,18 +119,15 @@ profCommands = function(){
                     ExpressionAttributeValues: { ":emptyList": [], ":newClass": [ classCode ] }
                 }
 
-                docClient.update(updateParams, updateCallback(
+                awsManager.update(updateParams,
                     function() {
                         printer("New class created: " + classCode);
                     },
                     printer
-                ));
+                );
             }
 
-            docClient.put(putParams, putCallback(
-                onClassCreated,
-                printer
-            ));
+            awsManager.put(putParams, onClassCreated, printer);
         };
 
         var testClassCode = function() {
@@ -142,7 +139,7 @@ profCommands = function(){
             numAttempts++;
 
             classCode = getRandomClassName();
-            docClient.get(getClassKey(classCode), getCallback(testClassCode, onClassCodeAvailable, printer));
+            awsManager.get(getClassKey(classCode), testClassCode, onClassCodeAvailable, printer);
         };
 
         validateLogin(
