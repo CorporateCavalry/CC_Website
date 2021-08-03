@@ -7,7 +7,7 @@
 
 			<label for="input_password">Password:</label>
 			<input type="password" name="password" id="input_password" size="50"><br><br>
-			<input type="button" onclick="processLogin()" value="Submit">
+			<input type="button" onclick="processLogin()" value="Log in" id="button_login">
 		</form>
 		<br>
 		<p id="login_printer"></p>
@@ -16,10 +16,12 @@
 
 <script>
 function processLogin() {
-	var elements = document.getElementById("prof_login_form").elements;
-	var email = elements["email"].value;
-	var password = elements["password"].value;
-	var printer = getHtmlPrinter("login_printer");
+	if (profCommands.getIsProcessing()) return;
+
+	let elements = document.getElementById("prof_login_form").elements;
+	let email = elements["email"].value;
+	let password = elements["password"].value;
+	let printer = getHtmlPrinter("login_printer");
 
 	if (!isString(email) || !isString(password)) {
 		printer("Invalid data type.");
@@ -31,6 +33,15 @@ function processLogin() {
 		return;
 	}
 
-	profCommands.login(email, password, printer, loginRefresh);
+	let submitButton = $("#button_login");
+	submitButton.prop("disabled", true);
+	printer("");
+
+	let onComplete = function(msg) {
+		submitButton.prop("disabled", false);
+		printer(msg);
+	}
+
+	profCommands.login(email, password, loginRefresh, onComplete);
 }
 </script>

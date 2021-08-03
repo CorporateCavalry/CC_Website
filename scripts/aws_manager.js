@@ -5,7 +5,7 @@ awsManager = function() {
     function get(params, onFound, onNotFound, printer) {
         docClient.get(params, function(err, data) {
             if (err) {
-                onError(err, printer);
+                printError(err, printer);
             } else {
                 if (data.hasOwnProperty("Item")) {
                     onFound(data["Item"]);
@@ -19,7 +19,7 @@ awsManager = function() {
     function put(params, onSuccess, printer) {
         docClient.put(params, function(err, data) {
             if (err) {
-                onError(err, printer);
+                printError(err, printer);
             } else {
                 onSuccess();
             }
@@ -29,7 +29,7 @@ awsManager = function() {
     function update(params, onSuccess, printer) {
         docClient.update(params, function(err, data) {
             if (err) {
-                onError(err, printer);
+                printError(err, printer);
             } else {
                 onSuccess();
             }

@@ -8,7 +8,7 @@
 			<label for="input_end_date">End Date:</label>
 			<input type="date" name="end_date" id="input_end_date" size="50"><br>
 
-			<input type="button" onclick="processCreateClass()" value="Create Class">
+			<input type="button" onclick="processCreateClass()" value="Create Class" id="button_create_class">
 		</form>
 		<br>
 		<p id="create_class_printer"></p>
@@ -19,11 +19,11 @@
 var isCreatingClass = false;
 
 (function(){
-	var startDateInput = $("#input_start_date");
-	var endDateInput = $("#input_end_date");
+	let startDateInput = $("#input_start_date");
+	let endDateInput = $("#input_end_date");
 
-	var date = new Date();
-	var todayStr = getWebFormattedDateString(date);
+	let date = new Date();
+	let todayStr = getWebFormattedDateString(date);
 	startDateInput.attr("value", todayStr); // default value of start date is today
 	startDateInput.attr("min", todayStr);
 	endDateInput.attr("min", todayStr);
@@ -34,19 +34,21 @@ var isCreatingClass = false;
 
 function parseInputDate(str) {
 	// by default, because there's no timestamp, it treats it as UTC
-	var parsed = new Date(Date.parse(str));
+	let parsed = new Date(Date.parse(str));
 	// so, use the "UTC" values to generate a new date which is in the correct timezone
-	var utcValDate = new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate(), parsed.getUTCHours(), parsed.getUTCMinutes(), parsed.getUTCSeconds());
+	let utcValDate = new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate(), parsed.getUTCHours(), parsed.getUTCMinutes(), parsed.getUTCSeconds());
     // finally, set it to midnight for our current timezone
 	utcValDate.setHours(0, 0, 0, 0);
 	return utcValDate;
 }
 
 function processCreateClass() {
-	var elements = document.getElementById("prof_create_class_form").elements;
-	var startDateStr = elements["start_date"].value;
-	var endDateStr = elements["end_date"].value;
-	var printer = getHtmlPrinter("create_class_printer");
+	if (profCommands.getIsProcessing()) return;
+
+	let elements = document.getElementById("prof_create_class_form").elements;
+	let startDateStr = elements["start_date"].value;
+	let endDateStr = elements["end_date"].value;
+	let printer = getHtmlPrinter("create_class_printer");
 
 	if (!isString(startDateStr) || !isString(endDateStr)) {
 		printer("Invalid data type.");
@@ -61,7 +63,7 @@ function processCreateClass() {
 	const startDate = parseInputDate(startDateStr);
 	const endDate = parseInputDate(endDateStr);
 
-	var yesterday = new Date();
+	let yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1); // this works apparently even if it goes over a month
 
 	if (startDate <= yesterday) {
@@ -74,7 +76,15 @@ function processCreateClass() {
 		return;
 	}
 
-	printer("loading...");
-	profCommands.createClass(getSlidersFormattedDateString(startDate), getSlidersFormattedDateString(endDate), printer);
+	let submitButton = $("#button_create_class");
+	submitButton.prop("disabled", true);
+	printer("");
+
+	let onComplete = function(msg) {
+		submitButton.prop("disabled", false);
+		printer(msg);
+	}
+
+	profCommands.createClass(getSlidersFormattedDateString(startDate), getSlidersFormattedDateString(endDate), onComplete);
 }
 </script>

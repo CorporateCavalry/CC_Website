@@ -8,6 +8,7 @@ profCommands = function() {
 
     let cachedEmail = loadStringFromStorage(CACHED_EMAIL_KEY);
     let cachedPassword = loadStringFromStorage(CACHED_PASSWORD_KEY);
+    let isProcessing = false;
 
     function getProfKey(email) {
         return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
@@ -23,7 +24,8 @@ profCommands = function() {
             return;
         }
 
-        awsManager.get(getProfKey(cachedEmail),
+        awsManager.get(
+            getProfKey(cachedEmail),
             function(data) {
                 if (data["Password"] === cachedPassword) {
                     onValid();
@@ -44,7 +46,10 @@ profCommands = function() {
         localStorage.setItem(CACHED_PASSWORD_KEY, password);
     }
 
-    function createAccount(email, password, printer) {
+    function createAccount(email, password, onComplete) {
+        if (isProcessing) return;
+        isProcessing = true;
+
         let putParams = {
             TableName: PROF_TABLE_NAME,
             Item: {
@@ -53,33 +58,50 @@ profCommands = function() {
             }
         };
 
-        let onCreateSuccess = function() { printer("Account created!"); };
-        let onAccountTaken = function(data) { printer("This email is already taken!"); };
-        let onAccountOpen = function() { awsManager.put(putParams, onCreateSuccess, printer); }
+        let resultPrinter = function(msg) {
+            completeProcessing();
+            onComplete(msg);
+        }
 
-        awsManager.get(getProfKey(email), onAccountTaken, onAccountOpen, printer);
+        let onCreateSuccess = function() { resultPrinter("Account created!"); };
+        let onAccountTaken = function(data) { resultPrinter("This email is already taken!"); };
+        let onAccountOpen = function() { awsManager.put(putParams, onCreateSuccess, resultPrinter); }
+
+        awsManager.get(getProfKey(email), onAccountTaken, onAccountOpen, resultPrinter);
     }
 
-    function login(email, password, printer, onLogIn) {
-        awsManager.get(getProfKey(email),
-            function(data) {
+    function login(email, password, onLogIn, onComplete) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        let resultPrinter = function(msg) {
+            completeProcessing();
+            onComplete(msg);
+        }
+
+        awsManager.get(
+            getProfKey(email),
+            function(data) { // email found
                 if (data["Password"] === password) {
                     cacheLogin(email, password);
-                    printer("Successfully logged in!");
+                    resultPrinter("Successfully logged in!");
                     onLogIn();
                 } else {
-                    printer("Password is incorrect.");
+                    resultPrinter("Password is incorrect.");
                 }
             },
-            function() {
-                printer("No account was found for this email.");
+            function() { // email not found
+                resultPrinter("No account was found for this email.");
             },
-            printer
+            resultPrinter
         );
     }
 
-    function logout() {
+    function logout(onComplete) {
+        if (isProcessing) return;
+
         cacheLogin("", "");
+        onComplete();
     }
 
     function getRandomChar() {
@@ -94,9 +116,18 @@ profCommands = function() {
         return str;
     }
 
-    function createClass(startDate, endDate, printer) {
+    function createClass(startDate, endDate, onComplete) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        let resultPrinter = function(msg) {
+            completeProcessing();
+            onComplete(msg);
+        }
+
+        let onInvalid = function() { resultPrinter("Login credentials invalid."); };
+
         let numAttempts = 0;
-        let onInvalid = function() { printer("Login credentials invalid."); };
         let classCode;
 
         let onClassCodeAvailable = function() {
@@ -120,14 +151,12 @@ profCommands = function() {
                 }
 
                 awsManager.update(updateParams,
-                    function() {
-                        printer("New class created: " + classCode);
-                    },
-                    printer
+                    function() { resultPrinter("New class created: " + classCode); },
+                    resultPrinter
                 );
             }
 
-            awsManager.put(putParams, onClassCreated, printer);
+            awsManager.put(putParams, onClassCreated, resultPrinter);
         };
 
         let testClassCode = function() {
@@ -139,13 +168,13 @@ profCommands = function() {
             numAttempts++;
 
             classCode = getRandomClassName();
-            awsManager.get(getClassKey(classCode), testClassCode, onClassCodeAvailable, printer);
+            awsManager.get(getClassKey(classCode), testClassCode, onClassCodeAvailable, resultPrinter);
         };
 
         validateLogin(
             testClassCode,
             onInvalid,
-            printer
+            resultPrinter
         );
     }
 
@@ -157,7 +186,16 @@ profCommands = function() {
         return cachedEmail;
     }
 
+    function completeProcessing() {
+        isProcessing = false;
+    }
+
+    function getIsProcessing() {
+        return isProcessing;
+    }
+
     return {
+        getIsProcessing:getIsProcessing,
         login:login,
         logout:logout,
         isLoggedIn:isLoggedIn,

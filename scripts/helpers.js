@@ -2,7 +2,11 @@
 function getConsolePrinter() { return function(msg) { console.log(msg); } }
 function getHtmlPrinter(elementId) { return function(msg) { $("#" + elementId).html(msg); } }
 
-function onError(err, printer) { printer("Error: " + JSON.stringify(err, undefined, 2)); }
+function printError(err, printer) {
+    printer("Unexpected error: See console for details.");
+    console.log("Error: " + JSON.stringify(err, undefined, 2));
+}
+function nop() { }
 
 function isNullOrEmpty(str) { return !str || str === ""; }
 
