@@ -42,7 +42,7 @@ function processCreateClass() {
 	var elements = document.getElementById("prof_create_class_form").elements;
 	var startDateStr = elements["start_date"].value;
 	var endDateStr = elements["end_date"].value;
-	var printer = consolePrinter();
+	var printer = getConsolePrinter();
 
 	if (!isString(startDateStr) || !isString(endDateStr)) {
 		printer("Invalid data type.");

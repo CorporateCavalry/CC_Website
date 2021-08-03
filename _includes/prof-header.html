@@ -10,7 +10,7 @@
 <script>
 function loginRefresh() {
 	if (profCommands.isLoggedIn()) {
-		htmlPrinter("prof_login_header")("Logged in as " + profCommands.getCurrentUser());
+		getHtmlPrinter("prof_login_header")("Logged in as " + profCommands.getCurrentUser());
 		$(".logged_in").css("display", "block");
 		$(".logged_out").css("display", "none");
 	} else {

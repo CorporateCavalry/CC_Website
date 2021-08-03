@@ -1,6 +1,6 @@
 // printers are used to display information
-function consolePrinter() { return function(msg) { console.log(msg); } }
-function htmlPrinter(elementId) { return function(msg) { $("#" + elementId).html(msg); } }
+function getConsolePrinter() { return function(msg) { console.log(msg); } }
+function getHtmlPrinter(elementId) { return function(msg) { $("#" + elementId).html(msg); } }
 
 function onError(err, printer) { printer("Error: " + JSON.stringify(err, undefined, 2)); }
 

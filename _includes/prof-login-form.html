@@ -19,7 +19,7 @@ function processLogin() {
 	var elements = document.getElementById("prof_login_form").elements;
 	var email = elements["email"].value;
 	var password = elements["password"].value;
-	var printer = htmlPrinter("log");
+	var printer = getHtmlPrinter("log");
 
 	if (!isString(email) || !isString(password)) {
 		printer("Invalid data type.");
