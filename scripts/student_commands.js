@@ -1,7 +1,7 @@
 studentCommands = function(){
     function getAccount(accountID) {
-        var returnStr = "Error";
-        var params = {
+        let returnStr = "Error";
+        let params = {
             TableName: "Accounts",
             Key: { "AccountID": accountID }
         };

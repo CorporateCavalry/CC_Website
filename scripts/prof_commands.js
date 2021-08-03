@@ -1,13 +1,13 @@
 profCommands = function() {
-    var PROF_TABLE_NAME = "Professors";
-    var CLASS_TABLE_NAME = "Classes";
-    var CACHED_EMAIL_KEY = "prof_email";
-    var CACHED_PASSWORD_KEY = "prof_password";
-    var MAX_CREATE_ATTEMPTS = 5;
-    var CLASS_CODE_SIZE = 4;
+    const PROF_TABLE_NAME = "Professors";
+    const CLASS_TABLE_NAME = "Classes";
+    const CACHED_EMAIL_KEY = "prof_email";
+    const CACHED_PASSWORD_KEY = "prof_password";
+    const MAX_CREATE_ATTEMPTS = 5;
+    const CLASS_CODE_SIZE = 4;
 
-    var cachedEmail = loadStringFromStorage(CACHED_EMAIL_KEY);
-    var cachedPassword = loadStringFromStorage(CACHED_PASSWORD_KEY);
+    let cachedEmail = loadStringFromStorage(CACHED_EMAIL_KEY);
+    let cachedPassword = loadStringFromStorage(CACHED_PASSWORD_KEY);
 
     function getProfKey(email) {
         return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
@@ -45,7 +45,7 @@ profCommands = function() {
     }
 
     function createAccount(email, password, printer) {
-        var putParams = {
+        let putParams = {
             TableName: PROF_TABLE_NAME,
             Item: {
                 "Email": email,
@@ -53,9 +53,9 @@ profCommands = function() {
             }
         };
 
-        var onCreateSuccess = function() { printer("Account created!"); };
-        var onAccountTaken = function(data) { printer("This email is already taken!"); };
-        var onAccountOpen = function() { awsManager.put(putParams, onCreateSuccess, printer); }
+        let onCreateSuccess = function() { printer("Account created!"); };
+        let onAccountTaken = function(data) { printer("This email is already taken!"); };
+        let onAccountOpen = function() { awsManager.put(putParams, onCreateSuccess, printer); }
 
         awsManager.get(getProfKey(email), onAccountTaken, onAccountOpen, printer);
     }
@@ -87,7 +87,7 @@ profCommands = function() {
     }
 
     function getRandomClassName() {
-        var str = "";
+        let str = "";
         for (let i = 0; i < CLASS_CODE_SIZE; i++) {
             str += getRandomChar();
         }
@@ -95,12 +95,12 @@ profCommands = function() {
     }
 
     function createClass(startDate, endDate, printer) {
-        var numAttempts = 0;
-        var onInvalid = function() { printer("Login credentials invalid."); };
-        var classCode;
+        let numAttempts = 0;
+        let onInvalid = function() { printer("Login credentials invalid."); };
+        let classCode;
 
-        var onClassCodeAvailable = function() {
-            var putParams = {
+        let onClassCodeAvailable = function() {
+            let putParams = {
                 TableName: CLASS_TABLE_NAME,
                 Item: {
                     "ClassCode": classCode,
@@ -111,8 +111,8 @@ profCommands = function() {
                 }
             };
 
-            var onClassCreated = function() {
-                var updateParams = {
+            let onClassCreated = function() {
+                let updateParams = {
                     TableName: PROF_TABLE_NAME,
                     Key: { "Email": cachedEmail },
                     UpdateExpression: "set Classes = list_append(if_not_exists(Classes, :emptyList), :newClass)",
@@ -130,7 +130,7 @@ profCommands = function() {
             awsManager.put(putParams, onClassCreated, printer);
         };
 
-        var testClassCode = function() {
+        let testClassCode = function() {
             if (numAttempts === MAX_CREATE_ATTEMPTS) {
                 onInvalid();
                 return;

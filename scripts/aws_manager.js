@@ -1,6 +1,6 @@
 awsManager = function() {
     AWS.config.update(getCredentials());
-    var docClient = new AWS.DynamoDB.DocumentClient();
+    let docClient = new AWS.DynamoDB.DocumentClient();
 
     function get(params, onFound, onNotFound, printer) {
         docClient.get(params, function(err, data) {
