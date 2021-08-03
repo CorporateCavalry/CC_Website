@@ -10,7 +10,7 @@
 			<input type="button" onclick="processLogin()" value="Submit">
 		</form>
 		<br>
-		<p id="log"></p>
+		<p id="login_printer"></p>
 	</div>
 </div>
 
@@ -19,7 +19,7 @@ function processLogin() {
 	var elements = document.getElementById("prof_login_form").elements;
 	var email = elements["email"].value;
 	var password = elements["password"].value;
-	var printer = getHtmlPrinter("log");
+	var printer = getHtmlPrinter("login_printer");
 
 	if (!isString(email) || !isString(password)) {
 		printer("Invalid data type.");

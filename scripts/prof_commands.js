@@ -1,13 +1,20 @@
 profCommands = function(){
     var PROF_TABLE_NAME = "Professors";
+    var CLASS_TABLE_NAME = "Classes";
     var CACHED_EMAIL_KEY = "prof_email";
     var CACHED_PASSWORD_KEY = "prof_password";
+    var MAX_CREATE_ATTEMPTS = 5;
+    var CLASS_CODE_SIZE = 4;
 
     var cachedEmail = loadStringFromStorage(CACHED_EMAIL_KEY);
-    var cachedPassword = loadStringFromStorage(CACHED_EMAIL_KEY);
+    var cachedPassword = loadStringFromStorage(CACHED_PASSWORD_KEY);
 
-    function getKey(email) {
+    function getProfKey(email) {
         return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
+    }
+
+    function getClassKey(classCode) {
+        return { TableName: CLASS_TABLE_NAME, Key: { "ClassCode": classCode } };
     }
 
     function validateLogin(onValid, onInvalid, printer) {
@@ -16,7 +23,7 @@ profCommands = function(){
             return;
         }
 
-        docClient.get(getKey(cachedEmail), getCallback(
+        docClient.get(getProfKey(cachedEmail), getCallback(
             function(data) {
                 if (data["Password"] === cachedPassword) {
                     onValid();
@@ -50,11 +57,11 @@ profCommands = function(){
         var onAccountTaken = function(data) { printer("This email is already taken!"); };
         var onAccountOpen = function() { docClient.put(putParams, putCallback(onCreateSuccess, printer)); }
 
-        docClient.get(getKey(email), getCallback(onAccountTaken, onAccountOpen, printer));
+        docClient.get(getProfKey(email), getCallback(onAccountTaken, onAccountOpen, printer));
     }
 
     function login(email, password, printer, onLogIn) {
-        docClient.get(getKey(email), getCallback(
+        docClient.get(getProfKey(email), getCallback(
             function(data) {
                 if (data["Password"] === password) {
                     cacheLogin(email, password);
@@ -71,6 +78,80 @@ profCommands = function(){
         ));
     }
 
+    function logout() {
+        cacheLogin("", "");
+    }
+
+    function getRandomChar() {
+        return String.fromCharCode(65 + Math.floor(Math.random() * 26)); //65 is uppercase A
+    }
+
+    function getRandomClassName() {
+        var str = "";
+        for (let i = 0; i < CLASS_CODE_SIZE; i++) {
+            str += getRandomChar();
+        }
+        return str;
+    }
+
+    function createClass(startDate, endDate, printer) {
+        var numAttempts = 0;
+        var onInvalid = function() { printer("Login credentials invalid."); };
+        var classCode;
+
+        var onClassCodeAvailable = function() {
+            var putParams = {
+                TableName: CLASS_TABLE_NAME,
+                Item: {
+                    "ClassCode": classCode,
+                    "StartDate": startDate,
+                    "EndDate": endDate,
+                    "GroupCount": 0,
+                    "Owner": cachedEmail
+                }
+            };
+
+            var onClassCreated = function() {
+                var updateParams = {
+                    TableName: PROF_TABLE_NAME,
+                    Key: { "Email": cachedEmail },
+                    UpdateExpression: "set Classes = list_append(if_not_exists(Classes, :emptyList), :newClass)",
+                    ExpressionAttributeValues: { ":emptyList": [], ":newClass": [ classCode ] }
+                }
+
+                docClient.update(updateParams, updateCallback(
+                    function() {
+                        printer("New class created: " + classCode);
+                    },
+                    printer
+                ));
+            }
+
+            docClient.put(putParams, putCallback(
+                onClassCreated,
+                printer
+            ));
+        };
+
+        var testClassCode = function() {
+            if (numAttempts === MAX_CREATE_ATTEMPTS) {
+                onInvalid();
+                return;
+            }
+
+            numAttempts++;
+
+            classCode = getRandomClassName();
+            docClient.get(getClassKey(classCode), getCallback(testClassCode, onClassCodeAvailable, printer));
+        };
+
+        validateLogin(
+            testClassCode,
+            onInvalid,
+            printer
+        );
+    }
+
     function isLoggedIn() {
         return !isNullOrEmpty(cachedEmail);
     }
@@ -79,14 +160,11 @@ profCommands = function(){
         return cachedEmail;
     }
 
-    function logout() {
-        cacheLogin("", "");
-    }
-
     return {
         login:login,
         logout:logout,
         isLoggedIn:isLoggedIn,
-        getCurrentUser:getCurrentUser
+        getCurrentUser:getCurrentUser,
+        createClass:createClass
     }
 }();

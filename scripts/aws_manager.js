@@ -24,3 +24,13 @@ function putCallback(onSuccess, printer) {
         }
     }
 }
+
+function updateCallback(onSuccess, printer) {
+    return function(err, data) {
+        if (err) {
+            onError(err, printer);
+        } else {
+            onSuccess();
+        }
+    }
+}

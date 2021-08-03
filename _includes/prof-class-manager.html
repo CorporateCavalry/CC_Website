@@ -10,10 +10,14 @@
 
 			<input type="button" onclick="processCreateClass()" value="Create Class">
 		</form>
+		<br>
+		<p id="create_class_printer"></p>
 	</div>
 </div>
 
 <script>
+var isCreatingClass = false;
+
 (function(){
 	var startDateInput = $("#input_start_date");
 	var endDateInput = $("#input_end_date");
@@ -42,7 +46,7 @@ function processCreateClass() {
 	var elements = document.getElementById("prof_create_class_form").elements;
 	var startDateStr = elements["start_date"].value;
 	var endDateStr = elements["end_date"].value;
-	var printer = getConsolePrinter();
+	var printer = getHtmlPrinter("create_class_printer");
 
 	if (!isString(startDateStr) || !isString(endDateStr)) {
 		printer("Invalid data type.");
@@ -69,5 +73,8 @@ function processCreateClass() {
 		printer("End date must be after start date!");
 		return;
 	}
+
+	printer("loading...");
+	profCommands.createClass(getSlidersFormattedDateString(startDate), getSlidersFormattedDateString(endDate), printer);
 }
 </script>
