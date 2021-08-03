@@ -16,3 +16,24 @@ function loadStringFromStorage(key) {
 
     return "";
 }
+
+function getPaddedNumStr(num, digits) {
+    return new String(num).padStart(digits, '0');
+}
+
+function getSlidersFormattedDateString(timestamp) {
+    // format is "yyyy MM/dd HH:mm:ss", where the time is in UTC
+    return timestamp.getUTCFullYear() + " " +
+        getPaddedNumStr(timestamp.getUTCMonth() + 1, 2) + "/" + // months are 0-indexed
+        getPaddedNumStr(timestamp.getUTCDate(), 2) + " " +
+        getPaddedNumStr(timestamp.getUTCHours(), 2) + ":" +
+        getPaddedNumStr(timestamp.getUTCMinutes(), 2) + ":" +
+        getPaddedNumStr(timestamp.getUTCSeconds(), 2);
+}
+
+function getWebFormattedDateString(timestamp) {
+    // format is "yyyy-MM-dd"
+    return timestamp.getFullYear() + "-" +
+        getPaddedNumStr(timestamp.getMonth() + 1, 2) + "-" + // months are 0-indexed
+        getPaddedNumStr(timestamp.getDate(), 2);
+}

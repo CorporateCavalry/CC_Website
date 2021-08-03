@@ -1,0 +1,73 @@
+<div class="section">
+	<div class="logged_in">
+		<p>Create a new class</p>
+		<form id="prof_create_class_form">
+			<label for="input_start_date">Start Date:</label>
+			<input type="date" name="start_date" id="input_start_date" size="50" min="2021-08-05"><br>
+
+			<label for="input_end_date">End Date:</label>
+			<input type="date" name="end_date" id="input_end_date" size="50"><br>
+
+			<input type="button" onclick="processCreateClass()" value="Create Class">
+		</form>
+	</div>
+</div>
+
+<script>
+(function(){
+	var startDateInput = $("#input_start_date");
+	var endDateInput = $("#input_end_date");
+
+	var date = new Date();
+	var todayStr = getWebFormattedDateString(date);
+	startDateInput.attr("value", todayStr); // default value of start date is today
+	startDateInput.attr("min", todayStr);
+	endDateInput.attr("min", todayStr);
+
+	date.setDate(date.getDate() + 7); // default end date is 1 week away
+	endDateInput.attr("value", getWebFormattedDateString(date));
+})();
+
+function parseInputDate(str) {
+	// by default, because there's no timestamp, it treats it as UTC
+	var parsed = new Date(Date.parse(str));
+	// so, use the "UTC" values to generate a new date which is in the correct timezone
+	var utcValDate = new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate(), parsed.getUTCHours(), parsed.getUTCMinutes(), parsed.getUTCSeconds());
+    // finally, set it to midnight for our current timezone
+	utcValDate.setHours(0, 0, 0, 0);
+	return utcValDate;
+}
+
+function processCreateClass() {
+	var elements = document.getElementById("prof_create_class_form").elements;
+	var startDateStr = elements["start_date"].value;
+	var endDateStr = elements["end_date"].value;
+	var printer = consolePrinter();
+
+	if (!isString(startDateStr) || !isString(endDateStr)) {
+		printer("Invalid data type.");
+		return;
+	}
+
+	if (isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
+		printer("All fields must be filled out!");
+		return;
+	}
+
+	const startDate = parseInputDate(startDateStr);
+	const endDate = parseInputDate(endDateStr);
+
+	var yesterday = new Date();
+	yesterday.setDate(yesterday.getDate() - 1); // this works apparently even if it goes over a month
+
+	if (startDate <= yesterday) {
+		printer("Start date cannot be before today's date!");
+		return;
+	}
+
+	if (endDate <= startDate) {
+		printer("End date must be after start date!");
+		return;
+	}
+}
+</script>

@@ -2,8 +2,11 @@
 	<div class="logged_out">
 		<p>Log in to your account</p>
 		<form id="prof_login_form">
-			Email: <input type="text" name="email", size="50"><br>
-			Password: <input type="password" name="password", size="50"><br><br>
+			<label for="input_email">Email:</label>
+			<input type="text" name="email" id="input_email" size="50"><br>
+
+			<label for="input_password">Password:</label>
+			<input type="password" name="password" id="input_password" size="50"><br><br>
 			<input type="button" onclick="processLogin()" value="Submit">
 		</form>
 		<br>
@@ -16,7 +19,18 @@ function processLogin() {
 	var elements = document.getElementById("prof_login_form").elements;
 	var email = elements["email"].value;
 	var password = elements["password"].value;
+	var printer = htmlPrinter("log");
 
-	profCommands.login(email, password, htmlPrinter("log"), loginRefresh);
+	if (!isString(email) || !isString(password)) {
+		printer("Invalid data type.");
+		return;
+	}
+
+	if (isNullOrEmpty(email) || isNullOrEmpty(password)) {
+		printer("All fields must be filled out!");
+		return;
+	}
+
+	profCommands.login(email, password, printer, loginRefresh);
 }
 </script>

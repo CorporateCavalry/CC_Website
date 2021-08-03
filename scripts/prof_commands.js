@@ -54,16 +54,6 @@ profCommands = function(){
     }
 
     function login(email, password, printer, onLogIn) {
-        if (!isString(email) || !isString(password)) {
-            printer("Invalid data type.");
-            return;
-        }
-
-        if (isNullOrEmpty(email) || isNullOrEmpty(password)) {
-            printer("All fields must be filled out!");
-            return;
-        }
-
         docClient.get(getKey(email), getCallback(
             function(data) {
                 if (data["Password"] === password) {
