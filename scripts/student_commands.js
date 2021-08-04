@@ -34,19 +34,19 @@ studentCommands = function() {
         // });
     }
 
-    function createAccount(accountID, username, password, onLogIn, onComplete) {
+    function createAccount(accountID, username, password, onSuccess, failPrinter) {
         if (isProcessing) return;
         isProcessing = true;
 
-        const resultPrinter = function(msg) {
+        const onFail = function(msg) {
             completeProcessing();
-            onComplete(msg);
+            failPrinter(msg);
         }
 
         awsManager.get(
             getAccountKey(accountID),
             function(data) { // account taken
-                resultPrinter("An account for this ID already exists!");
+                onFail("An account for this ID already exists!");
             },
             function() { // account available
                 const putParams = {
@@ -63,13 +63,13 @@ studentCommands = function() {
                     putParams,
                     function() { // on success
                         loginManager.loginAsStudent(accountID, password);
-                        resultPrinter("");
-                        onLogIn();
+                        completeProcessing();
+                        onSuccess();
                     },
-                    resultPrinter
+                    onFail
                 );
             },
-            resultPrinter
+            onFail
         );
     }
 
@@ -77,13 +77,13 @@ studentCommands = function() {
 
     }
 
-    function login(accountID, password, onLogIn, onComplete) {
+    function login(accountID, password, onSuccess, failPrinter) {
         if (isProcessing) return;
         isProcessing = true;
 
-        const resultPrinter = function(msg) {
+        const onFail = function(msg) {
             completeProcessing();
-            onComplete(msg);
+            failPrinter(msg);
         }
 
         awsManager.get(
@@ -91,16 +91,16 @@ studentCommands = function() {
             function(data) { // email found
                 if (data.hasOwnProperty("Password") && data["Password"] === password) {
                     loginManager.loginAsStudent(accountID, password);
-                    resultPrinter("");
-                    onLogIn();
+                    completeProcessing();
+                    onSuccess();
                 } else {
-                    resultPrinter("Password is incorrect.");
+                    onFail("Password is incorrect.");
                 }
             },
             function() { // email not found
-                resultPrinter("No account was found with this student ID.");
+                onFail("No account was found with this student ID.");
             },
-            resultPrinter
+            onFail
         );
     }
 

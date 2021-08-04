@@ -3,6 +3,7 @@
 	<ul id="manage_classes_list">
 	</ul>
 	<p id="manage_classes_log"></p>
+	<input type="button" onclick="goToPageSafe('/createclass')" value="New Class" id="button_add_new_class">
 </div>
 <div class="logged_out">
 	{% include create-professor-account.html %}
@@ -20,15 +21,17 @@
 		};
 
 		const len = classes.length;
-		const list = document.getElementById("manage_classes_list");
-		list.innerHTML = ""; // clear anything inside of it
+		if (len > 0) {
+			const list = document.getElementById("manage_classes_list");
+			list.innerHTML = ""; // clear anything inside of it
 
-		let newElement;
+			let newElement;
 
-		for (let i = 0; i < len; i++) {
-			newElement = document.createElement("li");
-			newElement.innerHTML = classItemHTML(classes[i]);
-			list.appendChild(newElement);
+			for (let i = 0; i < len; i++) {
+				newElement = document.createElement("li");
+				newElement.innerHTML = classItemHTML(classes[i]);
+				list.appendChild(newElement);
+			}
 		}
 	}
 

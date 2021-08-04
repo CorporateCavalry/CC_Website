@@ -7,7 +7,7 @@
 		<label for="prof_create_class_end_date">End Date:</label>
 		<input type="date" name="end_date" id="prof_create_class_end_date" size="50"><br>
 
-		<input type="button" onclick="processCreateClass()" value="Create Class" id="button_prof_create_class">
+		<input type="button" onclick="processCreateClass()" value="Create" id="button_prof_create_class">
 	</form>
 	<br>
 	<p id="prof_create_class_printer"></p>
@@ -73,15 +73,20 @@
 			return;
 		}
 
-		const submitButton = $("#prof_button_create_class");
+		const submitButton = $("#button_prof_create_class");
 		submitButton.prop("disabled", true);
 		printer("");
 
-		const onComplete = function(msg) {
-			submitButton.prop("disabled", false);
-			printer(msg);
-		}
-
-		profCommands.createClass(getSlidersFormattedDateString(startDate), getSlidersFormattedDateString(endDate), onComplete);
+		profCommands.createClass(
+			getSlidersFormattedDateString(startDate),
+			getSlidersFormattedDateString(endDate),
+			function(classCode) {
+				goToPageSafe("/manageclass/?code=" + classCode);
+			},
+			function(msg) {
+				submitButton.prop("disabled", false);
+				printer(msg);
+			}
+		);
 	}
 </script>

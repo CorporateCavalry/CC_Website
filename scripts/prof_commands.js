@@ -37,19 +37,19 @@ profCommands = function() {
         );
     }
 
-    function createAccount(email, password, onLogIn, onComplete) {
+    function createAccount(email, password, onSuccess, failPrinter) {
         if (isProcessing) return;
         isProcessing = true;
 
-        const resultPrinter = function(msg) {
+        const onFail = function(msg) {
             completeProcessing();
-            onComplete(msg);
+            failPrinter(msg);
         }
 
         awsManager.get(
             getProfKey(email),
             function(data) { // account taken
-                resultPrinter("This email is already taken!");
+                onFail("This email is already taken!");
             },
             function() { // account available
                 const putParams = {
@@ -64,22 +64,23 @@ profCommands = function() {
                     putParams,
                     function() { // success
                         loginManager.loginAsProfessor(email, password);
-                        resultPrinter("");
-                        onLogIn();
+                        completeProcessing();
+                        onSuccess();
                     },
-                    resultPrinter);
+                    onFail
+                );
             },
-            resultPrinter
+            onFail
         );
     }
 
-    function login(email, password, onLogIn, onComplete) {
+    function login(email, password, onSuccess, failPrinter) {
         if (isProcessing) return;
         isProcessing = true;
 
-        const resultPrinter = function(msg) {
+        const onFail = function(msg) {
             completeProcessing();
-            onComplete(msg);
+            failPrinter(msg);
         }
 
         awsManager.get(
@@ -87,16 +88,16 @@ profCommands = function() {
             function(data) { // email found
                 if (data["Password"] === password) {
                     loginManager.loginAsProfessor(email, password);
-                    resultPrinter("");
-                    onLogIn();
+                    completeProcessing();
+                    onSuccess();
                 } else {
-                    resultPrinter("Password is incorrect.");
+                    onFail("Password is incorrect.");
                 }
             },
             function() { // email not found
-                resultPrinter("No account was found for this email.");
+                onFail("No account was found for this email.");
             },
-            resultPrinter
+            onFail
         );
     }
 
@@ -112,13 +113,13 @@ profCommands = function() {
         return str;
     }
 
-    function createClass(startDate, endDate, onComplete) {
+    function createClass(startDate, endDate, onSuccess, failPrinter) {
         if (isProcessing) return;
         isProcessing = true;
 
-        const resultPrinter = function(msg) {
+        const onFail = function(msg) {
             completeProcessing();
-            onComplete(msg);
+            failPrinter(msg);
         }
 
         let numAttempts = 0;
@@ -146,75 +147,93 @@ profCommands = function() {
                     ExpressionAttributeValues: { ":emptyList": [], ":newClass": [ classCode ] }
                 }
 
-                awsManager.update(updateParams,
-                    function() { resultPrinter("New class created: " + classCode); },
-                    resultPrinter
+                awsManager.update(
+                    updateParams,
+                    function() {
+                        completeProcessing();
+                        onSuccess(classCode);
+                    },
+                    onFail
                 );
             }
 
-            awsManager.put(putParams, onClassCreated, resultPrinter);
+            awsManager.put(putParams, onClassCreated, onFail);
         };
 
         const testClassCode = function(profData) {
             if (numAttempts === MAX_CREATE_ATTEMPTS) {
-                resultPrinter("Could not create class: max number of attempts reached.");
+                onFail("Could not create class: max number of attempts reached.");
                 return;
             }
 
             numAttempts++;
 
             classCode = getRandomClassName();
-            awsManager.get(getClassKey(classCode), testClassCode, onClassCodeAvailable, resultPrinter);
+            awsManager.get(getClassKey(classCode), testClassCode, onClassCodeAvailable, onFail);
         };
 
         validateLogin(
             testClassCode,
             function() {
-                resultPrinter("Login credentials invalid.");
+                onFail("Login credentials invalid.");
             },
-            resultPrinter
+            onFail
         );
     }
 
-    function getClassList(classListProcessor, errorPrinter) {
+    function getClassList(onSuccess, failPrinter) {
         if (isProcessing) return;
         isProcessing = true;
 
-        const resultPrinter = function(msg) {
+        const onFail = function(msg) {
             completeProcessing();
-            errorPrinter(msg);
-        };
-
-        const onInvalid = function() {
-            resultPrinter("");
+            failPrinter(msg);
         };
 
         validateLogin(
             function(profData) {
-                let keyList = [];
-                let allClasses = profData["Classes"];
-                let len = allClasses.length;
-                for (let i = 0; i < len; i++) {
-                    keyList.push({ "ClassCode": allClasses[i] });
-                }
-
-                const onSuccess = function(data) {
+                const onNoClasses = function() {
                     completeProcessing();
-                    classListProcessor(data[CLASS_TABLE_NAME]);
+                    onSuccess([]);
                 }
 
-                const params = {
-                    RequestItems: {
-                        [CLASS_TABLE_NAME]: {
-                            Keys: keyList
-                        }
-                    }
-                };
+                if (profData.hasOwnProperty("Classes")) {
+                    let keyList = [];
+                    let allClasses = profData["Classes"];
 
-                awsManager.getBatch(params, onSuccess, resultPrinter);
+                    let len = allClasses.length;
+                    if (len === 0) {
+                        onNoClasses();
+                        return;
+                    }
+
+                    for (let i = 0; i < len; i++) {
+                        keyList.push({ "ClassCode": allClasses[i] });
+                    }
+
+                    const params = {
+                        RequestItems: {
+                            [CLASS_TABLE_NAME]: {
+                                Keys: keyList
+                            }
+                        }
+                    };
+
+                    awsManager.getBatch(params,
+                        function(data) {
+                            completeProcessing();
+                            onSuccess(data[CLASS_TABLE_NAME]);
+                        },
+                        onFail
+                    );
+                } else {
+                    onNoClasses();
+                }
             },
-            onInvalid,
-            resultPrinter
+            function() {
+                onFail("Invalid login credentials.");
+            },
+            onFail
         );
     }
 
