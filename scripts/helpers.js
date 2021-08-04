@@ -1,6 +1,6 @@
 // printers are used to display information
 function getConsolePrinter() { return function(msg) { console.log(msg); } }
-function getHtmlPrinter(elementId) { return function(msg) { $("#" + elementId).html(msg); } }
+function getHtmlPrinter(elementId) { return function(msg) { $("#" + elementId).html(getHtmlSafeText(msg)); } }
 
 function getPageRedirector(path) { return function() { window.location.href = path; } }
 function goToPageSafe(path) {
