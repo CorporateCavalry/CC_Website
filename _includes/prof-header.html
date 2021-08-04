@@ -1,7 +1,7 @@
 <script src="/scripts/prof_commands.js"></script>
 
 <div class="section">
-	<div class="logged_in">
+	<div class="prof_logged_in">
 		<p id="prof_login_header">loading...</p>
 		<input type="button" onclick="processLogout()" value="Logout">
 	</div>
@@ -11,11 +11,11 @@
 function loginRefresh() {
 	if (profCommands.isLoggedIn()) {
 		getHtmlPrinter("prof_login_header")("Logged in as " + profCommands.getCurrentUser());
-		$(".logged_in").css("display", "block");
-		$(".logged_out").css("display", "none");
+		$(".prof_logged_in").css("display", "block");
+		$(".prof_logged_out").css("display", "none");
 	} else {
-		$(".logged_in").css("display", "none");
-		$(".logged_out").css("display", "block");
+		$(".prof_logged_in").css("display", "none");
+		$(".prof_logged_out").css("display", "block");
 	}
 }
 
