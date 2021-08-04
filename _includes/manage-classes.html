@@ -5,19 +5,30 @@
 	<p id="manage_classes_log"></p>
 	<input type="button" onclick="goToPageSafe('/createclass')" value="New Class" id="button_add_new_class">
 </div>
-<div class="logged_out">
-	{% include create-professor-account.html %}
-</div>
 
 <script>
 	function displayClassData(classes) {
-		// console.log("oi");
-		// console.log(JSON.stringify(classes, undefined, 2));
-		// return;
+		const today = new Date();
+		const formatDate = function(date) {
+			return getPaddedNumStr(date.getMonth() + 1, 2) + "/" + getPaddedNumStr(date.getDate(), 2);
+		}
 
 		const classItemHTML = function(classData) {
 			let code = classData["ClassCode"];
-			return "<a onclick=\"goToPageSafe('/manageclass/?code=" + code + "')\">" + code + "</a>";
+			let status;
+			let startDate = parseSlidersDateString(classData["StartDate"]);
+			if (today < startDate) {
+				status = "Unstarted: Starts " + formatDate(startDate);
+			} else {
+				let endDate = parseSlidersDateString(classData["EndDate"]);
+				if (today < endDate) {
+					status = "Started: Ends " + formatDate(endDate);
+				} else {
+					status = "Completed"
+				}
+			}
+
+			return "<a onclick=\"goToPageSafe('/manageclass/?code=" + code + "')\">" + code + "</a> - " + status;
 		};
 
 		const len = classes.length;

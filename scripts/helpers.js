@@ -6,7 +6,7 @@ function getPageRedirector(path) { return function() { window.location.href = pa
 function goToPageSafe(path) {
     if (profCommands.getIsProcessing()) return;
     if (studentCommands.getIsProcessing()) return;
-    
+
     window.location.href = path;
 }
 
@@ -31,6 +31,18 @@ function loadStringFromStorage(key) {
 
 function getPaddedNumStr(num, digits) {
     return new String(num).padStart(digits, '0');
+}
+
+function parseSlidersDateString(datestring) {
+    let parsedDate = new Date(Date.parse(datestring));
+    return new Date(Date.UTC(
+        parsedDate.getFullYear(),
+        parsedDate.getMonth(),
+        parsedDate.getDate(),
+        parsedDate.getHours(),
+        parsedDate.getMinutes(),
+        parsedDate.getSeconds()
+    ));
 }
 
 function getSlidersFormattedDateString(timestamp) {
