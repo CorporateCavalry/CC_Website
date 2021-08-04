@@ -50,29 +50,36 @@ profCommands = function() {
         if (isProcessing) return;
         isProcessing = true;
 
-        const putParams = {
-            TableName: PROF_TABLE_NAME,
-            Item: {
-                "Email": email,
-                "Password": password
-            }
-        };
-
         const resultPrinter = function(msg) {
             completeProcessing();
             onComplete(msg);
         }
 
-        const onCreateSuccess = function() {
-            cacheLogin(email, password);
-            resultPrinter("Successfully logged in!");
-            onLogIn();
-        };
+        awsManager.get(
+            getProfKey(email),
+            function(data) {
+                resultPrinter("This email is already taken!");
+            },
+            function() {
+                const putParams = {
+                    TableName: PROF_TABLE_NAME,
+                    Item: {
+                        "Email": email,
+                        "Password": password
+                    }
+                };
 
-        const onAccountTaken = function(data) { resultPrinter("This email is already taken!"); };
-        const onAccountOpen = function() { awsManager.put(putParams, onCreateSuccess, resultPrinter); }
-
-        awsManager.get(getProfKey(email), onAccountTaken, onAccountOpen, resultPrinter);
+                awsManager.put(
+                    putParams,
+                    function() {
+                        cacheLogin(email, password);
+                        resultPrinter("Successfully logged in!");
+                        onLogIn();
+                    },
+                    resultPrinter);
+            },
+            resultPrinter
+        );
     }
 
     function login(email, password, onLogIn, onComplete) {
