@@ -57,10 +57,10 @@ profCommands = function() {
 
         awsManager.get(
             getProfKey(email),
-            function(data) {
+            function(data) { // account taken
                 resultPrinter("This email is already taken!");
             },
-            function() {
+            function() { // account available
                 const putParams = {
                     TableName: PROF_TABLE_NAME,
                     Item: {
@@ -71,7 +71,7 @@ profCommands = function() {
 
                 awsManager.put(
                     putParams,
-                    function() {
+                    function() { // success
                         cacheLogin(email, password);
                         resultPrinter("Successfully logged in!");
                         onLogIn();
