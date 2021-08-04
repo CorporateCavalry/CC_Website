@@ -1,61 +1,59 @@
-<div class="section">
-	<div class="logged_out">
-		<p>Sign in to your account</p>
-		<form id="login_form">
-			<label for="login_email">Email or Student ID:</label>
-			<input type="email" name="key" id="login_key" size="50"><br>
+<div class="logged_out">
+	<p>Sign in to your account</p>
+	<form id="login_form">
+		<label for="login_email">Email or Student ID:</label>
+		<input type="email" name="key" id="login_key" size="50"><br>
 
-			<label for="login_password">Password:</label>
-			<input type="password" name="password" id="login_password" size="50"><br><br>
-			<input type="button" onclick="processLogin()" value="Sign In" id="prof_login">
-		</form>
-		<br>
-		<p id="login_printer"></p>
-	</div>
-	<div class="logged_in">
-		Already signed in.
-	</div>
+		<label for="login_password">Password:</label>
+		<input type="password" name="password" id="login_password" size="50"><br><br>
+		<input type="button" onclick="processLogin()" value="Sign In" id="prof_login">
+	</form>
+	<br>
+	<p id="login_printer"></p>
+</div>
+<div class="logged_in">
+	Already signed in.
 </div>
 
 <script>
-function processLogin() {
-	if (profCommands.getIsProcessing()) return;
-	if (studentCommands.getIsProcessing()) return;
+	function processLogin() {
+		if (profCommands.getIsProcessing()) return;
+		if (studentCommands.getIsProcessing()) return;
 
-	const elements = document.getElementById("login_form").elements;
-	const accountKey = elements["key"].value;
-	const password = elements["password"].value;
-	const printer = getHtmlPrinter("login_printer");
+		const elements = document.getElementById("login_form").elements;
+		const accountKey = elements["key"].value;
+		const password = elements["password"].value;
+		const printer = getHtmlPrinter("login_printer");
 
-	if (!isString(accountKey) || !isString(password)) {
-		printer("Invalid data type.");
-		return;
+		if (!isString(accountKey) || !isString(password)) {
+			printer("Invalid data type.");
+			return;
+		}
+
+		if (isNullOrEmpty(accountKey) || isNullOrEmpty(password)) {
+			printer("All fields must be filled out!");
+			return;
+		}
+
+		const submitButton = $("#button_login");
+		printer("");
+
+		const onComplete = function(msg) {
+			submitButton.prop("disabled", false);
+			printer(msg);
+		}
+
+		const accountID = parseInt(accountKey);
+		if (!isNaN(accountID)) { // valid student ID
+			submitButton.prop("disabled", true);
+
+			studentCommands.login(accountID, password, getPageRedirector("howtoplay"), onComplete);
+		} else if (!elements["key"].validity.typeMismatch) { // valid email
+			submitButton.prop("disabled", true);
+
+			profCommands.login(accountKey, password, getPageRedirector("manageclasses"), onComplete);
+		} else { // neither
+			printer("Please enter a valid Student ID or email address!");
+		}
 	}
-
-	if (isNullOrEmpty(accountKey) || isNullOrEmpty(password)) {
-		printer("All fields must be filled out!");
-		return;
-	}
-
-	const submitButton = $("#button_login");
-	printer("");
-
-	const onComplete = function(msg) {
-		submitButton.prop("disabled", false);
-		printer(msg);
-	}
-
-	const accountID = parseInt(accountKey);
-	if (!isNaN(accountID)) { // valid student ID
-		submitButton.prop("disabled", true);
-
-		studentCommands.login(accountID, password, getPageRedirector("howtoplay"), onComplete);
-	} else if (!elements["key"].validity.typeMismatch) { // valid email
-		submitButton.prop("disabled", true);
-
-		profCommands.login(accountKey, password, getPageRedirector("manageclasses"), onComplete);
-	} else { // neither
-		printer("Please enter a valid Student ID or email address!");
-	}
-}
 </script>

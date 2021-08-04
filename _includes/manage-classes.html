@@ -1,16 +1,8 @@
 <div class="prof_logged_in">
-	<p>Create a new class</p>
-	<form id="prof_create_class_form">
-		<label for="prof_create_class_start_date">Start Date:</label>
-		<input type="date" name="start_date" id="prof_create_class_start_date" size="50"><br>
-
-		<label for="prof_create_class_end_date">End Date:</label>
-		<input type="date" name="end_date" id="prof_create_class_end_date" size="50"><br>
-
-		<input type="button" onclick="processCreateClass()" value="Create Class" id="button_prof_create_class">
-	</form>
-	<br>
-	<p id="prof_create_class_printer"></p>
+	<p>Manage classes</p>
+</div>
+<div class="logged_out">
+	{% include create-professor-account.html %}
 </div>
 
 <script>

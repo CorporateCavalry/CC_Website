@@ -1,68 +1,66 @@
-<div class="section">
-	<div class="logged_out">
-		<p>Sign up as a student</p>
-		<form id="create_student_account_form">
-			<label for="create_student_account_id">UC Davis Student ID:</label>
-			<input type="email" name="account_id" id="create_student_account_id" size="50"><br>
+<div class="logged_out">
+	<p>Sign up as a student</p>
+	<form id="create_student_account_form">
+		<label for="create_student_account_id">UC Davis Student ID:</label>
+		<input type="email" name="account_id" id="create_student_account_id" size="50"><br>
 
-			<label for="create_student_account_name">Display Name:</label>
-			<input type="text" name="display_name" id="create_student_account_name" size="50"><br>
+		<label for="create_student_account_name">Display Name:</label>
+		<input type="text" name="display_name" id="create_student_account_name" size="50"><br>
 
-			<label for="create_student_account_password">Password:</label>
-			<input type="password" name="password" id="create_student_account_password" size="50"><br>
+		<label for="create_student_account_password">Password:</label>
+		<input type="password" name="password" id="create_student_account_password" size="50"><br>
 
-			<label for="create_student_account_password_confirm">Confirm Password:</label>
-			<input type="password" name="password_confirm" id="create_student_account_password_confirm" size="50"><br><br>
-			<input type="button" onclick="processCreateStudentAccount()" value="Create account" id="button_create_student_account">
-		</form>
-		<br>
-		<p id="create_student_account_printer"></p>
-	</div>
-	<div class="logged_in">
-		Already signed in.
-	</div>
+		<label for="create_student_account_password_confirm">Confirm Password:</label>
+		<input type="password" name="password_confirm" id="create_student_account_password_confirm" size="50"><br><br>
+		<input type="button" onclick="processCreateStudentAccount()" value="Create account" id="button_create_student_account">
+	</form>
+	<br>
+	<p id="create_student_account_printer"></p>
+</div>
+<div class="logged_in">
+	Already signed in.
 </div>
 
 <script>
-function processCreateStudentAccount() {
-	if (studentCommands.getIsProcessing()) return;
+	function processCreateStudentAccount() {
+		if (studentCommands.getIsProcessing()) return;
 
-	const elements = document.getElementById("create_student_account_form").elements;
-	const accountID = parseInt(elements["account_id"].value);
-	const name = elements["display_name"].value;
-	const password = elements["password"].value;
-	const confirm = elements["password_confirm"].value;
-	const printer = getHtmlPrinter("create_student_account_printer");
+		const elements = document.getElementById("create_student_account_form").elements;
+		const accountID = parseInt(elements["account_id"].value);
+		const name = elements["display_name"].value;
+		const password = elements["password"].value;
+		const confirm = elements["password_confirm"].value;
+		const printer = getHtmlPrinter("create_student_account_printer");
 
-	if (!isString(name) || !isString(password) || !isString(confirm)) {
-		printer("Invalid data type.");
-		return;
+		if (!isString(name) || !isString(password) || !isString(confirm)) {
+			printer("Invalid data type.");
+			return;
+		}
+
+		if (isNaN(accountID)) {
+			printer("Please enter a valid Student ID");
+			return;
+		}
+
+		if (isNullOrEmpty(name) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
+			printer("All fields must be filled out!");
+			return;
+		}
+
+		if (confirm !== password) {
+			printer("Passwords do not match!");
+			return;
+		}
+
+		const submitButton = $("#button_create_student_account");
+		submitButton.prop("disabled", true);
+		printer("");
+
+		const onComplete = function(msg) {
+			submitButton.prop("disabled", false);
+			printer(msg);
+		}
+
+		studentCommands.createAccount(accountID, name, password, getPageRedirector("howtoplay"), onComplete);
 	}
-
-	if (isNaN(accountID)) {
-		printer("Please enter a valid Student ID");
-		return;
-	}
-
-	if (isNullOrEmpty(name) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
-		printer("All fields must be filled out!");
-		return;
-	}
-
-	if (confirm !== password) {
-		printer("Passwords do not match!");
-		return;
-	}
-
-	const submitButton = $("#button_create_student_account");
-	submitButton.prop("disabled", true);
-	printer("");
-
-	const onComplete = function(msg) {
-		submitButton.prop("disabled", false);
-		printer(msg);
-	}
-
-	studentCommands.createAccount(accountID, name, password, getPageRedirector("howtoplay"), onComplete);
-}
 </script>
