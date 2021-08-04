@@ -59,6 +59,6 @@ function processCreateProfAccount() {
 		printer(msg);
 	}
 
-	profCommands.createAccount(email, password, loginRefresh, onComplete);
+	profCommands.createAccount(email, password, getPageRedirector("manageclasses"), onComplete);
 }
 </script>

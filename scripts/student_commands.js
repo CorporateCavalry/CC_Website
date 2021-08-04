@@ -63,8 +63,8 @@ studentCommands = function() {
                     putParams,
                     function() { // on success
                         loginManager.loginAsStudent(accountID, password);
+                        resultPrinter("");
                         onLogIn();
-                        resultPrinter("Account created!");
                     },
                     resultPrinter
                 );
@@ -91,7 +91,7 @@ studentCommands = function() {
             function(data) { // email found
                 if (data.hasOwnProperty("Password") && data["Password"] === password) {
                     loginManager.loginAsStudent(accountID, password);
-                    resultPrinter("Successfully logged in!");
+                    resultPrinter("");
                     onLogIn();
                 } else {
                     resultPrinter("Password is incorrect.");

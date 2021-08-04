@@ -64,7 +64,7 @@ profCommands = function() {
                     putParams,
                     function() { // success
                         loginManager.loginAsProfessor(email, password);
-                        resultPrinter("Successfully logged in!");
+                        resultPrinter("");
                         onLogIn();
                     },
                     resultPrinter);
@@ -87,7 +87,7 @@ profCommands = function() {
             function(data) { // email found
                 if (data["Password"] === password) {
                     loginManager.loginAsProfessor(email, password);
-                    resultPrinter("Successfully logged in!");
+                    resultPrinter("");
                     onLogIn();
                 } else {
                     resultPrinter("Password is incorrect.");

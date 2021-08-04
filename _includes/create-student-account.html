@@ -63,6 +63,6 @@ function processCreateStudentAccount() {
 		printer(msg);
 	}
 
-	studentCommands.createAccount(accountID, name, password, loginRefresh, onComplete);
+	studentCommands.createAccount(accountID, name, password, getPageRedirector("howtoplay"), onComplete);
 }
 </script>

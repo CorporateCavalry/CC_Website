@@ -49,11 +49,11 @@ function processLogin() {
 	if (!isNaN(accountID)) { // valid student ID
 		submitButton.prop("disabled", true);
 
-		studentCommands.login(accountID, password, loginRefresh, onComplete);
+		studentCommands.login(accountID, password, getPageRedirector("howtoplay"), onComplete);
 	} else if (!elements["key"].validity.typeMismatch) { // valid email
 		submitButton.prop("disabled", true);
 
-		profCommands.login(accountKey, password, loginRefresh, onComplete);
+		profCommands.login(accountKey, password, getPageRedirector("manageclasses"), onComplete);
 	} else { // neither
 		printer("Please enter a valid Student ID or email address!");
 	}
