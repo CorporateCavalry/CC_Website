@@ -36,9 +36,20 @@ awsManager = function() {
         });
     }
 
+    function getBatch(params, onSuccess, printer) {
+        docClient.batchGet(params, function(err, data) {
+            if (err) {
+                printError(err, printer);
+            } else {
+                onSuccess(data.Responses);
+            }
+        });
+    }
+
     return {
         get:get,
         put:put,
-        update:update
+        update:update,
+        getBatch:getBatch
     }
 }();

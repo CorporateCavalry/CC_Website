@@ -27,7 +27,7 @@ profCommands = function() {
             getProfKey(cachedEmail),
             function(data) {
                 if (data["Password"] === cachedPassword) {
-                    onValid();
+                    onValid(data);
                 } else {
                     onInvalid();
                 }
@@ -121,8 +121,6 @@ profCommands = function() {
             onComplete(msg);
         }
 
-        const onInvalid = function() { resultPrinter("Login credentials invalid."); };
-
         let numAttempts = 0;
         let classCode;
 
@@ -157,9 +155,9 @@ profCommands = function() {
             awsManager.put(putParams, onClassCreated, resultPrinter);
         };
 
-        const testClassCode = function() {
+        const testClassCode = function(profData) {
             if (numAttempts === MAX_CREATE_ATTEMPTS) {
-                onInvalid();
+                resultPrinter("Could not create class: max number of attempts reached.");
                 return;
             }
 
@@ -171,6 +169,50 @@ profCommands = function() {
 
         validateLogin(
             testClassCode,
+            function() {
+                resultPrinter("Login credentials invalid.");
+            },
+            resultPrinter
+        );
+    }
+
+    function getClassList(classListProcessor, errorPrinter) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const resultPrinter = function(msg) {
+            completeProcessing();
+            errorPrinter(msg);
+        };
+
+        const onInvalid = function() {
+            resultPrinter("");
+        };
+
+        validateLogin(
+            function(profData) {
+                let keyList = [];
+                let allClasses = profData["Classes"];
+                let len = allClasses.length;
+                for (let i = 0; i < len; i++) {
+                    keyList.push({ "ClassCode": allClasses[i] });
+                }
+
+                const onSuccess = function(data) {
+                    completeProcessing();
+                    classListProcessor(data[CLASS_TABLE_NAME]);
+                }
+
+                const params = {
+                    RequestItems: {
+                        [CLASS_TABLE_NAME]: {
+                            Keys: keyList
+                        }
+                    }
+                };
+
+                awsManager.getBatch(params, onSuccess, resultPrinter);
+            },
             onInvalid,
             resultPrinter
         );
@@ -193,6 +235,7 @@ profCommands = function() {
         createAccount:createAccount,
         login:login,
         getCurrentUser:getCurrentUser,
-        createClass:createClass
+        createClass:createClass,
+        getClassList:getClassList
     }
 }();

@@ -1,79 +1,40 @@
 <div class="prof_logged_in">
 	<p>Manage classes</p>
+	<ul id="manage_classes_list">
+	</ul>
+	<p id="manage_classes_log"></p>
 </div>
 <div class="logged_out">
 	{% include create-professor-account.html %}
 </div>
 
 <script>
-	// set the default values
-	(function(){
-		const startDateInput = $("#prof_create_class_start_date");
-		const endDateInput = $("#prof_create_class_end_date");
+	function displayClassData(classes) {
+		// console.log("oi");
+		// console.log(JSON.stringify(classes, undefined, 2));
+		// return;
 
-		let date = new Date();
-		const todayStr = getWebFormattedDateString(date);
-		startDateInput.attr("value", todayStr); // default value of start date is today
-		startDateInput.attr("min", todayStr);
-		endDateInput.attr("min", todayStr);
+		const classItemHTML = function(classData) {
+			let code = classData["ClassCode"];
+			return "<a onclick=\"goToPageSafe('/manageclass/?code=" + code + "')\">" + code + "</a>";
+		};
 
-		date.setDate(date.getDate() + 7); // default end date is 1 week away
-		endDateInput.attr("value", getWebFormattedDateString(date));
-	})();
+		const len = classes.length;
+		const list = document.getElementById("manage_classes_list");
+		list.innerHTML = ""; // clear anything inside of it
 
-	function parseInputDate(str) {
-		// by default, because there's no timestamp, it treats it as UTC
-		const parsed = new Date(Date.parse(str));
-		// so, use the "UTC" values to generate a new date which is in the correct timezone
-		let utcValDate = new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate(), parsed.getUTCHours(), parsed.getUTCMinutes(), parsed.getUTCSeconds());
-	    // finally, set it to midnight for our current timezone
-		utcValDate.setHours(0, 0, 0, 0);
-		return utcValDate;
+		let newElement;
+
+		for (let i = 0; i < len; i++) {
+			newElement = document.createElement("li");
+			newElement.innerHTML = classItemHTML(classes[i]);
+			list.appendChild(newElement);
+		}
 	}
 
-	function processCreateClass() {
-		if (profCommands.getIsProcessing()) return;
-
-		const elements = document.getElementById("prof_create_class_form").elements;
-		const startDateStr = elements["start_date"].value;
-		const endDateStr = elements["end_date"].value;
-		const printer = getHtmlPrinter("prof_create_class_printer");
-
-		if (!isString(startDateStr) || !isString(endDateStr)) {
-			printer("Invalid data type.");
-			return;
+	document.addEventListener("DOMContentLoaded", function(event) {
+		if (loginManager.isProfessor()) {
+			profCommands.getClassList(displayClassData, getHtmlPrinter("manage_classes_log"));
 		}
-
-		if (isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
-			printer("All fields must be filled out!");
-			return;
-		}
-
-		const startDate = parseInputDate(startDateStr);
-		const endDate = parseInputDate(endDateStr);
-
-		let yesterday = new Date();
-		yesterday.setDate(yesterday.getDate() - 1); // this works apparently even if it goes over a month
-
-		if (startDate <= yesterday) {
-			printer("Start date cannot be before today's date!");
-			return;
-		}
-
-		if (endDate <= startDate) {
-			printer("End date must be after start date!");
-			return;
-		}
-
-		const submitButton = $("#prof_button_create_class");
-		submitButton.prop("disabled", true);
-		printer("");
-
-		const onComplete = function(msg) {
-			submitButton.prop("disabled", false);
-			printer(msg);
-		}
-
-		profCommands.createClass(getSlidersFormattedDateString(startDate), getSlidersFormattedDateString(endDate), onComplete);
-	}
+	});
 </script>
