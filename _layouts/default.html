@@ -19,22 +19,22 @@
 			<script>
 				function loginRefresh() {
 					if (loginManager.isProfessor()) {
-						$(".prof_logged_in").css("display", "block");
+						$(".prof_logged_in").css("display", "");
 						$(".student_logged_in").css("display", "none");
 
 						$(".logged_out").css("display", "none");
-						$(".logged_in").css("display", "block");
+						$(".logged_in").css("display", "");
 					} else if (loginManager.isStudent()) {
 						$(".prof_logged_in").css("display", "none");
-						$(".student_logged_in").css("display", "block");
+						$(".student_logged_in").css("display", "");
 
 						$(".logged_out").css("display", "none");
-						$(".logged_in").css("display", "block");
+						$(".logged_in").css("display", "");
 					} else {
 						$(".prof_logged_in").css("display", "none");
 						$(".student_logged_in").css("display", "none");
 
-						$(".logged_out").css("display", "block");
+						$(".logged_out").css("display", "");
 						$(".logged_in").css("display", "none");
 					}
 				}

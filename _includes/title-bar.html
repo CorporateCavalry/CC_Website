@@ -1,8 +1,5 @@
-<div class="title-bar">
-	<div class="logo">
-		<a onclick="goToPageSafe('/')" title="SLIDERS">Sliders: an experience</a>
-	</div>
-	<ul class="nav-bar">
+<div class="nav-bar">
+	<ul class="nav-bar-general">
 		<li>
 			<a onclick="goToPageSafe('/')">Home</a>
 		</li>
@@ -12,35 +9,29 @@
 		<li>
 			<a onclick="goToPageSafe('/howtoplay')">How to Play</a>
 		</li>
-		<div class="logged_out">
-			<li>
-				<a onclick="goToPageSafe('/studentsignup')">Student Sign Up</a>
-			</li>
-			<li>
-				<a onclick="goToPageSafe('/professorsignup')">Professor Sign Up</a>
-			</li>
-			<li>
-				<a onclick="goToPageSafe('/signin')">Sign In</a>
-			</li>
-		</div>
-		<div class="student_logged_in">
-			<li>
-				<a onclick="goToPageSafe('/play')">Play</a>
-			</li>
-		</div>
-		<div class="prof_logged_in">
-			<li>
-				<a onclick="goToPageSafe('/manageclasses')">Manage Classes</a>
-			</li>
-		</div>
-		<div class="logged_in">
-			<li>
-				<a onclick="processLogout()">Log out</a>
-			</li>
-		</div>
-		<!--<li>
-			<a href="/#contact">Contact</a>
-		</li>-->
+		<li>
+			<a onclick="goToPageSafe('/')">Contact</a>
+		</li>
+	</ul>
+	<ul class="nav-bar-accounts">
+		<li class="logged_out">
+			<a onclick="goToPageSafe('/studentsignup')">Student Sign Up</a>
+		</li>
+		<li class="logged_out">
+			<a onclick="goToPageSafe('/professorsignup')">Professor Sign Up</a>
+		</li>
+		<li class="logged_out">
+			<a onclick="goToPageSafe('/signin')">Sign In</a>
+		</li>
+		<li class="student_logged_in">
+			<a onclick="goToPageSafe('/play')">Play</a>
+		</li>
+		<li class="prof_logged_in">
+			<a onclick="goToPageSafe('/manageclasses')">Manage Classes</a>
+		</li>
+		<li class="logged_in">
+			<a onclick="processLogout()">Log out</a>
+		</li>
 	</ul>
 </div>
 

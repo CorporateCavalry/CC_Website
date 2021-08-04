@@ -1,8 +1,8 @@
 ---
 ---
 /* VARIABLES */
-$header-font-size: 32px;
-$medium-font-size: 28px;
+$header-font-size: 24px;
+$medium-font-size: 18px;
 $small-font-size: 20px;
 $paragraph-font-size: 18px;
 $code-font-size: 14px;
@@ -245,35 +245,44 @@ body {
 }
 
 /* TITLE BAR */
-.title-bar {
+.nav-bar {
   font-size: $header-font-size;
   font-weight: 600;
 
-  padding: $standard-margin 64px;
+  padding: $standard-margin;
 
   display: flex;
-  justify-content: space-between;
+  flex-grow: 1;
   align-items: center;
+  justify-content: space-between;
 
   background-color: #000;
 
   a {
     color: #FFF;
-    text-transform: uppercase;
   }
   a:hover {
     filter: brightness($text-hover-brightness);
   }
-  .logo {
-    white-space: nowrap;
-  }
-  .nav-bar {
+  .nav-bar-general {
     list-style: none;
 
+    flex-grow: 0;
     display: flex;
     flex-wrap: wrap;
-    white-space: nowrap;
-    justify-content: center;
+    justify-content: flex-start;
+
+    li {
+      margin-right: 1em;
+    }
+  }
+  .nav-bar-accounts {
+    list-style: none;
+
+    flex-grow: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 
     li {
       margin-left: 1em;
