@@ -12,23 +12,41 @@
 		<li>
 			<a href="/howtoplay">How to Play</a>
 		</li>
-		<li>
-			<a href="/studentsignup">Student Sign Up</a>
-		</li>
-		<li>
-			<a href="/professorsignup">Professor Sign Up</a>
-		</li>
-		<li>
-			<a href="/play">Play</a>
-		</li>
-		<li>
-			<a href="/manageclasses">Manage Classes</a>
-		</li>
+		<div class="logged_out">
+			<li>
+				<a href="/studentsignup">Student Sign Up</a>
+			</li>
+			<li>
+				<a href="/professorsignup">Professor Sign Up</a>
+			</li>
+			<li>
+				<a href="/signin">Sign In</a>
+			</li>
+		</div>
+		<div class="prof_logged_in">
+			<li>
+				<a href="/play">Play</a>
+			</li>
+		</div>
+		<div class="prof_logged_in">
+			<li>
+				<a href="/manageclasses">Manage Classes</a>
+			</li>
+			<li>
+				<a onclick="processLogout()">Log out</a>
+			</li>
+		</div>
 		<!--<li>
 			<a href="/#contact">Contact</a>
 		</li>-->
 	</ul>
 </div>
+
+<script>
+	function processLogout() {
+		loginManager.logout(loginRefresh);
+	}
+</script>
 
 <!-- <div class="gallery">
 	{% for image in page.images %}

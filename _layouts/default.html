@@ -11,7 +11,37 @@
 			<script src="/scripts/aws_credentials.js"></script>
 			<script src="/scripts/helpers.js"></script>
 			<script src="/scripts/aws_manager.js"></script>
+			<script src="/scripts/prof_commands.js"></script>
+			<script src="/scripts/student_commands.js"></script>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+			<script>
+				function loginRefresh() {
+					if (loginManager.isProfessor()) {
+						$(".prof_logged_in").css("display", "block");
+						$(".student_logged_in").css("display", "none");
+
+						$(".logged_out").css("display", "none");
+						$(".logged_in").css("display", "block");
+					} else if (loginManager.isStudent()) {
+						$(".prof_logged_in").css("display", "none");
+						$(".student_logged_in").css("display", "block");
+
+						$(".logged_out").css("display", "none");
+						$(".logged_in").css("display", "block");
+					} else {
+						$(".prof_logged_in").css("display", "none");
+						$(".student_logged_in").css("display", "none");
+
+						$(".logged_out").css("display", "block");
+						$(".logged_in").css("display", "none");
+					}
+				}
+
+				document.addEventListener("DOMContentLoaded", function(event){
+					loginRefresh();
+				});
+			</script>
 		</head>
 		<body>
 			<div class="container">

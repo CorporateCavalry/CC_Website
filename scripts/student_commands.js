@@ -3,7 +3,7 @@ studentCommands = function() {
     const CLASS_TABLE_NAME = "Classes";
     const CACHED_LOGIN_KEY = "student_login";
 
-    let cachedLogin = laodStringFromStorage();
+    let cachedLogin = loadStringFromStorage(CACHED_LOGIN_KEY);
 
     function getAccountKey(id) {
         return { TableName: ACCT_TABLE_NAME, Key: { "AccountID": id } };
@@ -62,6 +62,7 @@ studentCommands = function() {
                 awsManager.put(
                     putParams,
                     function() { // on success
+                        loginManager.loginAsStudent(accountID, password);
                         onLogIn();
                         resultPrinter("Account created!");
                     },
@@ -85,6 +86,8 @@ studentCommands = function() {
     }
 
     return {
+        getIsProcessing:getIsProcessing,
+        createAccount:createAccount,
         getAccount:getAccount
     }
 }();

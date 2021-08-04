@@ -1,13 +1,9 @@
 profCommands = function() {
     const PROF_TABLE_NAME = "Professors";
     const CLASS_TABLE_NAME = "Classes";
-    const CACHED_EMAIL_KEY = "prof_email";
-    const CACHED_PASSWORD_KEY = "prof_password";
     const MAX_CREATE_ATTEMPTS = 5;
     const CLASS_CODE_SIZE = 4;
 
-    let cachedEmail = loadStringFromStorage(CACHED_EMAIL_KEY);
-    let cachedPassword = loadStringFromStorage(CACHED_PASSWORD_KEY);
     let isProcessing = false;
 
     function getProfKey(email) {
@@ -19,6 +15,9 @@ profCommands = function() {
     }
 
     function validateLogin(onValid, onInvalid, printer) {
+        let cachedEmail = loginManager.getCachedEmail();
+        let cachedPassword = loginManager.getCachedPassword();
+
         if (isNullOrEmpty(cachedEmail) || isNullOrEmpty(cachedPassword)) {
             onInvalid();
             return;
@@ -36,14 +35,6 @@ profCommands = function() {
             onInvalid,
             printer
         );
-    }
-
-    function cacheLogin(email, password) {
-        cachedEmail = email;
-        localStorage.setItem(CACHED_EMAIL_KEY, email);
-
-        cachedPassword = password;
-        localStorage.setItem(CACHED_PASSWORD_KEY, password);
     }
 
     function createAccount(email, password, onLogIn, onComplete) {
@@ -72,7 +63,7 @@ profCommands = function() {
                 awsManager.put(
                     putParams,
                     function() { // success
-                        cacheLogin(email, password);
+                        loginManager.loginAsProfessor(email, password);
                         resultPrinter("Successfully logged in!");
                         onLogIn();
                     },
@@ -95,7 +86,7 @@ profCommands = function() {
             getProfKey(email),
             function(data) { // email found
                 if (data["Password"] === password) {
-                    cacheLogin(email, password);
+                    loginManager.loginAsProfessor(email, password);
                     resultPrinter("Successfully logged in!");
                     onLogIn();
                 } else {
@@ -107,13 +98,6 @@ profCommands = function() {
             },
             resultPrinter
         );
-    }
-
-    function logout(onComplete) {
-        if (isProcessing) return;
-
-        cacheLogin("", "");
-        onComplete();
     }
 
     function getRandomChar() {
@@ -143,6 +127,8 @@ profCommands = function() {
         let classCode;
 
         const onClassCodeAvailable = function() {
+            let cachedEmail = loginManager.getCachedEmail();
+
             const putParams = {
                 TableName: CLASS_TABLE_NAME,
                 Item: {
@@ -190,12 +176,8 @@ profCommands = function() {
         );
     }
 
-    function isLoggedIn() {
-        return !isNullOrEmpty(cachedEmail);
-    }
-
     function getCurrentUser() {
-        return cachedEmail;
+        return loginManager.getCachedEmail();
     }
 
     function completeProcessing() {
@@ -210,8 +192,6 @@ profCommands = function() {
         getIsProcessing:getIsProcessing,
         createAccount:createAccount,
         login:login,
-        logout:logout,
-        isLoggedIn:isLoggedIn,
         getCurrentUser:getCurrentUser,
         createClass:createClass
     }
