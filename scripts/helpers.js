@@ -2,8 +2,13 @@
 function getConsolePrinter() { return function(msg) { console.log(msg); } }
 function getHtmlPrinter(elementId) { return function(msg) { $("#" + elementId).html(msg); } }
 
-// redirectors can redirect you to a page
-function getPageRedirector(path) { return function() { window.location.href = "/" + path; } }
+function getPageRedirector(path) { return function() { window.location.href = path; } }
+function goToPageSafe(path) {
+    if (profCommands.getIsProcessing()) return;
+    if (studentCommands.getIsProcessing()) return;
+    
+    window.location.href = path;
+}
 
 function printError(err, printer) {
     printer("Unexpected error: See console for details.");

@@ -1,36 +1,36 @@
 <div class="title-bar">
 	<div class="logo">
-		<a href="/" title="SLIDERS">Sliders: an experience</a>
+		<a onclick="goToPageSafe('/')" title="SLIDERS">Sliders: an experience</a>
 	</div>
 	<ul class="nav-bar">
 		<li>
-			<a href="/">Home</a>
+			<a onclick="goToPageSafe('/')">Home</a>
 		</li>
 		<li>
-			<a href="/#about">About Us</a>
+			<a onclick="goToPageSafe('/#about')">About Us</a>
 		</li>
 		<li>
-			<a href="/howtoplay">How to Play</a>
+			<a onclick="goToPageSafe('/howtoplay')">How to Play</a>
 		</li>
 		<div class="logged_out">
 			<li>
-				<a href="/studentsignup">Student Sign Up</a>
+				<a onclick="goToPageSafe('/studentsignup')">Student Sign Up</a>
 			</li>
 			<li>
-				<a href="/professorsignup">Professor Sign Up</a>
+				<a onclick="goToPageSafe('/professorsignup')">Professor Sign Up</a>
 			</li>
 			<li>
-				<a href="/signin">Sign In</a>
+				<a onclick="goToPageSafe('/signin')">Sign In</a>
 			</li>
 		</div>
 		<div class="student_logged_in">
 			<li>
-				<a href="/play">Play</a>
+				<a onclick="goToPageSafe('/play')">Play</a>
 			</li>
 		</div>
 		<div class="prof_logged_in">
 			<li>
-				<a href="/manageclasses">Manage Classes</a>
+				<a onclick="goToPageSafe('/manageclasses')">Manage Classes</a>
 			</li>
 		</div>
 		<div class="logged_in">
@@ -46,7 +46,7 @@
 
 <script>
 	function processLogout() {
-		loginManager.logout(getPageRedirector(""));
+		loginManager.logout(getPageRedirector("/"));
 	}
 </script>
 

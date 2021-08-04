@@ -6,7 +6,7 @@
 
 		<label for="login_password">Password:</label>
 		<input type="password" name="password" id="login_password" size="50"><br><br>
-		<input type="button" onclick="processLogin()" value="Sign In" id="prof_login">
+		<input type="button" onclick="processLogin()" value="Sign In" id="button_login">
 	</form>
 	<br>
 	<p id="login_printer"></p>
@@ -47,11 +47,11 @@
 		if (!isNaN(accountID)) { // valid student ID
 			submitButton.prop("disabled", true);
 
-			studentCommands.login(accountID, password, getPageRedirector("howtoplay"), onComplete);
+			studentCommands.login(accountID, password, getPageRedirector("/howtoplay"), onComplete);
 		} else if (!elements["key"].validity.typeMismatch) { // valid email
 			submitButton.prop("disabled", true);
 
-			profCommands.login(accountKey, password, getPageRedirector("manageclasses"), onComplete);
+			profCommands.login(accountKey, password, getPageRedirector("/manageclasses"), onComplete);
 		} else { // neither
 			printer("Please enter a valid Student ID or email address!");
 		}
