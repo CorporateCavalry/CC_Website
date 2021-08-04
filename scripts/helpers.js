@@ -31,6 +31,10 @@ function loadStringFromStorage(key) {
     return "";
 }
 
+function getHtmlSafeText(text) {
+    return $('<span>').text(text).html();
+}
+
 // date formatting
 function getPaddedNumStr(num, digits) {
     return new String(num).padStart(digits, '0');
@@ -63,6 +67,10 @@ function getWebFormattedDateString(timestamp) {
     return timestamp.getFullYear() + "-" +
         getPaddedNumStr(timestamp.getMonth() + 1, 2) + "-" + // months are 0-indexed
         getPaddedNumStr(timestamp.getDate(), 2);
+}
+
+function getShortFormattedDateString(date) {
+    return new String(date.getMonth() + 1) + "/" + new String(date.getDate());
 }
 
 // login caching

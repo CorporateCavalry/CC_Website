@@ -9,20 +9,17 @@
 <script>
 	function displayClassData(classes) {
 		const today = new Date();
-		const formatDate = function(date) {
-			return getPaddedNumStr(date.getMonth() + 1, 2) + "/" + getPaddedNumStr(date.getDate(), 2);
-		}
 
 		const classItemHTML = function(classData) {
 			let code = classData["ClassCode"];
 			let status;
 			let startDate = parseSlidersDateString(classData["StartDate"]);
 			if (today < startDate) {
-				status = "Unstarted: Starts " + formatDate(startDate);
+				status = "Unstarted: Starts " + getShortFormattedDateString(startDate);
 			} else {
 				let endDate = parseSlidersDateString(classData["EndDate"]);
 				if (today < endDate) {
-					status = "Started: Ends " + formatDate(endDate);
+					status = "Started: Ends " + getShortFormattedDateString(endDate);
 				} else {
 					status = "Completed"
 				}

@@ -1,5 +1,6 @@
 <div class="prof_logged_in">
 	<div id="manage_class_title"></div>
+	<p id="manage_class_log"></p>
 </div>
 
 <script>
@@ -11,6 +12,45 @@
 			return;
 		}
 
+		let classData = null;
+		let templateData = null;
+
+		function generateIntroStatement() {
+			let formattedStartDate = getShortFormattedDateString(parseSlidersDateString(classData["StartDate"]));
+			let text = templateData.replaceAll("[start_date]", formattedStartDate);
+			let homepage = document.location.origin;
+			text = text.replaceAll("[url_join_page]", homepage + "/join?code=" + classCode);
+			text = text.replaceAll("[url_home_page]", homepage + "/");
+			console.log(text);
+		}
+
+		function initTemplate(template) {
+			templateData = getHtmlSafeText(template);
+			if (classData !== null) generateIntroStatement();
+		}
+
+		function initClassData(data) {
+			classData = data;
+			if (templateData !== null) generateIntroStatement();
+		}
+
 		$("#manage_class_title").html("Manage class: " + classCode);
+		let printer = getHtmlPrinter("manage_class_log");
+
+		$.ajax({
+            url: "./intro_statement.md",
+            async: true,
+            success: initTemplate,
+			error: function(xhr, ajaxOptions, thrownError) {
+				printer("Could not load intro statement.");
+			}
+        });
+
+		classCommands.fetchClassData(
+			classCode,
+			["ClassCode", "StartDate", "EndDate", "GroupCount"],
+			initClassData,
+			printer
+		);
 	})();
 </script>
