@@ -1,0 +1,16 @@
+<div class="prof_logged_in">
+	<div id="manage_class_title"></div>
+</div>
+
+<script>
+	(function() {
+		let classCode = getURLClassCode();
+
+		if (isNullOrEmpty(classCode)) {
+			goToPageSafe("/manageclasses");
+			return;
+		}
+
+		$("#manage_class_title").html("Manage class: " + classCode);
+	})();
+</script>

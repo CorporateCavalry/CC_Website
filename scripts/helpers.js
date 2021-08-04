@@ -10,14 +10,16 @@ function goToPageSafe(path) {
     window.location.href = path;
 }
 
+function getURLClassCode() {
+    return new URLSearchParams(window.location.search).get('code');
+}
+
 function printError(err, printer) {
     printer("Unexpected error: See console for details.");
     console.log("Error: " + JSON.stringify(err, undefined, 2));
 }
-function nop() { }
 
 function isNullOrEmpty(str) { return !str || str === ""; }
-
 function isString(obj) { return typeof obj === 'string' || obj instanceof String; }
 
 function loadStringFromStorage(key) {
@@ -29,6 +31,7 @@ function loadStringFromStorage(key) {
     return "";
 }
 
+// date formatting
 function getPaddedNumStr(num, digits) {
     return new String(num).padStart(digits, '0');
 }
