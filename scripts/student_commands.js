@@ -5,7 +5,11 @@ studentCommands = function() {
 
     let cachedLogin = loadStringFromStorage(CACHED_LOGIN_KEY);
 
-    function getAccountKey(id) {
+    function getAccountKey(id, attributes) {
+        return { TableName: ACCT_TABLE_NAME, Key: { "AccountID": id }, AttributesToGet: attributes };
+    }
+
+    function getAccountKeyAll(id) {
         return { TableName: ACCT_TABLE_NAME, Key: { "AccountID": id } };
     }
 
@@ -44,7 +48,7 @@ studentCommands = function() {
         }
 
         awsManager.get(
-            getAccountKey(accountID),
+            getAccountKey(accountID, ["AccountID"]),
             function(data) { // account taken
                 onFail("An account for this ID already exists!");
             },
@@ -87,7 +91,7 @@ studentCommands = function() {
         }
 
         awsManager.get(
-            getAccountKey(accountID),
+            getAccountKey(accountID, ["Password"]),
             function(data) { // email found
                 if (data.hasOwnProperty("Password") && data["Password"] === password) {
                     loginManager.loginAsStudent(accountID, password);

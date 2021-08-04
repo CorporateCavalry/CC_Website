@@ -6,7 +6,11 @@ profCommands = function() {
 
     let isProcessing = false;
 
-    function getProfKey(email) {
+    function getProfKey(email, attributes) {
+        return { TableName: PROF_TABLE_NAME, Key: { "Email": email }, AttributesToGet: attributes };
+    }
+
+    function getProfKeyAll(email) {
         return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
     }
 
@@ -14,7 +18,7 @@ profCommands = function() {
         return { TableName: CLASS_TABLE_NAME, Key: { "ClassCode": classCode } };
     }
 
-    function validateLogin(onValid, onInvalid, printer) {
+    function validateLogin(getAll, onValid, onInvalid, printer) {
         let cachedEmail = loginManager.getCachedEmail();
         let cachedPassword = loginManager.getCachedPassword();
 
@@ -23,8 +27,10 @@ profCommands = function() {
             return;
         }
 
+        let params = getAll ? getProfKeyAll(cachedEmail) : getProfKey(cachedEmail, ["Password"]);
+
         awsManager.get(
-            getProfKey(cachedEmail),
+            params,
             function(data) {
                 if (data["Password"] === cachedPassword) {
                     onValid(data);
@@ -47,7 +53,7 @@ profCommands = function() {
         }
 
         awsManager.get(
-            getProfKey(email),
+            getProfKey(email, ["Email"]),
             function(data) { // account taken
                 onFail("This email is already taken!");
             },
@@ -84,7 +90,7 @@ profCommands = function() {
         }
 
         awsManager.get(
-            getProfKey(email),
+            getProfKey(email, ["Password"]),
             function(data) { // email found
                 if (data["Password"] === password) {
                     loginManager.loginAsProfessor(email, password);
@@ -173,6 +179,7 @@ profCommands = function() {
         };
 
         validateLogin(
+            false,
             testClassCode,
             function() {
                 onFail("Login credentials invalid.");
@@ -191,6 +198,7 @@ profCommands = function() {
         };
 
         validateLogin(
+            true,
             function(profData) {
                 const onNoClasses = function() {
                     completeProcessing();
@@ -214,7 +222,12 @@ profCommands = function() {
                     const params = {
                         RequestItems: {
                             [CLASS_TABLE_NAME]: {
-                                Keys: keyList
+                                Keys: keyList,
+                                AttributesToGet: [
+                                    "ClassCode",
+                                    "StartDate",
+                                    "EndDate"
+                                ]
                             }
                         }
                     };
