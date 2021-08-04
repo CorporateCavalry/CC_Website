@@ -1,8 +1,5 @@
 profCommands = function() {
     const PROF_TABLE_NAME = "Professors";
-    const CLASS_TABLE_NAME = "Classes";
-    const MAX_CREATE_ATTEMPTS = 5;
-    const CLASS_CODE_SIZE = 4;
 
     let isProcessing = false;
 
@@ -14,8 +11,8 @@ profCommands = function() {
         return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
     }
 
-    function getClassKey(classCode) {
-        return { TableName: CLASS_TABLE_NAME, Key: { "ClassCode": classCode } };
+    function printBusy(printer) {
+        printer("Professor database busy!");
     }
 
     function validateLogin(getAll, onValid, onInvalid, printer) {
@@ -27,7 +24,7 @@ profCommands = function() {
             return;
         }
 
-        let params = getAll ? getProfKeyAll(cachedEmail) : getProfKey(cachedEmail, ["Password"]);
+        let params = getAll ? getProfKeyAll(cachedEmail) : getProfKey(cachedEmail, ["Email", "Password"]);
 
         awsManager.get(
             params,
@@ -44,7 +41,10 @@ profCommands = function() {
     }
 
     function createAccount(email, password, onSuccess, failPrinter) {
-        if (isProcessing) return;
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
         isProcessing = true;
 
         const onFail = function(msg) {
@@ -81,7 +81,10 @@ profCommands = function() {
     }
 
     function login(email, password, onSuccess, failPrinter) {
-        if (isProcessing) return;
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
         isProcessing = true;
 
         const onFail = function(msg) {
@@ -107,20 +110,11 @@ profCommands = function() {
         );
     }
 
-    function getRandomChar() {
-        return String.fromCharCode(65 + Math.floor(Math.random() * 26)); //65 is uppercase A
-    }
-
-    function getRandomClassName() {
-        let str = "";
-        for (let i = 0; i < CLASS_CODE_SIZE; i++) {
-            str += getRandomChar();
-        }
-        return str;
-    }
-
     function createClass(startDate, endDate, onSuccess, failPrinter) {
-        if (isProcessing) return;
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
         isProcessing = true;
 
         const onFail = function(msg) {
@@ -128,59 +122,35 @@ profCommands = function() {
             failPrinter(msg);
         }
 
-        let numAttempts = 0;
-        let classCode;
+        validateLogin(
+            false,
+            function(profData) {
+                let email = profData["Email"];
 
-        const onClassCodeAvailable = function() {
-            let cachedEmail = loginManager.getCachedEmail();
+                classCommands.createClass(
+                    email,
+                    startDate,
+                    endDate,
+                    function(classCode) {
+                        const updateParams = {
+                            TableName: PROF_TABLE_NAME,
+                            Key: { "Email": email },
+                            UpdateExpression: "set Classes = list_append(if_not_exists(Classes, :emptyList), :newClass)",
+                            ExpressionAttributeValues: { ":emptyList": [], ":newClass": [ classCode ] }
+                        }
 
-            const putParams = {
-                TableName: CLASS_TABLE_NAME,
-                Item: {
-                    "ClassCode": classCode,
-                    "StartDate": startDate,
-                    "EndDate": endDate,
-                    "GroupCount": 0,
-                    "Owner": cachedEmail
-                }
-            };
-
-            const onClassCreated = function() {
-                const updateParams = {
-                    TableName: PROF_TABLE_NAME,
-                    Key: { "Email": cachedEmail },
-                    UpdateExpression: "set Classes = list_append(if_not_exists(Classes, :emptyList), :newClass)",
-                    ExpressionAttributeValues: { ":emptyList": [], ":newClass": [ classCode ] }
-                }
-
-                awsManager.update(
-                    updateParams,
-                    function() {
-                        completeProcessing();
-                        onSuccess(classCode);
+                        awsManager.update(
+                            updateParams,
+                            function() {
+                                completeProcessing();
+                                onSuccess(classCode);
+                            },
+                            onFail
+                        );
                     },
                     onFail
                 );
-            }
-
-            awsManager.put(putParams, onClassCreated, onFail);
-        };
-
-        const testClassCode = function(profData) {
-            if (numAttempts === MAX_CREATE_ATTEMPTS) {
-                onFail("Could not create class: max number of attempts reached.");
-                return;
-            }
-
-            numAttempts++;
-
-            classCode = getRandomClassName();
-            awsManager.get(getClassKey(classCode), testClassCode, onClassCodeAvailable, onFail);
-        };
-
-        validateLogin(
-            false,
-            testClassCode,
+            },
             function() {
                 onFail("Login credentials invalid.");
             },
@@ -189,7 +159,10 @@ profCommands = function() {
     }
 
     function getClassList(onSuccess, failPrinter) {
-        if (isProcessing) return;
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
         isProcessing = true;
 
         const onFail = function(msg) {
@@ -199,48 +172,20 @@ profCommands = function() {
 
         validateLogin(
             true,
-            function(profData) {
-                const onNoClasses = function() {
-                    completeProcessing();
-                    onSuccess([]);
-                }
-
+            function(profData) { // login credentials valid
                 if (profData.hasOwnProperty("Classes")) {
-                    let keyList = [];
-                    let allClasses = profData["Classes"];
-
-                    let len = allClasses.length;
-                    if (len === 0) {
-                        onNoClasses();
-                        return;
-                    }
-
-                    for (let i = 0; i < len; i++) {
-                        keyList.push({ "ClassCode": allClasses[i] });
-                    }
-
-                    const params = {
-                        RequestItems: {
-                            [CLASS_TABLE_NAME]: {
-                                Keys: keyList,
-                                AttributesToGet: [
-                                    "ClassCode",
-                                    "StartDate",
-                                    "EndDate"
-                                ]
-                            }
-                        }
-                    };
-
-                    awsManager.getBatch(params,
-                        function(data) {
+                    classCommands.getClassList(
+                        profData["Classes"],
+                        [ "ClassCode", "StartDate", "EndDate" ],
+                        function(list) {
                             completeProcessing();
-                            onSuccess(data[CLASS_TABLE_NAME]);
+                            onSuccess(list);
                         },
                         onFail
                     );
                 } else {
-                    onNoClasses();
+                    completeProcessing();
+                    onSuccess([]);
                 }
             },
             function() {

@@ -1,9 +1,10 @@
 studentCommands = function() {
     const ACCT_TABLE_NAME = "Accounts";
-    const CLASS_TABLE_NAME = "Classes";
     const CACHED_LOGIN_KEY = "student_login";
 
     let cachedLogin = loadStringFromStorage(CACHED_LOGIN_KEY);
+
+    let isProcessing = false;
 
     function getAccountKey(id, attributes) {
         return { TableName: ACCT_TABLE_NAME, Key: { "AccountID": id }, AttributesToGet: attributes };
@@ -13,18 +14,16 @@ studentCommands = function() {
         return { TableName: ACCT_TABLE_NAME, Key: { "AccountID": id } };
     }
 
-    function getClassKey(classCode) {
-        return { TableName: CLASS_TABLE_NAME, Key: { "ClassCode": classCode } };
+    function printBusy(printer) {
+        printer("Professor database busy!");
     }
 
-    let isProcessing = false;
-
     function getAccount(accountID) {
-        let returnStr = "Error";
-        let params = {
-            TableName: "Accounts",
-            Key: { "AccountID": accountID }
-        };
+        // let returnStr = "Error";
+        // let params = {
+        //     TableName: "Accounts",
+        //     Key: { "AccountID": accountID }
+        // };
 
         // awsManager.get(params, function (err, data) {
         //     if (err) {
@@ -39,7 +38,10 @@ studentCommands = function() {
     }
 
     function createAccount(accountID, username, password, onSuccess, failPrinter) {
-        if (isProcessing) return;
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
         isProcessing = true;
 
         const onFail = function(msg) {
@@ -82,7 +84,10 @@ studentCommands = function() {
     }
 
     function login(accountID, password, onSuccess, failPrinter) {
-        if (isProcessing) return;
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
         isProcessing = true;
 
         const onFail = function(msg) {
