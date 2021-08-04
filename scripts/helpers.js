@@ -59,7 +59,7 @@ loginManager = function() {
     }
 
     function loginAsStudent(accountID, password) {
-        cacheLogin(new String(accountID), password, STUDENT_LOGIN_TYPE);
+        cacheLogin(new String(accountID), password, STUDENT_LOGIN_KEY_TYPE);
     }
 
     function cacheLogin(tableKey, password, loginType) {

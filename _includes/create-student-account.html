@@ -28,7 +28,7 @@ function processCreateStudentAccount() {
 	if (studentCommands.getIsProcessing()) return;
 
 	const elements = document.getElementById("create_student_account_form").elements;
-	const account_id = parseInt(elements["account_id"].value);
+	const accountID = parseInt(elements["account_id"].value);
 	const name = elements["display_name"].value;
 	const password = elements["password"].value;
 	const confirm = elements["password_confirm"].value;
@@ -39,7 +39,7 @@ function processCreateStudentAccount() {
 		return;
 	}
 
-	if (isNaN(account_id)) {
+	if (isNaN(accountID)) {
 		printer("Please enter a valid Student ID");
 		return;
 	}
@@ -63,6 +63,6 @@ function processCreateStudentAccount() {
 		printer(msg);
 	}
 
-	studentCommands.createAccount(account_id, name, password, loginRefresh, onComplete);
+	studentCommands.createAccount(accountID, name, password, loginRefresh, onComplete);
 }
 </script>

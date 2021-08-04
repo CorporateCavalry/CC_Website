@@ -77,6 +77,33 @@ studentCommands = function() {
 
     }
 
+    function login(accountID, password, onLogIn, onComplete) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const resultPrinter = function(msg) {
+            completeProcessing();
+            onComplete(msg);
+        }
+
+        awsManager.get(
+            getAccountKey(accountID),
+            function(data) { // email found
+                if (data.hasOwnProperty("Password") && data["Password"] === password) {
+                    loginManager.loginAsStudent(accountID, password);
+                    resultPrinter("Successfully logged in!");
+                    onLogIn();
+                } else {
+                    resultPrinter("Password is incorrect.");
+                }
+            },
+            function() { // email not found
+                resultPrinter("No account was found with this student ID.");
+            },
+            resultPrinter
+        );
+    }
+
     function completeProcessing() {
         isProcessing = false;
     }
@@ -88,6 +115,7 @@ studentCommands = function() {
     return {
         getIsProcessing:getIsProcessing,
         createAccount:createAccount,
+        login:login,
         getAccount:getAccount
     }
 }();
