@@ -1,17 +1,12 @@
-<div class="logged_out">
-	<div class="section-header">Student and Professor Sign In</div>
-	<form id="login_form">
-		<ul class="form-list">
-			{% include form-line.html formName="login" inputID="key" inputType="email" placeholder="Professor Email or UC Davis Student ID"%}
-			{% include form-line.html formName="login" inputID="password" inputType="password" placeholder="Password"%}
-		</ul>
-		{% include button.html function="processLogin" id="login" label="Sign In" %}
-	</form>
-	{% include alert-message.html id="login" type="error" %}
-</div>
-<div class="logged_in">
-	Already signed in.
-</div>
+<div class="section-header">Student and Professor Sign In</div>
+<form id="login_form">
+	<ul class="form-list">
+		{% include form-line.html formName="login" inputID="key" inputType="email" placeholder="Professor Email or UC Davis Student ID"%}
+		{% include form-line.html formName="login" inputID="password" inputType="password" placeholder="Password"%}
+	</ul>
+</form>
+{% include button.html function="processLogin" id="login" label="Sign In" %}
+{% include alert-message.html id="login" type="error" %}
 
 <script>
 	clearAlertPrinter("login");

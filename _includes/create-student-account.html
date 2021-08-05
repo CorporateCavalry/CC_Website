@@ -1,19 +1,14 @@
-<div class="logged_out">
-	<div class="section-header">Student Sign Up</div>
-	<form id="create_student_account_form">
-		<ul class="form-list">
-			{% include form-line.html formName="create_student_account" inputID="name" inputType="text" placeholder="Name (visible to teammates)" %}
-			{% include form-line.html formName="create_student_account" inputID="studentID" inputType="text" placeholder="UC Davis Student ID" %}
-			{% include form-line.html formName="create_student_account" inputID="password" inputType="password" placeholder="Password" %}
-			{% include form-line.html formName="create_student_account" inputID="confirm_password" inputType="password" placeholder="Confirm Password" %}
-		</ul>
-		{% include button.html function="processCreateStudentAccount" id="create_student_account" label="Sign Up" %}
-	</form>
-	{% include alert-message.html id="create_student_account" type="error" %}
-</div>
-<div class="logged_in">
-	Already signed in.
-</div>
+<div class="section-header">Student Sign Up</div>
+<form id="create_student_account_form">
+	<ul class="form-list">
+		{% include form-line.html formName="create_student_account" inputID="name" inputType="text" placeholder="Name (visible to teammates)" %}
+		{% include form-line.html formName="create_student_account" inputID="studentID" inputType="text" placeholder="UC Davis Student ID" %}
+		{% include form-line.html formName="create_student_account" inputID="password" inputType="password" placeholder="Password" %}
+		{% include form-line.html formName="create_student_account" inputID="confirm_password" inputType="password" placeholder="Confirm Password" %}
+	</ul>
+</form>
+{% include button.html function="processCreateStudentAccount" id="create_student_account" label="Sign Up" %}
+{% include alert-message.html id="create_student_account" type="error" %}
 
 <script>
 	clearAlertPrinter("create_student_account");

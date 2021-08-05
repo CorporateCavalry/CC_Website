@@ -1,19 +1,14 @@
-<div class="logged_out">
-	<div class="section-header">Professor Sign Up</div>
-	<form id="create_professor_account_form">
-		<ul class="form-list">
-			{% include form-line.html formName="create_professor_account" inputID="name" inputType="text" placeholder="Name (visible to students)" %}
-			{% include form-line.html formName="create_professor_account" inputID="email" inputType="email" placeholder="Email" %}
-			{% include form-line.html formName="create_professor_account" inputID="password" inputType="password" placeholder="Password" %}
-			{% include form-line.html formName="create_professor_account" inputID="confirm_password" inputType="password" placeholder="Confirm Password" %}
-		</ul>
-		{% include button.html function="processCreateProfAccount" id="create_professor_account" label="Sign Up" %}
-	</form>
-	{% include alert-message.html id="create_professor_account" type="error" %}
-</div>
-<div class="logged_in">
-	Already signed in.
-</div>
+<div class="section-header">Professor Sign Up</div>
+<form id="create_professor_account_form">
+	<ul class="form-list">
+		{% include form-line.html formName="create_professor_account" inputID="name" inputType="text" placeholder="Name (visible to students)" %}
+		{% include form-line.html formName="create_professor_account" inputID="email" inputType="email" placeholder="Email" %}
+		{% include form-line.html formName="create_professor_account" inputID="password" inputType="password" placeholder="Password" %}
+		{% include form-line.html formName="create_professor_account" inputID="confirm_password" inputType="password" placeholder="Confirm Password" %}
+	</ul>
+</form>
+{% include button.html function="processCreateProfAccount" id="create_professor_account" label="Sign Up" %}
+{% include alert-message.html id="create_professor_account" type="error" %}
 
 <script>
 	clearAlertPrinter("create_professor_account");
