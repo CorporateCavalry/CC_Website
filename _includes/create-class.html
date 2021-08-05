@@ -1,21 +1,19 @@
-<div class="prof_logged_in">
-	<div class="section-header">Create New Class</div>
-	<form id="create_class_form">
-		<ul class="form-list">
-			{% include form-line.html formName="create_class" inputID="name" inputType="text" placeholder="Class Name (visible to students)" %}
-			<li>
-				<ul class="form-date-range">
-					{% include form-date-line.html formName="create_class" inputID="start_date" %}
-					{% include form-date-line.html formName="create_class" inputID="end_date" %}
-				</ul>
-			</li>
-		</ul>
-		{% include button.html function="processCreateClass" label="Create" id="create_class" %}
-	</form>
-
-	{% include alert-message.html id="create_class_warning" type="warning" %}
-	{% include alert-message.html id="create_class_error" type="error" %}
-</div>
+<div class="section-header">Create New Class</div>
+<form id="create_class_form">
+	<ul class="form-list">
+		{% include form-line.html formName="create_class" inputID="name" inputType="text" placeholder="Class Name (visible to students)" %}
+		<li>
+			<ul class="form-date-range">
+				{% include form-date-line.html formName="create_class" inputID="start_date" %}
+				<li class="hidden-divider">
+				{% include form-date-line.html formName="create_class" inputID="end_date" %}
+			</ul>
+		</li>
+	</ul>
+</form>
+{% include button.html function="processCreateClass" label="Create" id="create_class" %}
+{% include alert-message.html id="create_class_warning" type="warning" %}
+{% include alert-message.html id="create_class_error" type="error" %}
 
 <script>
 	createClassHelpers = function(){

@@ -437,7 +437,17 @@ p {
   // max-width: 675px;
 }
 
+.form-date-range {
+  display: flex;
+  justify-content: space-between;
+  .hidden-divider {
+    width: $standard-margin * 2;
+    flex-grow: 0;
+  }
+}
+
 .form-line {
+  flex-grow: 1;
   ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: $input-field-placeholder-text-color;
     opacity: 1; /* Firefox */
@@ -454,6 +464,7 @@ p {
 }
 
 .form-line > input {
+  font-family : inherit;
   margin-bottom: $standard-margin;
   width: 100%;
   padding-left: 8px;
