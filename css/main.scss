@@ -18,7 +18,8 @@ $content-top-padding: 64px;
 $section-header-height: 64px;
 $section-padding: 32px;
 
-$input-field-height: 32px;
+$input-field-height: 40px;
+$input-field-padding: 8px;
 $input-field-border-thickness: 3px;
 $input-field-border-color: black;
 $input-field-text-color: black;
@@ -444,10 +445,27 @@ p {
 .form-date-range {
   display: flex;
   justify-content: space-between;
+
+  .form-line {
+      align-items: center;
+      display: flex;
+  }
+
+  .form-line > input {
+      padding-left: 80px;
+  }
+
+  .form-line > label {
+      position: absolute;
+      font-size: $small-font-size;
+      font-weight: $medium-font-weight;
+      padding: $input-field-padding + $input-field-border-thickness;
+      margin-bottom: $standard-margin;
+  }
 }
 
 .hidden-divider {
-  width: $standard-margin * 2;
+  width: $standard-margin;
   flex-grow: 0;
 }
 
@@ -472,7 +490,8 @@ p {
   font-family : inherit;
   margin-bottom: $standard-margin;
   width: 100%;
-  padding-left: 8px;
+  padding: $input-field-padding;
+  box-sizing: border-box;
   height: $input-field-height;
   border-width: $input-field-border-thickness;
   border-radius: $corner-radius;

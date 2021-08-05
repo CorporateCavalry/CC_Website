@@ -4,9 +4,9 @@
 		{% include form-line.html formName="create_class" inputID="name" inputType="text" placeholder="Class Name (visible to students)" %}
 		<li>
 			<ul class="form-date-range">
-				{% include form-date-line.html formName="create_class" inputID="start_date" %}
+				{% include form-date-line.html formName="create_class" inputID="start_date" label="Start Date" %}
 				<li class="hidden-divider">
-				{% include form-date-line.html formName="create_class" inputID="end_date" %}
+				{% include form-date-line.html formName="create_class" inputID="end_date" label="End Date" %}
 			</ul>
 		</li>
 	</ul>
