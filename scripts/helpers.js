@@ -2,6 +2,21 @@
 function getConsolePrinter() { return function(msg) { console.log(msg); } }
 function getHtmlPrinter(elementId) { return function(msg) { $("#" + elementId).html(getHtmlSafeText(msg)); } }
 
+function getAlertPrinter(id) {
+    return function(msg) {
+        if (!isNullOrEmpty(msg)) {
+            $("#" + id + "_alert").css("display", "");
+            $("#" + id + "_alert_message").text(msg);
+        } else {
+            $("#" + id + "_alert").css("display", "none");
+        }
+    }
+}
+
+function clearAlertPrinter(id) {
+    getAlertPrinter(id)("");
+}
+
 function getPageRedirector(path) { return function() { window.location.href = path; } }
 function goToPageSafe(path) {
     if (profCommands.getIsProcessing()) return;

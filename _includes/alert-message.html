@@ -1,0 +1,9 @@
+<div class="alert-message" id="{{ include.id }}_alert">
+    <img src="/assets/alert-{{ include.type }}.png">
+    {% if include.type == "warning" %}
+        <h2 id="{{ include.id }}_alert_message" class="alert-warning-message">
+    {% else %}
+        <h2 id="{{ include.id }}_alert_message" class="alert-error-message">
+    {% endif %}
+        </h2>
+</div>

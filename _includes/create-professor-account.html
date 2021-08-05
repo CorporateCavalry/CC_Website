@@ -1,32 +1,33 @@
 <div class="logged_out">
-	<p>Sign up as a professor</p>
+	<div class="section-header">Professor Sign Up</div>
 	<form id="create_professor_account_form">
-		<label for="create_professor_account_email">Email:</label>
-		<input type="email" name="email" id="create_professor_account_email" size="50"><br>
-
-		<label for="create_professor_account_password">Password:</label>
-		<input type="password" name="password" id="create_professor_account_password" size="50"><br>
-
-		<label for="create_professor_account_password_confirm">Confirm Password:</label>
-		<input type="password" name="password_confirm" id="create_professor_account_password_confirm" size="50"><br><br>
-		<input type="button" onclick="processCreateProfAccount()" value="Create account" id="button_create_professor_account">
+		<ul class="form-list">
+			{% include form-line.html formName="create_professor_account" inputID="name" inputType="text" placeholder="Name (visible to students)" %}
+			{% include form-line.html formName="create_professor_account" inputID="email" inputType="email" placeholder="Email" %}
+			{% include form-line.html formName="create_professor_account" inputID="password" inputType="password" placeholder="Password" %}
+			{% include form-line.html formName="create_professor_account" inputID="confirm_password" inputType="password" placeholder="Confirm Password" %}
+		</ul>
+		{% include button.html function="processCreateProfAccount" id="create_professor_account" label="Sign Up" %}
 	</form>
-	<br>
-	<p id="create_professor_account_printer"></p>
+	{% include alert-message.html id="create_professor_account" type="error" %}
 </div>
 <div class="logged_in">
 	Already signed in.
 </div>
 
 <script>
+	clearAlertPrinter("create_professor_account");
+
 	function processCreateProfAccount() {
 		if (profCommands.getIsProcessing()) return;
 
-		const elements = document.getElementById("create_professor_account_form").elements;
-		const email = elements["email"].value;
-		const password = elements["password"].value;
-		const confirm = elements["password_confirm"].value;
-		const printer = getHtmlPrinter("create_professor_account_printer");
+		const formName = "create_professor_account";
+
+		const elements = document.getElementById(formName + "_form").elements;
+		const email = elements[formName + "_email"].value;
+		const password = elements[formName + "_password"].value;
+		const confirm = elements[formName + "_confirm_password"].value;
+		const printer = getAlertPrinter(formName);
 
 		if (!isString(email) || !isString(password) || !isString(confirm)) {
 			printer("Invalid data type.");
@@ -38,7 +39,7 @@
 			return;
 		}
 
-		if (elements["email"].validity.typeMismatch) {
+		if (elements[formName + "_email"].validity.typeMismatch) {
 			printer("Please enter a valid email address!");
 			return;
 		}
@@ -48,7 +49,7 @@
 			return;
 		}
 
-		const submitButton = $("#button_create_professor_account");
+		const submitButton = $("#button_" + formName);
 		submitButton.prop("disabled", true);
 		printer("");
 
