@@ -1,51 +1,100 @@
 <div class="prof_logged_in">
-	<p>Manage classes</p>
-	<ul id="manage_classes_list">
+	<div class="section-header">Manage Classes</div>
+	<ul id="manage_classes_list" class="class-element-list">
 	</ul>
-	<p id="manage_classes_log"></p>
-	<input type="button" onclick="goToPageSafe('/createclass')" value="New Class" id="button_add_new_class">
+	{% include alert-message.html id="manage_classes" type="error" %}
+
+	{% include button.html label="Create New" id="goto_create_class" function="goToCreateNewClass" %}
 </div>
 
 <script>
-	function displayClassData(classes) {
-		const today = new Date();
-
-		const classItemHTML = function(classData) {
-			let code = classData["ClassCode"];
-			let status;
-			let startDate = parseSlidersDateString(classData["StartDate"]);
-			if (today < startDate) {
-				status = "Unstarted: Starts " + getShortFormattedDateString(startDate);
-			} else {
-				let endDate = parseSlidersDateString(classData["EndDate"]);
-				if (today < endDate) {
-					status = "Started: Ends " + getShortFormattedDateString(endDate);
-				} else {
-					status = "Completed"
-				}
-			}
-
-			return "<a onclick=\"goToPageSafe('/manageclass/?code=" + code + "')\">" + code + "</a> - " + status;
-		};
-
-		const len = classes.length;
-		if (len > 0) {
-			const list = document.getElementById("manage_classes_list");
-			list.innerHTML = ""; // clear anything inside of it
-
-			let newElement;
-
-			for (let i = 0; i < len; i++) {
-				newElement = document.createElement("li");
-				newElement.innerHTML = classItemHTML(classes[i]);
-				list.appendChild(newElement);
-			}
-		}
+	function goToCreateNewClass() {
+		goToPageSafe("/createclass");
 	}
 
-	document.addEventListener("DOMContentLoaded", function(event) {
-		if (loginManager.isProfessor()) {
-			profCommands.getClassList(displayClassData, getHtmlPrinter("manage_classes_log"));
+	(function(){
+		let classList = null;
+		let classElementTemplate = null;
+
+		let printer = getAlertPrinter("manage_classes")
+		printer("");
+
+		function initClassElementTemplate(newTemplate) {
+			classElementTemplate = newTemplate;
+
+			if (classList !== null) {
+				displayClassData();
+			}
 		}
-	});
+
+		function initClassList(newList) {
+			classList = newList;
+
+			if (classElementTemplate !== null) {
+				displayClassData();
+			}
+		}
+
+		function displayClassData() {
+			const today = new Date();
+
+			const generateClassElementHTML = function(classData) {
+				let code = classData["ClassCode"];
+				let status;
+				let statusMessage = "";
+
+				let startDate = parseSlidersDateString(classData["StartDate"]);
+				if (today < startDate) {
+					status = "unstarted";
+					statusMessage = "Unstarted: Starts " + getShortFormattedDateString(startDate);
+				} else {
+					let endDate = parseSlidersDateString(classData["EndDate"]);
+					if (today < endDate) {
+						status = "started";
+						statusMessage = "Started: Ends " + getShortFormattedDateString(endDate);
+					} else {
+						status = "completed";
+						statusMessage = "Completed"
+					}
+				}
+
+				let html = classElementTemplate;
+				html = html.replaceAll("[code]", code);
+				html = html.replaceAll("[status]", status);
+				html = html.replaceAll("[studentCount]", "x"); //TODO: replace with student count
+				html = html.replaceAll("[statusMessage]", statusMessage);
+
+				return html;
+			}
+
+			const len = classList.length;
+			if (len > 0) {
+				const list = document.getElementById("manage_classes_list");
+				list.innerHTML = ""; // clear anything inside of it
+
+				let newElement;
+
+				for (let i = 0; i < len; i++) {
+					newElement = document.createElement("li");
+					newElement.innerHTML = generateClassElementHTML(classList[i]);
+					list.appendChild(newElement);
+				}
+			}
+		}
+
+		$.ajax({
+            url: "./class_element.html",
+            async: true,
+            success: initClassElementTemplate,
+			error: function(xhr, ajaxOptions, thrownError) {
+				printer("Could not load intro statement.");
+			}
+        });
+
+		document.addEventListener("DOMContentLoaded", function(event) {
+			if (loginManager.isProfessor()) {
+				profCommands.getClassList(initClassList, printer);
+			}
+		});
+	})();
 </script>
