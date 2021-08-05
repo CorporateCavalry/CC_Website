@@ -35,6 +35,21 @@ $button-press-color: #9F9F9F;
 
 $text-hover-brightness: 50%;
 
+$class-element-field-height: 48px;
+$class-element-field-border-thickness: 3px;
+$class-element-field-border-color: black;
+$class-element-field-text-color: black;
+$class-element-hover-background-color: #D0D0D0;
+$class-element-press-background-color: #ADADAD;
+
+$group-icon-size: 48px;
+
+$status-icon-size: 16px;
+$status-color-unstarted: #939393;
+$status-color-started: #0085FF;
+$status-color-completed: #00E517;
+$status-color-expired: #FF0000;
+
 $alert-icon-size: 32px;
 $alert-error-color: #FF0000;
 $alert-warning-color: #FFB800;
@@ -468,6 +483,71 @@ p {
 }
 .button:active {
   background-color: $button-press-color;
+}
+
+/* CLASS LIST ELEMENTS */
+.class-element-list {
+  li:hover {
+    background-color: $class-element-hover-background-color;
+  }
+  li:active {
+    background-color: $class-element-press-background-color;
+  }
+  li {
+    margin-bottom: $standard-margin;
+    padding: 8px;
+    width: 100%;
+    height: $class-element-field-height;
+    border-width: $class-element-field-border-thickness;
+    border-radius: $corner-radius;
+    font-size: $small-font-size;
+    color: $class-element-field-text-color;
+    border-color: $class-element-field-border-color;
+    border-style: solid;
+
+    .class-element-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      height: 100%;
+
+      h1 {
+        margin: 8px;
+      }
+
+      .student-count {
+        display: flex;
+        align-items: center;
+        img {
+          height: $group-icon-size;
+          width: $group-icon-size;
+        }
+      }
+    }
+  }
+}
+
+.class-status {
+  display: flex;
+  align-items: center;
+  img {
+    height: $status-icon-size;
+    width: $status-icon-size;
+  }
+  .status-message-unstarted {
+    color: $status-color-unstarted;
+  }
+  .status-message-started {
+    color: $status-color-started;
+  }
+  .status-message-completed {
+    color: $status-color-completed;
+  }
+  .status-message-expired {
+    color: $status-color-expired;
+  }
 }
 
 /* ALERTS */

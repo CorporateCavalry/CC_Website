@@ -1,11 +1,8 @@
-<div class="prof_logged_in">
-	<div class="section-header">Manage Classes</div>
-	<ul id="manage_classes_list" class="class-element-list">
-	</ul>
-	{% include alert-message.html id="manage_classes" type="error" %}
-
-	{% include button.html label="Create New" id="goto_create_class" function="goToCreateNewClass" %}
-</div>
+<div class="section-header">Manage Classes</div>
+<ul id="manage_classes_list" class="class-element-list">
+</ul>
+{% include alert-message.html id="manage_classes" type="error" %}
+{% include button.html label="Create New" id="goto_create_class" function="goToCreateNewClass" %}
 
 <script>
 	function goToCreateNewClass() {
