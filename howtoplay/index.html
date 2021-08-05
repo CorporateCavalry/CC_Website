@@ -2,8 +2,46 @@
 layout: default
 title: How to Play
 ---
-<div class="home-page">
+<div class="narrow-page">
 	<div class="section">
-		<p>how to play</p>
+		<div class="section-header">How to Play</div>
+		{% capture my_include %}{% include how-to-play-text.md %}{% endcapture %}
+		{{ my_include | markdownify }}
+	</div>
+	<div class="section">
+		<ul class="where-to-play-list">
+			<li>
+				<h1>Play on Mobile (reccomended)</h1>
+			</li>
+			<li>
+				<ul class="where-to-play-list-mobile">
+					<li>
+						{% include button.html function="onIOSAppStoreButtonPressed" id="download_for_iOS" label="Download for iOS" %}
+					</li>
+					<li class="hidden-divider">
+					<li>
+						{% include button.html function="onGooglePlayStoreButtonPressed" id="download_for_android" label="Download for Android" %}
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h1>or</h1>
+			</li>
+			<li>
+				{% include button.html function="onPlayOnlinePressed" id="play_online" label="Play Online" %}
+			</li>
+		</ul>
 	</div>
 </div>
+
+<script>
+	function onIOSAppStoreButtonPressed() {
+		goToPageSafe("/");
+	}
+	function onGooglePlayStoreButtonPressed() {
+		goToPageSafe("/");
+	}
+	function onPlayOnlinePressed() {
+		goToPageSafe("/play");
+	}
+</script>
