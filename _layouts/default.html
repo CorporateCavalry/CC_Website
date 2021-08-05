@@ -20,31 +20,31 @@
 			<script>
 				function loginRefresh() {
 					if (loginManager.isProfessor()) {
-						$(".prof_logged_in").css("display", "");
-						$(".student_logged_in").css("display", "none");
-						$(".student_has_class").css("display", "none");
+						$(".prof-logged-in").css("display", "");
+						$(".student-logged-in").css("display", "none");
+						$(".student-has-class").css("display", "none");
 
-						$(".logged_out").css("display", "none");
-						$(".logged_in").css("display", "");
+						$(".logged-out").css("display", "none");
+						$(".logged-in").css("display", "");
 					} else if (loginManager.isStudent()) {
-						$(".prof_logged_in").css("display", "none");
-						$(".student_logged_in").css("display", "");
+						$(".prof-logged-in").css("display", "none");
+						$(".student-logged-in").css("display", "");
 
 						if (loginManager.hasProperty("ClassCode")) { // in a class
-							$(".student_has_class").css("display", "");
+							$(".student-has-class").css("display", "");
 						} else { // not in a class
-							$(".student_has_class").css("display", "none");
+							$(".student-has-class").css("display", "none");
 						}
 
-						$(".logged_out").css("display", "none");
-						$(".logged_in").css("display", "");
+						$(".logged-out").css("display", "none");
+						$(".logged-in").css("display", "");
 					} else {
-						$(".prof_logged_in").css("display", "none");
-						$(".student_logged_in").css("display", "none");
-						$(".student_has_class").css("display", "none");
+						$(".prof-logged-in").css("display", "none");
+						$(".student-logged-in").css("display", "none");
+						$(".student-has-class").css("display", "none");
 
-						$(".logged_out").css("display", "");
-						$(".logged_in").css("display", "none");
+						$(".logged-out").css("display", "");
+						$(".logged-in").css("display", "none");
 					}
 				}
 
