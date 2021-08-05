@@ -18,88 +18,150 @@
 </div>
 
 <script>
-	(function(){
-		let formName = "create_class";
+	createClassHelpers = function(){
+		const formName = "create_class";
 
-		// clear the alert messages
-		clearAlertPrinter(formName + "_warning");
-		clearAlertPrinter(formName + "_error");
+		// called on "start"
+		(function(){
+			// clear the alert messages
+			clearAlertPrinter(formName + "_warning");
+			clearAlertPrinter(formName + "_error");
 
-		// set the default values for start and end date
-		const startDateInput = $("#" + formName + "_start_date");
-		const endDateInput = $("#" + formName + "_end_date");
+			// set the default values for start and end date
+			const startDateInput = $("#" + formName + "_start_date");
+			const endDateInput = $("#" + formName + "_end_date");
 
-		let date = new Date();
-		const todayStr = getWebFormattedDateString(date);
-		startDateInput.attr("value", todayStr); // default value of start date is today
-		startDateInput.attr("min", todayStr);
-		endDateInput.attr("min", todayStr);
+			let date = new Date();
 
-		date.setDate(date.getDate() + 7); // default end date is 1 week away
-		endDateInput.attr("value", getWebFormattedDateString(date));
-	})();
+			date.setDate(date.getDate() + 1);
+			const tomorrowStr = getWebFormattedDateString(date);
+			startDateInput.attr("min", tomorrowStr); // minimum date is tomorrow
+			endDateInput.attr("min", tomorrowStr);
 
-	function parseInputDate(str) {
-		// by default, because there's no timestamp, it treats it as UTC
-		const parsed = new Date(Date.parse(str));
-		// so, use the "UTC" values to generate a new date which is in the correct timezone
-		let utcValDate = new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate(), parsed.getUTCHours(), parsed.getUTCMinutes(), parsed.getUTCSeconds());
-	    // finally, set it to midnight for our current timezone
-		utcValDate.setHours(0, 0, 0, 0);
-		return utcValDate;
+			date.setDate(date.getDate() + 3);
+			startDateInput.attr("value", getWebFormattedDateString(date)); // default value of start date is 3 full days after today
+
+			date.setDate(date.getDate() + 7); // default end date is 1 week away
+			endDateInput.attr("value", getWebFormattedDateString(date));
+
+			// set up listeners for the date input fields
+			startDateInput.on('input', onDatesEdited);
+			endDateInput.on('input', onDatesEdited);
+		})();
+
+		const elements = document.getElementById(formName + "_form").elements;
+		const startDateElement = elements[formName + "_start_date"];
+		const endDateElement = elements[formName + "_end_date"];
+
+		const warningPrinter = getAlertPrinter(formName + "_warning");
+		const errorPrinter = getAlertPrinter(formName + "_error");
+
+		function onDatesEdited() {
+			const startDateStr = startDateElement.value;
+			const endDateStr = endDateElement.value;
+
+			warningPrinter("");
+			errorPrinter("");
+
+			if (isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
+				return;
+			}
+
+			const startDate = parseInputDate(startDateStr);
+			const endDate = parseInputDate(endDateStr);
+
+			let today = new Date();
+
+			if (startDate <= today) {
+				errorPrinter("Start date must be after today!");
+				return;
+			}
+
+			if (endDate <= startDate) {
+				errorPrinter("End date must be after start date!");
+				return;
+			}
+
+			const daysUntilStart = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
+			if (daysUntilStart < 4) {
+				warningPrinter("At least 3 full days is recommended for students to join class.");
+				return;
+			}
+
+			const gameLength = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
+			if (gameLength < 5 || gameLength > 9) {
+				warningPrinter("5 to 9 days is recommended for students to complete the game.");
+				return;
+			}
+		}
+
+		function parseInputDate(str) {
+			// by default, because there's no timestamp, it treats it as UTC
+			const parsed = new Date(Date.parse(str));
+			// so, use the "UTC" values to generate a new date which is in the correct timezone
+			let utcValDate = new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate(), parsed.getUTCHours(), parsed.getUTCMinutes(), parsed.getUTCSeconds());
+		    // finally, set it to midnight for our current timezone
+			utcValDate.setHours(0, 0, 0, 0);
+			return utcValDate;
+		}
+
+		function processCreateClass() {
+			if (profCommands.getIsProcessing()) return;
+
+			const className = elements[formName + "_name"].value;
+			const startDateStr = startDateElement.value;
+			const endDateStr = endDateElement.value;
+
+			if (!isString(className) || !isString(startDateStr) || !isString(endDateStr)) {
+				errorPrinter("Invalid data type.");
+				return;
+			}
+
+			if (isNullOrEmpty(className) || isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
+				errorPrinter("All fields must be filled out!");
+				return;
+			}
+
+			const startDate = parseInputDate(startDateStr);
+			const endDate = parseInputDate(endDateStr);
+
+			let today = new Date();
+
+			if (startDate <= today || endDate <= startDate) {
+				return;
+			}
+
+			const submitButton = $("#button_" + formName);
+			submitButton.prop("disabled", true);
+			errorPrinter("");
+			warningPrinter("");
+
+			profCommands.createClass(
+				getSlidersFormattedDateString(startDate),
+				getSlidersFormattedDateString(endDate),
+				function(classCode) {
+					goToPageSafe("/manageclass/?code=" + classCode);
+				},
+				function(msg) {
+					submitButton.prop("disabled", false);
+					errorPrinter(msg);
+				}
+			);
+		}
+
+		return {
+			onDatesEdited:onDatesEdited,
+			processCreateClass:processCreateClass
+		}
+	}();
+
+
+
+	function onDatesEdited() {
+		createClassHelpers.onDatesEdited();
 	}
 
 	function processCreateClass() {
-		if (profCommands.getIsProcessing()) return;
-
-		let formName = "create_class";
-
-		const elements = document.getElementById(formName + "_form").elements;
-		const className = elements[formName + "_name"].value;
-		const startDateStr = elements[formName + "_start_date"].value;
-		const endDateStr = elements[formName + "_end_date"].value;
-		const printer = getAlertPrinter(formName + "_error");
-
-		if (!isString(className) || !isString(startDateStr) || !isString(endDateStr)) {
-			printer("Invalid data type.");
-			return;
-		}
-
-		if (isNullOrEmpty(className) || (startDateStr) || isNullOrEmpty(endDateStr)) {
-			printer("All fields must be filled out!");
-			return;
-		}
-
-		const startDate = parseInputDate(startDateStr);
-		const endDate = parseInputDate(endDateStr);
-
-		let yesterday = new Date();
-		yesterday.setDate(yesterday.getDate() - 1); // this works apparently even if it goes over a month
-
-		if (startDate <= yesterday) {
-			printer("Start date cannot be before today's date!");
-			return;
-		}
-
-		if (endDate <= startDate) {
-			printer("End date must be after start date!");
-			return;
-		}
-
-		const submitButton = $("#button_" + formName);
-		submitButton.prop("disabled", true);
-		printer("");
-
-		profCommands.createClass(
-			getSlidersFormattedDateString(startDate),
-			getSlidersFormattedDateString(endDate),
-			function(classCode) {
-				goToPageSafe("/manageclass/?code=" + classCode);
-			},
-			function(msg) {
-				submitButton.prop("disabled", false);
-				printer(msg);
-			}
-		);
+		createClassHelpers.processCreateClass();
 	}
 </script>
