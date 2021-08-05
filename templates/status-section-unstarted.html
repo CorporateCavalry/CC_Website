@@ -2,8 +2,10 @@
 ---
 <div class="section">
     <h2>We recommend copying the class invitation below and sending it to your students on Canvas or by email.</h2>
-    {% capture my_include %}{% include intro_statement.md %}{% endcapture %}
-    {% include text-snippet-box.html markdownText=my_include %}
+    <div id="class-invitation-text">
+      {% capture my_include %}{% include_relative intro_statement.md %}{% endcapture %}
+      {% include text-snippet-box.html markdownText=my_include %}
+    </div>
     {% include button.html label="Copy Invitation" id="copy_invitation" function="copyInvitation" %}
     <h2>or</h2>
     <h2>If you wish to write your own statement, make sure it includes the join link found below.</h2>

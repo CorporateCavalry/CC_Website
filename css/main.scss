@@ -682,7 +682,7 @@ form {
   border-radius: $corner-radius;
   border-style: none;
   background-color: $text-snippet-background-color;
-  padding: $standard-margin $standard-margin 0 $standard-margin;
+  padding: $standard-margin $standard-margin 1px $standard-margin;
   margin-bottom: $standard-margin;
 
   body {
