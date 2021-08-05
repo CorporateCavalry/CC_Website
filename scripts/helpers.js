@@ -139,6 +139,10 @@ loginManager = function() {
         return cachedTableKey;
     }
 
+    function getCachedStudentID() {
+        return parseInt(cachedTableKey);
+    }
+
     function getCachedPassword() {
         return cachedPassword;
     }
@@ -150,6 +154,7 @@ loginManager = function() {
         isProfessor:isProfessor,
         isStudent:isStudent,
         getCachedEmail:getCachedEmail,
+        getCachedStudentID:getCachedStudentID,
         getCachedPassword:getCachedPassword
     }
 }();

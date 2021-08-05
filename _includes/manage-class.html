@@ -37,8 +37,6 @@
 			classCommands.initializeClassInfo(curClassData);
 		}
 
-		$("#manage_class_title").html("Manage class: " + classCode);
-
 		$.ajax({
             url: "/templates/intro_statement.md",
             async: true,
@@ -50,7 +48,7 @@
 
 		classCommands.fetchClassData(
 			classCode,
-			["Owner", "Name", "ClassCode", "StartDate", "EndDate", "GroupCount"],
+			classCommands.classInfoAttributes(),
 			initClassData,
 			function(msg) {
 				printer(msg);

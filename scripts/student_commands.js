@@ -97,7 +97,7 @@ studentCommands = function() {
 
         awsManager.get(
             getAccountKey(accountID, ["Password"]),
-            function(data) { // email found
+            function(data) { // account found
                 if (data.hasOwnProperty("Password") && data["Password"] === password) {
                     loginManager.loginAsStudent(accountID, password);
                     completeProcessing();
@@ -106,8 +106,52 @@ studentCommands = function() {
                     onFail("Password is incorrect.");
                 }
             },
-            function() { // email not found
+            function() { // account not found
                 onFail("No account was found with this student ID.");
+            },
+            onFail
+        );
+    }
+
+    function getMyClassData(attributes, onSuccess, onNoClass, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        const onFail = function(msg) {
+            completeProcessing();
+            failPrinter(msg);
+        }
+
+        const accountID = loginManager.getCachedStudentID();
+        const password = loginManager.getCachedPassword();
+
+        awsManager.get(
+            getAccountKey(accountID, ["Password", "ClassCode"]),
+            function(data) { // account found
+                if (data.hasOwnProperty("Password") && data["Password"] === password) { // password correct
+                    if (data.hasOwnProperty("ClassCode") && !isNullOrEmpty(data["ClassCode"])) {
+                        classCommands.fetchClassData(
+                            data["ClassCode"],
+                            attributes,
+                            function (data) {
+                                completeProcessing();
+                                onSuccess(data);
+                            },
+                            onFail
+                        );
+                    } else {
+                        completeProcessing();
+                        onNoClass();
+                    }
+                } else {
+                    onFail("Invalid login credentials");
+                }
+            },
+            function() { // account not found
+                onFail("Invalid login credentials");
             },
             onFail
         );
@@ -125,6 +169,7 @@ studentCommands = function() {
         getIsProcessing:getIsProcessing,
         createAccount:createAccount,
         login:login,
-        getAccount:getAccount
+        getAccount:getAccount,
+        getMyClassData:getMyClassData
     }
 }();

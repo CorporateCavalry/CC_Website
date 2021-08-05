@@ -152,6 +152,10 @@ classCommands = function() {
     }
 
     // helpers for class data parsing
+    function classInfoAttributes() {
+        return ["Owner", "Name", "ClassCode", "StartDate", "EndDate", "GroupCount"];
+    }
+
     function getClassStatus(classData) {
         const today = new Date();
 
@@ -205,6 +209,7 @@ classCommands = function() {
         getClassList:getClassList,
         fetchClassData:fetchClassData,
         getClassStatus:getClassStatus,
+        classInfoAttributes:classInfoAttributes,
         initializeClassInfo:initializeClassInfo,
         hideClassInfo:hideClassInfo
     }
