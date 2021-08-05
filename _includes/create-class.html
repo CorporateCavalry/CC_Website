@@ -1,23 +1,33 @@
 <div class="prof_logged_in">
-	<p>Create a new class</p>
-	<form id="prof_create_class_form">
-		<label for="prof_create_class_start_date">Start Date:</label>
-		<input type="date" name="start_date" id="prof_create_class_start_date" size="50"><br>
-
-		<label for="prof_create_class_end_date">End Date:</label>
-		<input type="date" name="end_date" id="prof_create_class_end_date" size="50"><br>
-
-		<input type="button" onclick="processCreateClass()" value="Create" id="button_prof_create_class">
+	<div class="section-header">Create New Class</div>
+	<form id="create_class_form">
+		<ul class="form-list">
+			{% include form-line.html formName="create_class" inputID="name" inputType="text" placeholder="Class Name (visible to students)" %}
+			<li>
+				<ul class="form-date-range">
+					{% include form-date-line.html formName="create_class" inputID="start_date" %}
+					{% include form-date-line.html formName="create_class" inputID="end_date" %}
+				</ul>
+			</li>
+		</ul>
+		{% include button.html function="processCreateClass" label="Create" id="create_class" %}
 	</form>
-	<br>
-	<p id="prof_create_class_printer"></p>
+
+	{% include alert-message.html id="create_class_warning" type="warning" %}
+	{% include alert-message.html id="create_class_error" type="error" %}
 </div>
 
 <script>
-	// set the default values
 	(function(){
-		const startDateInput = $("#prof_create_class_start_date");
-		const endDateInput = $("#prof_create_class_end_date");
+		let formName = "create_class";
+
+		// clear the alert messages
+		clearAlertPrinter(formName + "_warning");
+		clearAlertPrinter(formName + "_error");
+
+		// set the default values for start and end date
+		const startDateInput = $("#" + formName + "_start_date");
+		const endDateInput = $("#" + formName + "_end_date");
 
 		let date = new Date();
 		const todayStr = getWebFormattedDateString(date);
@@ -42,17 +52,20 @@
 	function processCreateClass() {
 		if (profCommands.getIsProcessing()) return;
 
-		const elements = document.getElementById("prof_create_class_form").elements;
-		const startDateStr = elements["start_date"].value;
-		const endDateStr = elements["end_date"].value;
-		const printer = getHtmlPrinter("prof_create_class_printer");
+		let formName = "create_class";
 
-		if (!isString(startDateStr) || !isString(endDateStr)) {
+		const elements = document.getElementById(formName + "_form").elements;
+		const className = elements[formName + "_name"].value;
+		const startDateStr = elements[formName + "_start_date"].value;
+		const endDateStr = elements[formName + "_end_date"].value;
+		const printer = getAlertPrinter(formName + "_error");
+
+		if (!isString(className) || !isString(startDateStr) || !isString(endDateStr)) {
 			printer("Invalid data type.");
 			return;
 		}
 
-		if (isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
+		if (isNullOrEmpty(className) || (startDateStr) || isNullOrEmpty(endDateStr)) {
 			printer("All fields must be filled out!");
 			return;
 		}
@@ -73,7 +86,7 @@
 			return;
 		}
 
-		const submitButton = $("#button_prof_create_class");
+		const submitButton = $("#button_" + formName);
 		submitButton.prop("disabled", true);
 		printer("");
 
