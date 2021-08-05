@@ -1,0 +1,61 @@
+{% include alert-message.html id="my_class" type="warning" %}
+{% include class-info.html %}
+
+<script>
+	(function() {
+		let printer = getAlertPrinter("my_class");
+		printer("");
+
+		let classCode = "YAPE"
+
+		if (isNullOrEmpty(classCode)) {
+			goToPageSafe("/");
+			return;
+		}
+
+		let curClassData = null;
+		let curTemplateData = null;
+
+		function generateIntroStatement() {
+			let formattedStartDate = getShortFormattedDateString(parseSlidersDateString(curClassData["StartDate"]));
+			let text = curTemplateData.replaceAll("[start_date]", formattedStartDate);
+			let homepage = document.location.origin;
+			text = text.replaceAll("[url_join_page]", homepage + "/join?code=" + classCode);
+			text = text.replaceAll("[url_home_page]", homepage + "/");
+			console.log(text);
+		}
+
+		function initTemplate(template) {
+			curTemplateData = getHtmlSafeText(template);
+			if (curClassData !== null) generateIntroStatement();
+		}
+
+		function initClassData(data) {
+			curClassData = data;
+			if (curTemplateData !== null) generateIntroStatement();
+
+			classCommands.initializeClassInfo(curClassData);
+		}
+
+		$("#manage_class_title").html("Manage class: " + classCode);
+
+		$.ajax({
+            url: "/templates/intro_statement.md",
+            async: true,
+            success: initTemplate,
+			error: function(xhr, ajaxOptions, thrownError) {
+				printer("Could not load intro statement.");
+			}
+        });
+
+		classCommands.fetchClassData(
+			classCode,
+			["Owner", "Name", "ClassCode", "StartDate", "EndDate", "GroupCount"],
+			initClassData,
+			function(msg) {
+				printer(msg);
+				classCommands.hideClassInfo();
+			}
+		);
+	})();
+</script>
