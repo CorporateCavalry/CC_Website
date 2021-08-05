@@ -16,8 +16,18 @@ profCommands = function() {
     }
 
     function validateLogin(getAll, onValid, onInvalid, printer) {
-        let cachedEmail = loginManager.getCachedEmail();
-        let cachedPassword = loginManager.getCachedPassword();
+        if (!loginManager.isProfessor()) {
+            onInvalid();
+            return;
+        }
+
+        if (!loginManager.hasProperty("Email") || !loginManager.hasProperty("Password")) {
+            onInvalid();
+            return;
+        }
+
+        let cachedEmail = loginManager.getProperty("Email");
+        let cachedPassword = loginManager.getProperty("Password");
 
         if (isNullOrEmpty(cachedEmail) || isNullOrEmpty(cachedPassword)) {
             onInvalid();
@@ -40,7 +50,7 @@ profCommands = function() {
         );
     }
 
-    function createAccount(email, password, onSuccess, failPrinter) {
+    function createAccount(email, password, name, onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -58,18 +68,20 @@ profCommands = function() {
                 onFail("This email is already taken!");
             },
             function() { // account available
+                const data = {
+                    "Email": email,
+                    "Password": password,
+                    "Name": name
+                }
                 const putParams = {
                     TableName: PROF_TABLE_NAME,
-                    Item: {
-                        "Email": email,
-                        "Password": password
-                    }
+                    Item: data
                 };
 
                 awsManager.put(
                     putParams,
                     function() { // success
-                        loginManager.loginAsProfessor(email, password);
+                        loginManager.loginAsProfessor(data);
                         completeProcessing();
                         onSuccess();
                     },
@@ -93,10 +105,10 @@ profCommands = function() {
         }
 
         awsManager.get(
-            getProfKey(email, ["Password"]),
+            getProfKey(email, loginManager.getProfCachedAttributes()),
             function(data) { // email found
                 if (data["Password"] === password) {
-                    loginManager.loginAsProfessor(email, password);
+                    loginManager.loginAsProfessor(data);
                     completeProcessing();
                     onSuccess();
                 } else {
@@ -125,17 +137,15 @@ profCommands = function() {
         validateLogin(
             false,
             function(profData) {
-                let email = profData["Email"];
-
                 classCommands.createClass(
-                    email,
+                    loginManager.getProperty("Name"),
                     className,
                     startDate,
                     endDate,
                     function(classCode) {
                         const updateParams = {
                             TableName: PROF_TABLE_NAME,
-                            Key: { "Email": email },
+                            Key: { "Email": profData["Email"] },
                             UpdateExpression: "set Classes = list_append(if_not_exists(Classes, :emptyList), :newClass)",
                             ExpressionAttributeValues: { ":emptyList": [], ":newClass": [ classCode ] }
                         }

@@ -20,16 +20,17 @@
 
 		const elements = document.getElementById(formName + "_form").elements;
 		const email = elements[formName + "_email"].value;
+		const name = elements[formName + "_name"].value;
 		const password = elements[formName + "_password"].value;
 		const confirm = elements[formName + "_confirm_password"].value;
 		const printer = getAlertPrinter(formName);
 
-		if (!isString(email) || !isString(password) || !isString(confirm)) {
+		if (!isString(email) || !isString(name) || !isString(password) || !isString(confirm)) {
 			printer("Invalid data type.");
 			return;
 		}
 
-		if (isNullOrEmpty(email) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
+		if (isNullOrEmpty(email) || isNullOrEmpty(name) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
 			printer("All fields must be filled out!");
 			return;
 		}
@@ -53,6 +54,6 @@
 			printer(msg);
 		}
 
-		profCommands.createAccount(email, password, getPageRedirector("/manageclasses"), onComplete);
+		profCommands.createAccount(email, password, name, getPageRedirector("/manageclasses"), onComplete);
 	}
 </script>

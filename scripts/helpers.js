@@ -36,15 +36,7 @@ function printError(err, printer) {
 
 function isNullOrEmpty(str) { return !str || str === ""; }
 function isString(obj) { return typeof obj === 'string' || obj instanceof String; }
-
-function loadStringFromStorage(key) {
-    var val = localStorage.getItem(key);
-    if (isString(val)) {
-        return val;
-    }
-
-    return "";
-}
+function isInt(obj) { return obj === parseInt(obj, 10); }
 
 function getHtmlSafeText(text) {
     return $('<span>').text(text).html();
@@ -90,61 +82,99 @@ function getShortFormattedDateString(date) {
 
 // login caching
 loginManager = function() {
-    const CACHED_TABLE_KEY_KEY = "table_key";
-    const CACHED_PASSWORD_KEY = "password";
-    const LOGIN_KEY_TYPE_KEY = "login_type";
-    let cachedTableKey = loadStringFromStorage(CACHED_TABLE_KEY_KEY);
-    let cachedPassword = loadStringFromStorage(CACHED_PASSWORD_KEY);
-    let cachedLoginType = loadStringFromStorage(LOGIN_KEY_TYPE_KEY);
+    const CACHED_LOGIN_KEY = "login_data";
+    const LOGIN_TYPE_KEY = "LoginType";
+
+    function loadStringFromStorage(key) {
+        const val = localStorage.getItem(key);
+        if (isString(val)) {
+            return val;
+        }
+
+        return "";
+    }
+
+    function loadJSONFromStorage(key) {
+        const val = loadStringFromStorage(key);
+        if (!isNullOrEmpty(val)) {
+            try {
+                return JSON.parse(val);
+            } catch (e) {
+                // invalid JSON
+                return {};
+            }
+        }
+
+        return {};
+    }
+
+    let cachedLoginData = loadJSONFromStorage(CACHED_LOGIN_KEY);
 
     const PROF_LOGIN_KEY_TYPE = "p";
     const STUDENT_LOGIN_KEY_TYPE = "s";
 
-    function loginAsProfessor(email, password) {
-        cacheLogin(email, password, PROF_LOGIN_KEY_TYPE);
+    function getProfCachedAttributes() {
+        return ["Email", "Password", "Name"];
     }
 
-    function loginAsStudent(accountID, password) {
-        cacheLogin(new String(accountID), password, STUDENT_LOGIN_KEY_TYPE);
+    function getStudentCachedAttributes() {
+        return ["AccountID", "Password", "Name", "ClassCode"];
     }
 
-    function cacheLogin(tableKey, password, loginType) {
-        cachedTableKey = tableKey;
-        localStorage.setItem(CACHED_TABLE_KEY_KEY, tableKey);
+    function loginAsProfessor(profData) {
+        cacheLogin(
+            profData,
+            getProfCachedAttributes(),
+            PROF_LOGIN_KEY_TYPE
+        );
+    }
 
-        cachedPassword = password;
-        localStorage.setItem(CACHED_PASSWORD_KEY, password);
+    function loginAsStudent(studentData) {
+        cacheLogin(
+            studentData,
+            getStudentCachedAttributes(),
+            STUDENT_LOGIN_KEY_TYPE
+        );
+    }
 
-        cachedLoginType = loginType;
-        localStorage.setItem(LOGIN_KEY_TYPE_KEY, loginType);
+    function cacheLogin(data, attributes, type) {
+        cachedLoginData = {};
+        const length = attributes.length;
+        let attribute;
+        for (let i = 0; i < length; i++) {
+            attribute = attributes[i];
+            if (data.hasOwnProperty(attribute)) {
+                cachedLoginData[attribute] = data[attribute];
+            }
+        }
+
+        cachedLoginData[LOGIN_TYPE_KEY] = type;
+        localStorage.setItem(CACHED_LOGIN_KEY, JSON.stringify(cachedLoginData));
     }
 
     function logout(onComplete) {
         if (profCommands.getIsProcessing()) return;
         if (studentCommands.getIsProcessing()) return;
 
-        cacheLogin("", "", "");
+        cachedLoginData = {};
+        localStorage.setItem(CACHED_LOGIN_KEY, "");
         onComplete();
     }
 
     function isProfessor() {
-        return cachedLoginType === PROF_LOGIN_KEY_TYPE;
+        return cachedLoginData.hasOwnProperty(LOGIN_TYPE_KEY) && cachedLoginData[LOGIN_TYPE_KEY] === PROF_LOGIN_KEY_TYPE;
     }
 
     function isStudent() {
-        return cachedLoginType === STUDENT_LOGIN_KEY_TYPE;
+        return cachedLoginData.hasOwnProperty(LOGIN_TYPE_KEY) && cachedLoginData[LOGIN_TYPE_KEY] === STUDENT_LOGIN_KEY_TYPE;
     }
 
-    function getCachedEmail() {
-        return cachedTableKey;
+    function hasProperty(key) {
+        return cachedLoginData.hasOwnProperty(key);
     }
 
-    function getCachedStudentID() {
-        return parseInt(cachedTableKey);
-    }
-
-    function getCachedPassword() {
-        return cachedPassword;
+    function getProperty(key) {
+        return cachedLoginData[key];
     }
 
     return {
@@ -153,8 +183,9 @@ loginManager = function() {
         logout:logout,
         isProfessor:isProfessor,
         isStudent:isStudent,
-        getCachedEmail:getCachedEmail,
-        getCachedStudentID:getCachedStudentID,
-        getCachedPassword:getCachedPassword
+        hasProperty:hasProperty,
+        getProperty:getProperty,
+        getProfCachedAttributes:getProfCachedAttributes,
+        getStudentCachedAttributes:getStudentCachedAttributes
     }
 }();

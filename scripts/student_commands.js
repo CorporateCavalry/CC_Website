@@ -2,8 +2,6 @@ studentCommands = function() {
     const ACCT_TABLE_NAME = "Accounts";
     const CACHED_LOGIN_KEY = "student_login";
 
-    let cachedLogin = loadStringFromStorage(CACHED_LOGIN_KEY);
-
     let isProcessing = false;
 
     function getAccountKey(id, attributes) {
@@ -19,22 +17,41 @@ studentCommands = function() {
     }
 
     function getAccount(accountID) {
-        // let returnStr = "Error";
-        // let params = {
-        //     TableName: "Accounts",
-        //     Key: { "AccountID": accountID }
-        // };
+    }
 
-        // awsManager.get(params, function (err, data) {
-        //     if (err) {
-        //         returnStr = "Error:" + JSON.stringify(err, undefined, 2);
-        //         console.log(returnStr)
-        //     } else {
-        //         console.log(data["Item"]["Name"])
-        //         returnStr = "Data Found:" + JSON.stringify(data, undefined, 2);
-        //         console.log(returnStr)
-        //     }
-        // });
+    function validateLogin(getAll, onValid, onInvalid, printer) {
+        if (!loginManager.isStudent()) {
+            onInvalid();
+            return;
+        }
+
+        if (!loginManager.hasProperty("AccountID") || !loginManager.hasProperty("Password")) {
+            onInvalid();
+            return;
+        }
+
+        let cachedAccountID = loginManager.getProperty("AccountID");
+        let cachedPassword = loginManager.getProperty("Password");
+
+        if (!isInt(cachedAccountID) || isNullOrEmpty(cachedPassword)) {
+            onInvalid();
+            return;
+        }
+
+        let params = getAll ? getAccountKeyAll(cachedAccountID) : getAccountKey(cachedAccountID, ["AccountID", "Password"]);
+
+        awsManager.get(
+            params,
+            function(data) {
+                if (data.hasOwnProperty("Password") && data["Password"] === cachedPassword) {
+                    onValid(data);
+                } else {
+                    onInvalid();
+                }
+            },
+            onInvalid,
+            printer
+        );
     }
 
     function createAccount(accountID, username, password, onSuccess, failPrinter) {
@@ -55,20 +72,22 @@ studentCommands = function() {
                 onFail("An account for this ID already exists!");
             },
             function() { // account available
+                const data = {
+                    "AccountID": accountID,
+                    "Name": username,
+                    "Password": password,
+                    "GroupID": -1
+                };
+
                 const putParams = {
                     TableName: ACCT_TABLE_NAME,
-                    Item: {
-                        "AccountID": accountID,
-                        "Name": username,
-                        "Password": password,
-                        "GroupID": -1
-                    }
+                    Item: data
                 };
 
                 awsManager.put(
                     putParams,
                     function() { // on success
-                        loginManager.loginAsStudent(accountID, password);
+                        loginManager.loginAsStudent(data);
                         completeProcessing();
                         onSuccess();
                     },
@@ -96,10 +115,10 @@ studentCommands = function() {
         }
 
         awsManager.get(
-            getAccountKey(accountID, ["Password"]),
+            getAccountKey(accountID, loginManager.getStudentCachedAttributes()),
             function(data) { // account found
                 if (data.hasOwnProperty("Password") && data["Password"] === password) {
-                    loginManager.loginAsStudent(accountID, password);
+                    loginManager.loginAsStudent(data);
                     completeProcessing();
                     onSuccess();
                 } else {
@@ -125,32 +144,26 @@ studentCommands = function() {
             failPrinter(msg);
         }
 
-        const accountID = loginManager.getCachedStudentID();
-        const password = loginManager.getCachedPassword();
+        if (!loginManager.hasProperty("ClassCode")) {
+            completeProcessing();
+            onNoClass();
+            return;
+        }
 
-        awsManager.get(
-            getAccountKey(accountID, ["Password", "ClassCode"]),
-            function(data) { // account found
-                if (data.hasOwnProperty("Password") && data["Password"] === password) { // password correct
-                    if (data.hasOwnProperty("ClassCode") && !isNullOrEmpty(data["ClassCode"])) {
-                        classCommands.fetchClassData(
-                            data["ClassCode"],
-                            attributes,
-                            function (data) {
-                                completeProcessing();
-                                onSuccess(data);
-                            },
-                            onFail
-                        );
-                    } else {
+        validateLogin(
+            false,
+            function(data) { // valid login
+                classCommands.fetchClassData(
+                    loginManager.getProperty("ClassCode"),
+                    attributes,
+                    function (data) {
                         completeProcessing();
-                        onNoClass();
-                    }
-                } else {
-                    onFail("Invalid login credentials");
-                }
+                        onSuccess(data);
+                    },
+                    onFail
+                );
             },
-            function() { // account not found
+            function() { // invalid login
                 onFail("Invalid login credentials");
             },
             onFail
