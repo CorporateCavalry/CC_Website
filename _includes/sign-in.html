@@ -22,11 +22,6 @@
 		const password = elements[formName + "_password"].value;
 		const printer = getAlertPrinter(formName);
 
-		if (!isString(accountKey) || !isString(password)) {
-			printer("Invalid data type.");
-			return;
-		}
-
 		if (isNullOrEmpty(accountKey) || isNullOrEmpty(password)) {
 			printer("All fields must be filled out!");
 			return;

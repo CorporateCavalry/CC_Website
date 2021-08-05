@@ -25,11 +25,6 @@
 		const confirm = elements[formName + "_confirm_password"].value;
 		const printer = getAlertPrinter(formName);
 
-		if (!isString(email) || !isString(name) || !isString(password) || !isString(confirm)) {
-			printer("Invalid data type.");
-			return;
-		}
-
 		if (isNullOrEmpty(email) || isNullOrEmpty(name) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
 			printer("All fields must be filled out!");
 			return;

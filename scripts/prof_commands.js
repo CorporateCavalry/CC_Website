@@ -51,6 +51,11 @@ profCommands = function() {
     }
 
     function createAccount(email, password, name, onSuccess, failPrinter) {
+        if (!isString(email) || !isString(password) || !isString(name)) {
+			logError("Invalid data type", failPrinter);
+			return;
+		}
+
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -93,6 +98,11 @@ profCommands = function() {
     }
 
     function login(email, password, onSuccess, failPrinter) {
+        if (!isString(email) || !isString(password)) {
+            logError("Invalid data type", failPrinter);
+			return;
+		}
+
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -123,6 +133,11 @@ profCommands = function() {
     }
 
     function createClass(className, startDate, endDate, onSuccess, failPrinter) {
+        if (!isString(className) || !isString(startDate) || !isString(endDate)) {
+            logError("Invalid data type", failPrinter);
+			return;
+		}
+
         if (isProcessing) {
             printBusy(failPrinter);
             return;

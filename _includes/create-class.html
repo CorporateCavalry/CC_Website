@@ -110,11 +110,6 @@
 			const startDateStr = startDateElement.value;
 			const endDateStr = endDateElement.value;
 
-			if (!isString(className) || !isString(startDateStr) || !isString(endDateStr)) {
-				errorPrinter("Invalid data type.");
-				return;
-			}
-
 			if (isNullOrEmpty(className) || isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
 				errorPrinter("All fields must be filled out!");
 				return;

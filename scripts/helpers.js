@@ -29,7 +29,7 @@ function getURLClassCode() {
     return new URLSearchParams(window.location.search).get('code');
 }
 
-function printError(err, printer) {
+function logError(err, printer) {
     printer("Unexpected error: See console for details.");
     console.log("Error: " + JSON.stringify(err, undefined, 2));
 }

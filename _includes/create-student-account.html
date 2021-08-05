@@ -25,11 +25,6 @@
 		const confirm = elements[formName + "_confirm_password"].value;
 		const printer = getAlertPrinter(formName);
 
-		if (!isString(name) || !isString(password) || !isString(confirm)) {
-			printer("Invalid data type.");
-			return;
-		}
-
 		if (isNaN(accountID)) {
 			printer("Please enter a valid Student ID");
 			return;
