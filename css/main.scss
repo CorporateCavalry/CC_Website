@@ -43,7 +43,7 @@ $class-element-field-text-color: black;
 $class-element-hover-background-color: #D0D0D0;
 $class-element-press-background-color: #ADADAD;
 
-$group-icon-size: 48px;
+$group-icon-size: 28px;
 
 $status-icon-size: 16px;
 $status-color-unstarted: #939393;
@@ -558,6 +558,9 @@ p {
 .student-count {
   display: flex;
   align-items: center;
+  margin-left: $standard-margin;
+  margin-right: $standard-margin;
+
   h1 {
     margin: 8px;
   }
@@ -584,9 +587,18 @@ p {
   }
 }
 
+.class-element-title {
+  flex-grow: 0;
+  h1 {
+    text-align: left;
+  }
+}
+
 .class-status {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex-grow: 1;
   h1 {
     margin: 8px;
   }
