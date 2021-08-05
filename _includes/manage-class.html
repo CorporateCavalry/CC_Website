@@ -1,10 +1,13 @@
 <div class="prof_logged_in">
-	<div id="manage_class_title"></div>
-	<p id="manage_class_log"></p>
+	{% include alert-message.html id="manage_class" type="warning" %}
+	{% include class-info.html %}
 </div>
 
 <script>
 	(function() {
+		let printer = getAlertPrinter("manage_class");
+		printer("");
+
 		let classCode = getURLClassCode();
 
 		if (isNullOrEmpty(classCode)) {
@@ -12,12 +15,12 @@
 			return;
 		}
 
-		let classData = null;
-		let templateData = null;
+		let curClassData = null;
+		let curTemplateData = null;
 
 		function generateIntroStatement() {
-			let formattedStartDate = getShortFormattedDateString(parseSlidersDateString(classData["StartDate"]));
-			let text = templateData.replaceAll("[start_date]", formattedStartDate);
+			let formattedStartDate = getShortFormattedDateString(parseSlidersDateString(curClassData["StartDate"]));
+			let text = curTemplateData.replaceAll("[start_date]", formattedStartDate);
 			let homepage = document.location.origin;
 			text = text.replaceAll("[url_join_page]", homepage + "/join?code=" + classCode);
 			text = text.replaceAll("[url_home_page]", homepage + "/");
@@ -25,20 +28,21 @@
 		}
 
 		function initTemplate(template) {
-			templateData = getHtmlSafeText(template);
-			if (classData !== null) generateIntroStatement();
+			curTemplateData = getHtmlSafeText(template);
+			if (curClassData !== null) generateIntroStatement();
 		}
 
 		function initClassData(data) {
-			classData = data;
-			if (templateData !== null) generateIntroStatement();
+			curClassData = data;
+			if (curTemplateData !== null) generateIntroStatement();
+
+			classCommands.initializeClassInfo(curClassData);
 		}
 
 		$("#manage_class_title").html("Manage class: " + classCode);
-		let printer = getHtmlPrinter("manage_class_log");
 
 		$.ajax({
-            url: "./intro_statement.md",
+            url: "/templates/intro_statement.md",
             async: true,
             success: initTemplate,
 			error: function(xhr, ajaxOptions, thrownError) {
@@ -48,9 +52,12 @@
 
 		classCommands.fetchClassData(
 			classCode,
-			["ClassCode", "StartDate", "EndDate", "GroupCount"],
+			["Owner", "ClassCode", "StartDate", "EndDate", "GroupCount"],
 			initClassData,
-			printer
+			function(msg) {
+				printer(msg);
+				classCommands.hideClassInfo();
+			}
 		);
 	})();
 </script>

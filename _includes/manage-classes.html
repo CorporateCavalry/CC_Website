@@ -36,33 +36,15 @@
 		}
 
 		function displayClassData() {
-			const today = new Date();
-
 			const generateClassElementHTML = function(classData) {
-				let code = classData["ClassCode"];
-				let status;
-				let statusMessage = "";
-
-				let startDate = parseSlidersDateString(classData["StartDate"]);
-				if (today < startDate) {
-					status = "unstarted";
-					statusMessage = "Unstarted: Starts " + getShortFormattedDateString(startDate);
-				} else {
-					let endDate = parseSlidersDateString(classData["EndDate"]);
-					if (today < endDate) {
-						status = "started";
-						statusMessage = "Started: Ends " + getShortFormattedDateString(endDate);
-					} else {
-						status = "completed";
-						statusMessage = "Completed"
-					}
-				}
+				const code = classData["ClassCode"];
+				const statusData = classCommands.getClassStatus(classData);
 
 				let html = classElementTemplate;
 				html = html.replaceAll("[code]", code);
-				html = html.replaceAll("[status]", status);
+				html = html.replaceAll("[status]", statusData["Status"]);
 				html = html.replaceAll("[studentCount]", "x"); //TODO: replace with student count
-				html = html.replaceAll("[statusMessage]", statusMessage);
+				html = html.replaceAll("[statusMessage]", statusData["Message"]);
 
 				return html;
 			}
@@ -83,7 +65,7 @@
 		}
 
 		$.ajax({
-            url: "./class_element.html",
+            url: "/templates/class_element.html",
             async: true,
             success: initClassElementTemplate,
 			error: function(xhr, ajaxOptions, thrownError) {

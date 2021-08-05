@@ -150,10 +150,61 @@ classCommands = function() {
         return isProcessing;
     }
 
+    // helpers for class data parsing
+    function getClassStatus(classData) {
+        const today = new Date();
+
+        let startDate = parseSlidersDateString(classData["StartDate"]);
+        if (today < startDate) {
+            return {
+                "Status": "unstarted",
+                "Message": "Unstarted: Starts " + getShortFormattedDateString(startDate)
+            };
+        } else {
+            let endDate = parseSlidersDateString(classData["EndDate"]);
+            if (today < endDate) {
+                return {
+                    "Status": "started",
+                    "Message": "Started: Ends " + getShortFormattedDateString(endDate)
+                };
+            } else {
+                return {
+                    "Status": "completed",
+                    "Message": "Completed"
+                };
+            }
+        }
+    }
+
+    function initializeClassInfo(classData) {
+        $(".class-info").css("display", "");
+        $(".class-title-text").text(classData["Owner"] + "'s [class name] Class (" + classData["ClassCode"] + ")");
+        $(".student-count-text").text(classData["GroupCount"]); //TODO: use student count
+        $(".class-date-range").text(
+            getShortFormattedDateString(parseSlidersDateString(classData["StartDate"])) +
+            " - " +
+            getShortFormattedDateString(parseSlidersDateString(classData["EndDate"]))
+        );
+
+        const statusData = getClassStatus(classData);
+        const statusMessageElement = $(".status-message");
+        statusMessageElement.addClass("status-message-" + statusData["Status"]);
+        statusMessageElement.removeClass("status-message");
+        statusMessageElement.text(statusData["Message"]);
+        $(".status-icon").attr("src", "/assets/statusIcon-" + statusData["Status"] + ".png");
+    }
+
+    function hideClassInfo() {
+        $(".class-info").css("display", "none");
+    }
+
     return {
         getIsProcessing:getIsProcessing,
         createClass:createClass,
         getClassList:getClassList,
-        fetchClassData:fetchClassData
+        fetchClassData:fetchClassData,
+        getClassStatus:getClassStatus,
+        initializeClassInfo:initializeClassInfo,
+        hideClassInfo:hideClassInfo
     }
 }();

@@ -1,0 +1,21 @@
+<ul class="class-info">
+    <li class="class-title">
+        <h1 class="class-title-text"></h1>
+    </li>
+    <li>
+        <ul class="class-details">
+            <li class="class-date-range">
+            </li>
+            <li class="student-count">
+                <img src="/assets/studentCountIcon.png">
+                <h1 class="student-count-text"></h1>
+            </li>
+        </ul>
+    </li>
+    {% if include.hideStatus != "true" %}
+        <li class="class-status">
+            <img class="status-icon" src="/assets/statusIcon-[status].png">
+            <h1 class="status-message"></h1>
+        </li>
+    {% endif %}
+</ul>
