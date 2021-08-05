@@ -35,6 +35,10 @@ $button-press-color: #9F9F9F;
 
 $text-hover-brightness: 50%;
 
+$alert-icon-size: 32px;
+$alert-error-color: #FF0000;
+$alert-warning-color: #FFB800;
+
 /* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
    License: none (public domain)
@@ -322,21 +326,6 @@ p {
 
   font-size: $large-font-size;
   font-weight: $large-font-weight;
-
-  .section-title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    a {
-      color: black;
-      font-size: $large-font-size;
-      margin: 0em 1em;
-      font-weight: 600;
-      white-space: nowrap;
-      text-transform: uppercase;
-    }
-  }
 }
 .inverted {
   background-color: #000;
@@ -479,6 +468,33 @@ p {
 }
 .button:active {
   background-color: $button-press-color;
+}
+
+/* ALERTS */
+.alert-message {
+  padding: $standard-margin;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+
+  .alert-error-message {
+    color: $alert-error-color;
+  }
+  .alert-warning-message {
+    color: $alert-warning-color;
+  }
+
+  h2 {
+    margin: 0;
+    padding: 8px;
+  }
+
+  img {
+    width: $alert-icon-size;
+    height: $alert-icon-size;
+  }
 }
 
 /* CODE SNIPPETS */
