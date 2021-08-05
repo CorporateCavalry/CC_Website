@@ -183,7 +183,11 @@ classCommands = function() {
 
     function initializeClassInfo(classData) {
         $(".class-info").css("display", "");
-        $(".class-title-text").text(classData["Owner"] + "'s " + classData["Name"] + " Class (" + classData["ClassCode"] + ")");
+
+        let title = classData["Owner"];
+        title += (title.toLowerCase().charAt(title.length - 1) !== 's') ? "'s " : "' "
+        title += classData["Name"] + " Class (" + classData["ClassCode"] + ")";
+        $(".class-title-text").text(title);
         $(".student-count-text").text(classData["GroupCount"]); //TODO: use student count
         $(".class-date-range").text(
             getShortFormattedDateString(parseSlidersDateString(classData["StartDate"])) +
