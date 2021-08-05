@@ -440,10 +440,11 @@ p {
 .form-date-range {
   display: flex;
   justify-content: space-between;
-  .hidden-divider {
-    width: $standard-margin * 2;
-    flex-grow: 0;
-  }
+}
+
+.hidden-divider {
+  width: $standard-margin * 2;
+  flex-grow: 0;
 }
 
 .form-line {
@@ -527,22 +528,45 @@ p {
       h1 {
         margin: 8px;
       }
-
-      .student-count {
-        display: flex;
-        align-items: center;
-        img {
-          height: $group-icon-size;
-          width: $group-icon-size;
-        }
-      }
     }
+  }
+}
+
+.student-count {
+  display: flex;
+  align-items: center;
+  h1 {
+    margin: 8px;
+  }
+  img {
+    height: $group-icon-size;
+    width: $group-icon-size;
+  }
+}
+
+.class-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .class-date-range {
+    font-size: $large-font-size;
+    font-weight: $large-font-weight;
+  }
+
+  .class-details {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
   }
 }
 
 .class-status {
   display: flex;
   align-items: center;
+  h1 {
+    margin: 8px;
+  }
   img {
     height: $status-icon-size;
     width: $status-icon-size;
