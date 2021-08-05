@@ -7,11 +7,15 @@
 		{% include form-line.html formName="create_student_account" inputID="confirm_password" inputType="password" placeholder="Confirm Password" %}
 	</ul>
 </form>
-{% include button.html function="processCreateStudentAccount" id="create_student_account" label="Sign Up" %}
+{% include button.html function="processCreateStudentAccount" id="create_student_account" label=include.buttonLabel %}
 {% include alert-message.html id="create_student_account" type="error" %}
 
 <script>
 	clearAlertPrinter("create_student_account");
+
+	function goToHowToPlay() {
+		goToPageSafe("/howtoplay");
+	}
 
 	function processCreateStudentAccount() {
 		if (studentCommands.getIsProcessing()) return;
@@ -49,6 +53,12 @@
 			printer(msg);
 		}
 
-		studentCommands.createAccount(accountID, name, password, getPageRedirector("/howtoplay"), onComplete);
+		studentCommands.createAccount(
+			accountID,
+			name,
+			password,
+			{{ include.onSignUpSuccess }},
+			onComplete
+		);
 	}
 </script>

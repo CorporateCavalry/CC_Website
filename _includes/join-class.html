@@ -1,0 +1,30 @@
+{% include alert-message.html id="join_class" type="warning" %}
+{% include class-info.html %}
+
+<script>
+	(function() {
+		let printer = getAlertPrinter("join_class");
+		printer("");
+
+		let classCode = getURLClassCode();
+
+		if (isNullOrEmpty(classCode)) {
+			goToPageSafe("/");
+			return;
+		}
+
+		function initClassData(data) {
+			classCommands.initializeClassInfo(data);
+		}
+
+		classCommands.fetchClassData(
+			classCode,
+			classCommands.classInfoAttributes(),
+			initClassData,
+			function(msg) {
+				printer(msg);
+				classCommands.hideClassInfo();
+			}
+		);
+	})();
+</script>
