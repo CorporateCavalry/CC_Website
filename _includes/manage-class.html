@@ -17,6 +17,10 @@
 		return text;
 	}
 
+	function downloadReport() {
+		console.log("Attempting to download report");
+	}
+
 	function copyInvitation() {
 		if (curClassData == null) {
 			console.log("Current class data is null");
@@ -58,6 +62,7 @@
 			let status = classCommands.getClassStatus(data)["Status"];
 			if (!isNullOrEmpty(status)) {
 				if (status === "unstarted") {
+					// UNSTARTED
 					$.ajax({
 						url: "/templates/status-section-unstarted.html",
 						async: true,
@@ -68,6 +73,33 @@
 							printer("Could not load unstarted section.");
 						}
 					});
+				} else if (status == "started") {
+					// STARTED
+					$.ajax({
+						url: "/templates/status-section-started.html",
+						async: true,
+						success: function(templateText) {
+							$("#status-section").html(templateText);
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							printer("Could not load started section.");
+						}
+					});
+				} else if (status == "completed") {
+					// COMPLETED
+					$.ajax({
+						url: "/templates/status-section-completed.html",
+						async: true,
+						success: function(templateText) {
+							$("#status-section").html(templateText);
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							printer("Could not load started section.");
+						}
+					});
+				} else if (status == "expired") {
+					// EXPIRED
+
 				}
 			}
 		}
