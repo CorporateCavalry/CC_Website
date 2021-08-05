@@ -1,7 +1,15 @@
-{% include alert-message.html id="manage_class" type="warning" %}
-{% include class-info.html %}
+<div class="section">
+	{% include alert-message.html id="manage_class" type="warning" %}
+	{% include class-info.html %}
+</div>
+<div id="status-section">
+</div>
 
 <script>
+	function copyInvitation() {
+		console.log("YAPE");
+	}
+
 	(function() {
 		let printer = getAlertPrinter("manage_class");
 		printer("");
@@ -13,38 +21,34 @@
 			return;
 		}
 
-		let curClassData = null;
-		let curTemplateData = null;
-
-		function generateIntroStatement() {
-			let formattedStartDate = getShortFormattedDateString(parseSlidersDateString(curClassData["StartDate"]));
-			let text = curTemplateData.replaceAll("[start_date]", formattedStartDate);
+		function fillOutIntroStatement(data, text) {
+			let formattedStartDate = getShortFormattedDateString(parseSlidersDateString(data["StartDate"]));
+			text = text.replaceAll("[start_date]", formattedStartDate);
 			let homepage = document.location.origin;
 			text = text.replaceAll("[url_join_page]", homepage + "/join?code=" + classCode);
 			text = text.replaceAll("[url_home_page]", homepage + "/");
-			console.log(text);
-		}
-
-		function initTemplate(template) {
-			curTemplateData = getHtmlSafeText(template);
-			if (curClassData !== null) generateIntroStatement();
+			return text;
 		}
 
 		function initClassData(data) {
-			curClassData = data;
-			if (curTemplateData !== null) generateIntroStatement();
+			classCommands.initializeClassInfo(data);
 
-			classCommands.initializeClassInfo(curClassData);
-		}
-
-		$.ajax({
-            url: "/templates/intro_statement.md",
-            async: true,
-            success: initTemplate,
-			error: function(xhr, ajaxOptions, thrownError) {
-				printer("Could not load intro statement.");
+			let status = classCommands.getClassStatus(data)["Status"];
+			if (!isNullOrEmpty(status)) {
+				if (status === "unstarted") {
+					$.ajax({
+						url: "/templates/status-section-unstarted.html",
+						async: true,
+						success: function(templateText) {
+							$("#status-section").html(fillOutIntroStatement(data, templateText));
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							printer("Could not load unstarted section.");
+						}
+					});
+				}
 			}
-        });
+		}
 
 		classCommands.fetchClassData(
 			classCode,

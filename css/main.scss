@@ -7,6 +7,10 @@ $medium-font-size: 18px;
 $medium-font-weight: 400;
 $small-font-size: 18px;
 $small-font-weight: 300;
+$text-snippet-font-size: 14px;
+$text-snippet-font-weight: 300;
+$text-snippet-text-color: #646464;
+$text-snippet-background-color: #DCDCDC;
 $code-font-size: 14px;
 
 $nav-bar-padding: 32px;
@@ -360,7 +364,7 @@ p {
 }
 /* SECTIONS */
 .section {
-  padding: 0px $section-padding;
+  padding: 0px $section-padding $section-padding $section-padding;
   display: flex;
   flex-direction: column;
 }
@@ -503,14 +507,15 @@ p {
 
 .button {
   height: $button-height;
-  border-radius: $corner-radius;
-  font-size: $large-font-size;
   align-self: center;
   padding: 0px $button-text-horizontal-padding;
+  margin-bottom: $standard-margin;
+  border-radius: $corner-radius;
   border-style: none;
   background-color: $button-background-color;
   color: $button-text-color;
-  font-family : inherit;
+  font-size: $large-font-size;
+  font-family: inherit;
 }
 
 .button:hover {
@@ -640,7 +645,7 @@ p {
 
 /* ALERTS */
 .alert-message {
-  padding: $standard-margin;
+  // padding: $standard-margin;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -662,6 +667,23 @@ p {
   img {
     width: $alert-icon-size;
     height: $alert-icon-size;
+  }
+}
+
+/* TEXT SNIPPETS */
+.text-snippet-box {
+  border-radius: $corner-radius;
+  border-style: none;
+  background-color: $text-snippet-background-color;
+  padding: $standard-margin $standard-margin 0 $standard-margin;
+  margin-bottom: $standard-margin;
+
+  body {
+    color: $text-snippet-text-color;
+  }
+  p {
+    font-size: $text-snippet-font-size;
+    font-weight: $text-snippet-font-weight;
   }
 }
 

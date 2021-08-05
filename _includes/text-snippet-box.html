@@ -1,0 +1,4 @@
+<div class="text-snippet-box">
+  {% capture my_include %}{{ include.markdownText }}{% endcapture %}
+  {{ my_include | markdownify }}
+</div>
