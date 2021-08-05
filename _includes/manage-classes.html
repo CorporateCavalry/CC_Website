@@ -34,11 +34,11 @@
 
 		function displayClassData() {
 			const generateClassElementHTML = function(classData) {
-				const code = classData["ClassCode"];
 				const statusData = classCommands.getClassStatus(classData);
 
 				let html = classElementTemplate;
-				html = html.replaceAll("[code]", code);
+				html = html.replaceAll("[code]", classData["ClassCode"]);
+				html = html.replaceAll("[name]", classData["Name"]);
 				html = html.replaceAll("[status]", statusData["Status"]);
 				html = html.replaceAll("[studentCount]", "x"); //TODO: replace with student count
 				html = html.replaceAll("[statusMessage]", statusData["Message"]);
@@ -72,7 +72,11 @@
 
 		document.addEventListener("DOMContentLoaded", function(event) {
 			if (loginManager.isProfessor()) {
-				profCommands.getClassList(initClassList, printer);
+				profCommands.getClassList(
+					["ClassCode", "Name", "StartDate", "EndDate"],
+					initClassList,
+					printer
+				);
 			}
 		});
 	})();

@@ -110,7 +110,7 @@ profCommands = function() {
         );
     }
 
-    function createClass(startDate, endDate, onSuccess, failPrinter) {
+    function createClass(className, startDate, endDate, onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -129,6 +129,7 @@ profCommands = function() {
 
                 classCommands.createClass(
                     email,
+                    className,
                     startDate,
                     endDate,
                     function(classCode) {
@@ -158,7 +159,7 @@ profCommands = function() {
         );
     }
 
-    function getClassList(onSuccess, failPrinter) {
+    function getClassList(attributes, onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -176,7 +177,7 @@ profCommands = function() {
                 if (profData.hasOwnProperty("Classes")) {
                     classCommands.getClassList(
                         profData["Classes"],
-                        [ "ClassCode", "StartDate", "EndDate" ],
+                        attributes,
                         function(list) {
                             completeProcessing();
                             onSuccess(list);

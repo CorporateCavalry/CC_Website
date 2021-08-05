@@ -25,7 +25,7 @@ classCommands = function() {
         return str;
     }
 
-    function createClass(owner, startDate, endDate, onSuccess, failPrinter) {
+    function createClass(owner, className, startDate, endDate, onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -48,7 +48,8 @@ classCommands = function() {
                     "StartDate": startDate,
                     "EndDate": endDate,
                     "GroupCount": 0,
-                    "Owner": owner
+                    "Owner": owner,
+                    "Name": className
                 }
             };
 
@@ -178,7 +179,7 @@ classCommands = function() {
 
     function initializeClassInfo(classData) {
         $(".class-info").css("display", "");
-        $(".class-title-text").text(classData["Owner"] + "'s [class name] Class (" + classData["ClassCode"] + ")");
+        $(".class-title-text").text(classData["Owner"] + "'s " + classData["Name"] + " Class (" + classData["ClassCode"] + ")");
         $(".student-count-text").text(classData["GroupCount"]); //TODO: use student count
         $(".class-date-range").text(
             getShortFormattedDateString(parseSlidersDateString(classData["StartDate"])) +
