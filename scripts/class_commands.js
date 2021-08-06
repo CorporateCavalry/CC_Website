@@ -243,7 +243,7 @@ classCommands = function() {
 
     // helpers for class data parsing
     function classInfoAttributes() {
-        return ["Owner", "Name", "ClassCode", "StartDate", "EndDate", "GroupCount"];
+        return ["Owner", "Name", "ClassCode", "StartDate", "EndDate", "StudentCount"];
     }
 
     function getClassStatus(classData) {
@@ -278,7 +278,7 @@ classCommands = function() {
         title += (title.toLowerCase().charAt(title.length - 1) !== 's') ? "'s " : "' "
         title += classData["Name"] + " Class (" + classData["ClassCode"] + ")";
         $(".class-title-text").text(title);
-        $(".student-count-text").text(classData["GroupCount"]); //TODO: use student count
+        $(".student-count-text").text(classData["StudentCount"]);
         $(".class-date-range").text(
             getShortFormattedDateString(parseSlidersDateString(classData["StartDate"])) +
             " - " +

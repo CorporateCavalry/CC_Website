@@ -40,7 +40,7 @@
 				html = html.replaceAll("[code]", classData["ClassCode"]);
 				html = html.replaceAll("[name]", classData["Name"]);
 				html = html.replaceAll("[status]", statusData["Status"]);
-				html = html.replaceAll("[studentCount]", "x"); //TODO: replace with student count
+				html = html.replaceAll("[studentCount]", classData["StudentCount"]);
 				html = html.replaceAll("[statusMessage]", statusData["Message"]);
 
 				return html;
@@ -73,7 +73,7 @@
 		document.addEventListener("DOMContentLoaded", function(event) {
 			if (loginManager.isProfessor()) {
 				profCommands.getClassList(
-					["ClassCode", "Name", "StartDate", "EndDate"],
+					["ClassCode", "Name", "StartDate", "EndDate", "StudentCount"],
 					initClassList,
 					printer
 				);
