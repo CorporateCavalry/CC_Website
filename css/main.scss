@@ -402,6 +402,7 @@ form {
 }
 
 .button {
+  -webkit-appearance: none;
   height: $button-height;
   align-self: center;
   padding: 0px $button-text-horizontal-padding;
