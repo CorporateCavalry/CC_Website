@@ -325,6 +325,7 @@ p {
 
 /* FORMS */
 form {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -335,9 +336,9 @@ form {
   max-width: $form-max-width;
   //width:  90%;
   width: 100%;
-  .form-line {
-    width: 100%;
-  }
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 .form-date-range {
@@ -368,37 +369,27 @@ form {
 }
 
 .form-line {
-  flex-grow: 1;
-  ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    font-size: $medium-font-size;
-    font-weight: $medium-font-weight;
-    color: $input-field-placeholder-text-color;
-    opacity: 1; /* Firefox */
-  }
-  // :-ms-input-placeholder { /* Internet Explorer 10-11 */
-  //   color: $input-field-placeholder-text-color;
-  // }
-  // ::-ms-input-placeholder { /* Microsoft Edge */
-  //   color: $input-field-placeholder-text-color;
-  // }
-  // ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-  //   color: $input-field-placeholder-text-color;
-  // }
-}
-
-.form-line > input {
-  font-family : inherit;
-  margin-bottom: $standard-spacing;
   width: 100%;
-  padding: $input-field-padding;
-  box-sizing: border-box;
-  height: $input-field-height;
-  border-width: $input-field-border-thickness;
-  border-radius: $corner-radius;
-  font-size: $small-font-size;
-  color: $input-field-text-color;
-  border-color: $input-field-border-color;
-  border-style: solid;
+  input {
+    ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+      font-size: $medium-font-size;
+      font-weight: $medium-font-weight;
+      color: $input-field-placeholder-text-color;
+      opacity: 1; /* Firefox */
+    }
+    font-family : inherit;
+    margin-bottom: $standard-spacing;
+    width: 100%;
+    padding: $input-field-padding;
+    box-sizing: border-box;
+    height: $input-field-height;
+    border-width: $input-field-border-thickness;
+    border-radius: $corner-radius;
+    font-size: $small-font-size;
+    color: $input-field-text-color;
+    border-color: $input-field-border-color;
+    border-style: solid;
+  }
 }
 
 .button {
