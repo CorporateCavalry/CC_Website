@@ -17,6 +17,7 @@ $mobile-large-font-size-ratio: 0.66;
 $mobile-medium-font-size-ratio: 0.75;
 $mobile-small-font-size-ratio: 0.85;
 $mobile-text-snippet-font-size-ratio: 0.85;
+$mobile-icon-size-ratio: 0.66;
 
 $narrow-page-max-width: 64rem;
 $mobile-page-width: 45rem;
@@ -32,6 +33,8 @@ $section-header-height: 4rem;
 $section-padding: 2rem;
 
 $form-max-width: 32rem;
+$class-element-list-max-width: 48rem;
+
 $input-field-height: 2.5rem;
 $input-field-padding: 0.5rem;
 $input-field-border-thickness: 0.1875rem;
@@ -132,7 +135,7 @@ h1 {
 h2 {
   font-size: $medium-font-size;
   font-weight: $medium-font-weight;
-  //margin-top: $standard-spacing;
+  margin-bottom: $standard-spacing;
   text-align: center;
 }
 
@@ -317,6 +320,7 @@ p {
   padding: 0 $section-padding $section-padding $section-padding;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 /* FORMS */
@@ -441,6 +445,8 @@ form {
 
 /* CLASS LIST ELEMENTS */
 .class-element-list {
+  width: 100%;
+  max-width: $class-element-list-max-width;
   li:hover {
     background-color: $class-element-hover-background-color;
   }
@@ -449,8 +455,7 @@ form {
   }
   li {
     margin-bottom: $standard-spacing;
-    padding: $standard-spacing / 2;
-    width: 100%;
+    padding: 0 $standard-spacing / 2;
     height: $class-element-field-height;
     border-width: $class-element-field-border-thickness;
     border-radius: $corner-radius;
@@ -513,6 +518,11 @@ form {
   }
 }
 
+.status-icon {
+  height: $status-icon-size;
+  width: $status-icon-size;
+}
+
 .class-status {
   display: flex;
   align-items: center;
@@ -520,10 +530,6 @@ form {
   flex-grow: 1;
   h1 {
     margin: $standard-spacing / 2;
-  }
-  img {
-    height: $status-icon-size;
-    width: $status-icon-size;
   }
   .status-message-unstarted {
     color: $status-color-unstarted;
@@ -571,7 +577,7 @@ form {
   border-radius: $corner-radius;
   border-style: none;
   background-color: $text-snippet-background-color;
-  padding: $standard-spacing $standard-spacing 1px $standard-spacing;
+  padding: 1px $standard-spacing $standard-spacing $standard-spacing;
   margin-bottom: $standard-spacing;
 
   body {
@@ -669,6 +675,19 @@ form {
     }
     .button {
       font-size: $mobile-large-font-size-ratio * $large-font-size;
+    }
+    .class-info > li > .class-details {
+      .class-date-range {
+        font-size: $mobile-large-font-size-ratio * $large-font-size;
+      }
+      .student-count > img {
+        height: $mobile-icon-size-ratio * $group-icon-size;
+        width: $mobile-icon-size-ratio * $group-icon-size;
+      }
+    }
+    .status-icon {
+      height: $mobile-icon-size-ratio * $status-icon-size;
+      width: $mobile-icon-size-ratio * $status-icon-size;
     }
 }
 
