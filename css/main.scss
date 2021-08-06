@@ -116,14 +116,14 @@ body {
 h1 {
   font-size: $large-font-size;
   font-weight: $large-font-weight;
-  margin-bottom: 8px;
+  margin: 8px;
   text-align: center;
 }
 
 h2 {
   font-size: $medium-font-size;
   font-weight: $medium-font-weight;
-  margin-bottom: 16px;
+  //margin-top: $standard-margin;
   text-align: center;
 }
 
@@ -131,7 +131,7 @@ p {
   font-size: $small-font-size;
   font-weight: $small-font-weight;
   line-height: 1.5;
-  margin-bottom: $standard-margin;
+  margin-top: $standard-margin;
   text-align: left;
 }
 
@@ -223,6 +223,22 @@ p {
   flex-wrap: wrap;
   justify-content: space-between;
 
+  .gallery-panel {
+    width: $standard-panel-width;
+    height: $standard-panel-width;
+    margin-bottom: $standard-margin;
+    ul {
+      list-style-position: inside;
+    }
+    li {
+      font-size: $small-font-size;
+      font-weight: $small-font-weight;
+      line-height: 1.5;
+      text-align: left;
+      list-style-type: disc;
+    }
+  }
+
   .image-with-caption {
     width: $standard-panel-width;
     img {
@@ -281,11 +297,6 @@ p {
     }
   }
 }
-@media only screen and (max-width: 900px) {
-  .selector > a > .selector-preview > .date {
-    font-size: $small-font-size;
-  }
-}
 
 /* TITLE BAR */
 .nav-bar {
@@ -338,16 +349,16 @@ p {
   height: $nav-bar-icon-size;
 }
 @media only screen and (max-width: 1100px) {
-  .title-bar {
-    padding: 16px $standard-margin;
-    font-size: $medium-font-size;
-    flex-direction: column;
-    .nav-bar > li {
-      margin-top: 0.5em;
-      margin-left: 0.5em;
-      margin-right: 0.5em;
-    }
-  }
+  // .title-bar {
+  //   padding: 16px $standard-margin;
+  //   font-size: $medium-font-size;
+  //   flex-direction: column;
+  //   .nav-bar > li {
+  //     margin-top: 0.5em;
+  //     margin-left: 0.5em;
+  //     margin-right: 0.5em;
+  //   }
+  // }
 }
 
 /* SECTION HEADERS */
@@ -367,12 +378,14 @@ p {
     color: white;
   }
 }
+/* SECTIONS */
 .section-divider {
   background-color: black;
-  height: 2px;
-  width: 100%;
+  padding: $section-padding;
+  .section-title {
+    color: white;
+  }
 }
-/* SECTIONS */
 .section {
   padding: 0px $section-padding $section-padding $section-padding;
   display: flex;
@@ -438,8 +451,12 @@ p {
     .selector > a {
       width: 100%;
     }
-    .gallery > .image-with-caption {
-      width: 100%;
+    .gallery {
+      flex-direction: column;
+      align-items: center;
+      .gallery-panel {
+        width: 100%;
+      }
     }
     .about-section > .about-pannel {
       width: 100%;

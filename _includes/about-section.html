@@ -1,5 +1,12 @@
 <div class="narrow-page">
 	<div class="section">
-		<div class="section-header" id="about">About</div>
+		<!-- <div class="section-header" id="about">About</div> -->
+		<div class="gallery">
+			<img class="gallery-panel" src="/assets/about/waterCoolerIntro.png">
+			<div class="gallery-panel">
+				{% capture my_include %}{% include about-panel-0.md %}{% endcapture %}
+				{{ my_include | markdownify }}
+			</div>
+		</div>
 	</div>
 </div>
