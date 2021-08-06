@@ -13,7 +13,8 @@ $text-snippet-text-color: #646464;
 $text-snippet-background-color: #DCDCDC;
 $code-font-size: 14px;
 
-$nav-bar-padding: 32px;
+$nav-bar-padding: 16px;
+$nav-bar-icon-size: 64px;
 
 $standard-margin: 16px;
 $standard-panel-width: 48.5%;
@@ -146,6 +147,10 @@ p {
       }
     }
   }
+}
+.title-graphic {
+  width: 100%;
+  height: auto;
 }
 /* SLIDES ANIMATION */
 .slide {
@@ -287,7 +292,7 @@ p {
   font-size: $large-font-size;
   font-weight: $large-font-weight;
 
-  padding: $nav-bar-padding;
+  padding: $nav-bar-padding $nav-bar-padding * 3 $nav-bar-padding $nav-bar-padding;
 
   display: flex;
   flex-grow: 1;
@@ -309,6 +314,7 @@ p {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
+    align-items: center;
 
     li {
       margin-right: 1em;
@@ -326,6 +332,10 @@ p {
       margin-left: 1em;
     }
   }
+}
+.nav-bar-icon {
+  width: $nav-bar-icon-size;
+  height: $nav-bar-icon-size;
 }
 @media only screen and (max-width: 1100px) {
   .title-bar {
