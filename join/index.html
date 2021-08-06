@@ -6,6 +6,11 @@ title: Join Class
 	<div class="section">
 		{% include join-class.html %}
 	</div>
+	<div class="student-logged-in">
+		<div class="section">
+			{% include button.html function="joinClass" label="Join" id="join_class" %}
+		</div>
+	</div>
 	<div class="logged-out">
 		<div class="section">
 			{% include create-student-account.html onSignUpSuccess="joinClass" buttonLabel="Sign Up and Join" %}
@@ -14,7 +19,13 @@ title: Join Class
 </div>
 
 <script>
+	clearAlertPrinter("join_class");
+
 	function joinClass() {
-		console.log("Ready to join class: " + getURLClassCode());
+		studentCommands.joinClass(
+			getURLClassCode(),
+			getPageRedirector("/howtoplay"),
+			getAlertPrinter("join_class")
+		);
 	}
 </script>

@@ -158,15 +158,13 @@ profCommands = function() {
                     startDate,
                     endDate,
                     function(classCode) {
-                        const updateParams = {
-                            TableName: PROF_TABLE_NAME,
-                            Key: { "Email": profData["Email"] },
-                            UpdateExpression: "set Classes = list_append(if_not_exists(Classes, :emptyList), :newClass)",
-                            ExpressionAttributeValues: { ":emptyList": [], ":newClass": [ classCode ] }
-                        }
-
                         awsManager.update(
-                            updateParams,
+                            {
+                                TableName: PROF_TABLE_NAME,
+                                Key: { "Email": profData["Email"] },
+                                UpdateExpression: "SET Classes = list_append(if_not_exists(Classes, :emptyList), :newClass)",
+                                ExpressionAttributeValues: { ":emptyList": [], ":newClass": [ classCode ] }
+                            },
                             function() {
                                 completeProcessing();
                                 onSuccess(classCode);

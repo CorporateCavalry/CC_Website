@@ -1,12 +1,19 @@
 classCommands = function() {
     const CLASS_TABLE_NAME = "Classes";
+    const GROUP_TABLE_NAME = "Groups";
+
     const MAX_CREATE_ATTEMPTS = 5;
     const CLASS_CODE_SIZE = 4;
+    const PLAYERS_IN_GROUP = 4;
 
     let isProcessing = false;
 
     function getClassKey(classCode, attributes) {
         return { TableName: CLASS_TABLE_NAME, Key: { "ClassCode": classCode }, AttributesToGet: attributes };
+    }
+
+    function generateGroupKey(classCode, groupID) {
+        return classCode + "-" + new String(groupID);
     }
 
     function printBusy(printer) {
@@ -136,11 +143,94 @@ classCommands = function() {
                 completeProcessing();
                 onSuccess(data);
             },
-            function(msg) {// not found
+            function(msg) { // not found
                 onFail("No data found for class " + classCode);
             },
             onFail
         );
+    }
+
+    function addAccountToClass(classCode, accountID, onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        const onFail = function(msg) {
+            completeProcessing();
+            failPrinter(msg);
+        }
+
+        awsManager.get(
+            getClassKey(classCode, ["ClassCode", "GroupCount", "StartDate"]),
+            function(classData) { // found
+                const groupKey = function(groupID) { return generateGroupKey(classCode, groupID); }
+
+                const onAddSuccess = function(groupID) {
+                    awsManager.update( // update the class with our group as the last one, and add ourselves to the student count
+                        {
+                            TableName: CLASS_TABLE_NAME,
+                            Key: { "ClassCode": classCode },
+                            UpdateExpression: "SET GroupCount = :groupCount, StudentCount = StudentCount + :one",
+                            ExpressionAttributeValues: { ":groupCount": (groupID + 1), ":one": 1 }
+                        },
+                        function() { // we updated the class, so pass back which group we are in
+                            completeProcessing();
+                            onSuccess(groupID);
+                        },
+                        onFail
+                    );
+                }
+
+                const getGroupData = function(groupID) {
+                    awsManager.get(
+                        { TableName: GROUP_TABLE_NAME, Key: { "GroupKey": groupKey(groupID) }, AttributesToGet: ["GroupID", "AccountIDs"] },
+                        function(groupData) { // we got the group data
+                            if (groupData["AccountIDs"].length >= PLAYERS_IN_GROUP) {
+                                createNewGroup(groupID + 1); // current group is full, so make a new one
+                            } else {
+                                awsManager.update( // append this account to the group
+                                    {
+                                        TableName: GROUP_TABLE_NAME,
+                                        Key: { "GroupKey": groupKey(groupID) },
+                                        UpdateExpression: "SET AccountIDs = list_append(if_not_exists(AccountIDs, :emptyList), :newAccount)",
+                                        ExpressionAttributeValues: { ":emptyList": [], ":newAccount": [ accountID ] }
+                                    },
+                                    function() { onAddSuccess(groupID) }, // we successfully updated the group data
+                                    onFail
+                                );
+                            }
+                        },
+                        function(msg) { createNewGroup(groupID); }, // we did not find the group, so create it
+                        onFail
+                    );
+                }
+
+                const createNewGroup = function(groupID) {
+                    const groupData = {
+                        "GroupKey": groupKey(groupID),
+                        "CreationDate": classData["StartDate"],
+                        "AccountIDs": [ accountID ]
+                    }
+                    awsManager.put(
+                        { TableName: GROUP_TABLE_NAME, Item: groupData },
+                        function() { onAddSuccess(groupID); }, // successfully added account to group
+                        onFail
+                    );
+                }
+
+                if (classData["GroupCount"] == 0) {
+                    createNewGroup(0); // this class has no groups, so create one
+                } else {
+                    getGroupData(classData["GroupCount"] - 1); // get the last group
+                }
+            },
+            function(msg) { // not found
+                onFail("Could not find class " + classCode);
+            },
+            onFail
+        )
     }
 
     function completeProcessing() {
@@ -212,6 +302,7 @@ classCommands = function() {
         createClass:createClass,
         getClassList:getClassList,
         fetchClassData:fetchClassData,
+        addAccountToClass:addAccountToClass,
         getClassStatus:getClassStatus,
         classInfoAttributes:classInfoAttributes,
         initializeClassInfo:initializeClassInfo,
