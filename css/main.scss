@@ -672,10 +672,10 @@ form {
       .class-date-range {
         font-size: $mobile-large-font-size-ratio * $large-font-size;
       }
-      .student-count > img {
-        height: $mobile-icon-size-ratio * $group-icon-size;
-        width: $mobile-icon-size-ratio * $group-icon-size;
-      }
+    }
+    .student-count > img {
+      height: $mobile-icon-size-ratio * $group-icon-size;
+      width: $mobile-icon-size-ratio * $group-icon-size;
     }
     .status-icon {
       height: $mobile-icon-size-ratio * $status-icon-size;
