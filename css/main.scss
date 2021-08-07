@@ -355,22 +355,19 @@ form {
   flex-direction: row;
 
   .form-line {
-      align-items: center;
+      align-items: flex-start;
       display: flex;
+      flex-direction: column;
   }
 
-  .form-line > input {
+  .form-line {
+    input {
       font-size: $small-font-size;
       font-weight: $medium-font-weight;
-      padding-left: 96px;
-  }
-
-  .form-line > label {
-      position: absolute;
-      font-size: $small-font-size;
-      font-weight: $medium-font-weight;
-      padding: $input-field-padding + $input-field-border-thickness;
-      margin-bottom: $standard-spacing;
+    }
+    label {
+      margin-bottom: $standard-spacing / 2;
+    }
   }
 }
 
@@ -695,7 +692,6 @@ form {
     .form-date-range > .form-line {
         input {
           font-size: $mobile-small-font-size-ratio * $small-font-size;
-          padding-left: 84px;
         }
         label {
           font-size: $mobile-small-font-size-ratio * $small-font-size;
