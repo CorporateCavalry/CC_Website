@@ -387,6 +387,7 @@ form {
       color: $input-field-placeholder-text-color;
       opacity: 1; /* Firefox */
     }
+    -webkit-appearance: none;
     font-family : inherit;
     margin-bottom: $standard-spacing;
     width: 100%;
