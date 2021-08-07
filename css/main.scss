@@ -228,7 +228,7 @@ p {
     height: $standard-panel-width;
     margin-bottom: $standard-spacing;
     ul {
-      list-style-position: inside;
+      margin-left: $standard-spacing * 1.5;
     }
     li {
       font-size: $small-font-size;
@@ -236,6 +236,12 @@ p {
       line-height: 1.5;
       text-align: left;
       list-style-type: disc;
+    }
+    ol {
+      margin-left: $standard-spacing * 1.5;
+    }
+    ol li {
+      list-style-type: decimal;
     }
   }
 }
@@ -656,6 +662,9 @@ form {
       font-size: $mobile-small-font-size-ratio * $small-font-size;
     }
     .gallery > .gallery-panel > ul > li {
+      font-size: $mobile-small-font-size-ratio * $small-font-size;
+    }
+    .gallery > .gallery-panel > ol > li {
       font-size: $mobile-small-font-size-ratio * $small-font-size;
     }
     .nav-bar {
