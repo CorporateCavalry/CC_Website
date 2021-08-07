@@ -66,7 +66,16 @@
 			}
 
 			const startDate = parseInputDate(startDateStr);
+			if (startDate == null) {
+				errorPrinter("Start date is invalid");
+				return;
+			}
+
 			const endDate = parseInputDate(endDateStr);
+			if (endDate == null) {
+				errorPrinter("End date is invalid");
+				return;
+			}
 
 			let today = new Date();
 
@@ -94,13 +103,25 @@
 		}
 
 		function parseInputDate(str) {
-			// by default, because there's no timestamp, it treats it as UTC
-			const parsed = new Date(Date.parse(str));
-			// so, use the "UTC" values to generate a new date which is in the correct timezone
-			let utcValDate = new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate(), parsed.getUTCHours(), parsed.getUTCMinutes(), parsed.getUTCSeconds());
-		    // finally, set it to midnight for our current timezone
-			utcValDate.setHours(0, 0, 0, 0);
-			return utcValDate;
+			// format is yyyy-mm-dd
+			const tokens = str.split('-');
+			if (tokens.length != 3) {
+				return null;
+			}
+
+			const year = parseInt(tokens[0]);
+			const month = parseInt(tokens[1]);
+			const date = parseInt(tokens[2]);
+
+			if (isNaN(year) || isNaN(month) || isNaN(date)) {
+				return null;
+			}
+
+			if (month > 12 || month < 1 || date > 31 || date < 1) {
+				return null;
+			}
+
+			return new Date(year, month - 1, date, 0, 0, 0);
 		}
 
 		function processCreateClass() {
@@ -120,7 +141,7 @@
 
 			let today = new Date();
 
-			if (startDate <= today || endDate <= startDate) {
+			if (startDate == null || endDate == null || startDate <= today || endDate <= startDate) {
 				return;
 			}
 
