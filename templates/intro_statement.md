@@ -7,5 +7,5 @@ Teamwork is vital as the challenges require every member to complete. You'll be 
 Before the challenges begin on [start_date], please sign up with your UC Davis Student ID using the following link:
 [url_join_page]
 
-For more information about [game name] visit:
+For more information about Corporate Cavalry visit:
 [url_home_page]
