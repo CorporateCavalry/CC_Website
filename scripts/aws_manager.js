@@ -46,10 +46,21 @@ awsManager = function() {
         });
     }
 
+    function deleteItem(params, onSuccess, printer) {
+        docClient.delete(params, function (err, data) {
+            if (err) {
+                logError(err, printer);
+            } else {
+                onSuccess();
+            }
+        });
+    }
+
     return {
         get:get,
         put:put,
         update:update,
-        getBatch:getBatch
+        getBatch:getBatch,
+        deleteItem:deleteItem
     }
 }();

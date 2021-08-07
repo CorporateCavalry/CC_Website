@@ -34,7 +34,7 @@ function logError(err, printer) {
     console.log("Error: " + JSON.stringify(err, undefined, 2));
 }
 
-function isNullOrEmpty(str) { return !str || str === ""; }
+function isNullOrEmpty(str) { return !str || str.length == 0; }
 function isString(obj) { return typeof obj === 'string' || obj instanceof String; }
 function isInt(obj) { return obj === parseInt(obj, 10); }
 
@@ -173,6 +173,10 @@ loginManager = function() {
         return cachedLoginData.hasOwnProperty(key);
     }
 
+    function isPropertyNonEmpty(key) {
+        return cachedLoginData.hasOwnProperty(key) && !isNullOrEmpty(cachedLoginData[key]);
+    }
+
     function getProperty(key) {
         return cachedLoginData[key];
     }
@@ -185,6 +189,7 @@ loginManager = function() {
         isStudent:isStudent,
         hasProperty:hasProperty,
         getProperty:getProperty,
+        isPropertyNonEmpty:isPropertyNonEmpty,
         getProfCachedAttributes:getProfCachedAttributes,
         getStudentCachedAttributes:getStudentCachedAttributes
     }

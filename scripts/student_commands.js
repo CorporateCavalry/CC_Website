@@ -150,7 +150,7 @@ studentCommands = function() {
             failPrinter(msg);
         }
 
-        if (!loginManager.hasProperty("ClassCode")) {
+        if (!loginManager.isPropertyNonEmpty("ClassCode")) {
             completeProcessing();
             onNoClass();
             return;
@@ -227,6 +227,58 @@ studentCommands = function() {
         );
     }
 
+    function leaveClass(onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        const onFail = function(msg) {
+            completeProcessing();
+            failPrinter(msg);
+        }
+
+        validateLogin(
+            true,
+            function(data) { // valid login
+                if (!data.hasOwnProperty("ClassCode") || isNullOrEmpty(data["ClassCode"])) {
+                    onFail("Student is not in a class!");
+                } else {
+                    classCommands.removeAccountFromClass(
+                        data["ClassCode"],
+                        data["GroupID"],
+                        data["AccountID"],
+                        function () { // on successfully removed
+                            data["GroupID"] = -1;
+                            data["ClassCode"] = "";
+
+                            awsManager.update(
+                                {
+                                    TableName: ACCT_TABLE_NAME,
+                                    Key: { "AccountID": data["AccountID"] },
+                                    UpdateExpression: "SET GroupID = :groupID, ClassCode = :classCode",
+                                    ExpressionAttributeValues: { ":groupID": -1, ":classCode": "" }
+                                },
+                                function() { // finished updating local account, now cache this information
+                                    loginManager.loginAsStudent(data);
+                                    completeProcessing();
+                                    onSuccess();
+                                },
+                                onFail
+                            );
+                        },
+                        onFail
+                    );
+                }
+            },
+            function() { // invalid login
+                onFail("Invalid login credentials");
+            },
+            onFail
+        );
+    }
+
     function completeProcessing() {
         isProcessing = false;
     }
@@ -241,6 +293,7 @@ studentCommands = function() {
         login:login,
         getAccount:getAccount,
         getMyClassData:getMyClassData,
-        joinClass:joinClass
+        joinClass:joinClass,
+        leaveClass:leaveClass
     }
 }();

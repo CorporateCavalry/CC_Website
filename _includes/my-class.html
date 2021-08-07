@@ -1,9 +1,10 @@
-{% include alert-message.html id="my_class" type="warning" %}
 {% include class-info.html %}
+{% include button.html id="leave_class" function="leaveClass" label="Leave Class" %}
+{% include alert-message.html id="my_class" type="warning" %}
 
 <script>
 	(function() {
-		if (!loginManager.isStudent()) {
+		if (!loginManager.isStudent() || !loginManager.isPropertyNonEmpty("ClassCode")) {
 			goToPageSafe("/");
 			return;
 		}
@@ -13,7 +14,14 @@
 
 		studentCommands.getMyClassData(
 			classCommands.classInfoAttributes(),
-			classCommands.initializeClassInfo, // found class code
+			function(classData) { // found class code
+				classCommands.initializeClassInfo(classData);
+				if (classCommands.getClassStatus(classData)["Status"] == "unstarted") {
+					$("#button_leave_class").css("display", "");
+				} else {
+					$("#button_leave_class").css("display", "none");
+				}
+			},
 			function() { // no class code
 				goToPageSafe("/");
 				return;
@@ -24,4 +32,13 @@
 			}
 		);
 	})();
+
+	function leaveClass() {
+		studentCommands.leaveClass(
+			function() { // successfully left the class
+				goToPageSafe("/");
+			},
+			getAlertPrinter("my_class")
+		);
+	}
 </script>

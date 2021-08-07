@@ -30,7 +30,7 @@
 						$(".prof-logged-in").css("display", "none");
 						$(".student-logged-in").css("display", "");
 
-						if (loginManager.hasProperty("ClassCode")) { // in a class
+						if (loginManager.isPropertyNonEmpty("ClassCode")) { // in a class
 							$(".student-has-class").css("display", "");
 						} else { // not in a class
 							$(".student-has-class").css("display", "none");

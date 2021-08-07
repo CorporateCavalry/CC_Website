@@ -143,7 +143,7 @@ classCommands = function() {
                 completeProcessing();
                 onSuccess(data);
             },
-            function(msg) { // not found
+            function() { // not found
                 onFail("No data found for class " + classCode);
             },
             onFail
@@ -160,7 +160,7 @@ classCommands = function() {
         const onFail = function(msg) {
             completeProcessing();
             failPrinter(msg);
-        }
+        };
 
         awsManager.get(
             getClassKey(classCode, ["ClassCode", "GroupCount", "StartDate"]),
@@ -181,7 +181,7 @@ classCommands = function() {
                         },
                         onFail
                     );
-                }
+                };
 
                 const getGroupData = function(groupID) {
                     awsManager.get(
@@ -205,7 +205,7 @@ classCommands = function() {
                         function(msg) { createNewGroup(groupID); }, // we did not find the group, so create it
                         onFail
                     );
-                }
+                };
 
                 const createNewGroup = function(groupID) {
                     const groupData = {
@@ -218,7 +218,7 @@ classCommands = function() {
                         function() { onAddSuccess(groupID); }, // successfully added account to group
                         onFail
                     );
-                }
+                };
 
                 if (classData["GroupCount"] == 0) {
                     createNewGroup(0); // this class has no groups, so create one
@@ -226,11 +226,85 @@ classCommands = function() {
                     getGroupData(classData["GroupCount"] - 1); // get the last group
                 }
             },
-            function(msg) { // not found
+            function() { // not found
                 onFail("Could not find class " + classCode);
             },
             onFail
-        )
+        );
+    }
+
+    function removeAccountFromClass(classCode, rmGroupID, rmAccountID, onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        const onFail = function(msg) {
+            completeProcessing();
+            failPrinter(msg);
+        };
+
+        awsManager.get(
+            getClassKey(classCode, ["ClassCode", "StartDate"]),
+            function(classData) { // found
+                const today = new Date();
+                if (parseSlidersDateString(classData["StartDate"]) < today) {
+                    onFail("Cannot leave a class that is already started!");
+                    return;
+                }
+
+                awsManager.get(
+                    { TableName: GROUP_TABLE_NAME, Key: { "GroupKey": generateGroupKey(classCode, rmGroupID) }, AttributesToGet: ["GroupKey", "AccountIDs"] },
+                    function(groupData) { // we got the group data
+                        let playerID = -1;
+                        const playerCount = groupData["AccountIDs"].length;
+                        for (let i = 0; i < playerCount; i++) {
+                            if (groupData["AccountIDs"][i] == rmAccountID) {
+                                playerID = i;
+                                break;
+                            }
+                        }
+
+                        if (playerID < 0) { // account is not in this group
+                            onFail("Account " + rmAccountID + " was not in group " + rmGroupID);
+                            return;
+                        }
+
+                        // remove the player from the group data
+                        awsManager.update(
+                            {
+                                TableName: GROUP_TABLE_NAME,
+                                Key: { "GroupKey": groupData["GroupKey"] },
+                                UpdateExpression: "REMOVE AccountIDs[" + playerID + "]",
+                            },
+                            function() { // successfully updated group, now remove an account from the class
+                                awsManager.update(
+                                    {
+                                        TableName: CLASS_TABLE_NAME,
+                                        Key: { "ClassCode": classCode },
+                                        UpdateExpression: "SET StudentCount = StudentCount - :one",
+                                        ExpressionAttributeValues: { ":one": 1 }
+                                    },
+                                    function() {
+                                        completeProcessing();
+                                        onSuccess();
+                                    },
+                                    onFail
+                                )
+                            },
+                            onFail
+                        );
+                    },
+                    function() { onFail("Could not find group: " + rmGroupID); }, // we did not find the group
+                    onFail
+                );
+            },
+            function() { // not found
+                onFail("Could not find class " + classCode);
+            },
+            onFail
+        );
     }
 
     function completeProcessing() {
@@ -303,6 +377,7 @@ classCommands = function() {
         getClassList:getClassList,
         fetchClassData:fetchClassData,
         addAccountToClass:addAccountToClass,
+        removeAccountFromClass:removeAccountFromClass,
         getClassStatus:getClassStatus,
         classInfoAttributes:classInfoAttributes,
         initializeClassInfo:initializeClassInfo,
