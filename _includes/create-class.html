@@ -16,167 +16,169 @@
 {% include alert-message.html id="create_class_error" type="error" %}
 
 <script>
-	createClassHelpers = function(){
-		const formName = "create_class";
+	if (!loginManager.isProfessor()) {
+		urlReplaceSafe("/signin/"); // go there and don't let us come back
+	} else {
+		createClassHelpers = function(){
+			const formName = "create_class";
 
-		// called on "start"
-		(function(){
-			// clear the alert messages
-			clearAlertPrinter(formName + "_warning");
-			clearAlertPrinter(formName + "_error");
+			// called on "start"
+			(function(){
+				// clear the alert messages
+				clearAlertPrinter(formName + "_warning");
+				clearAlertPrinter(formName + "_error");
 
-			// set the default values for start and end date
-			const startDateInput = $("#" + formName + "_start_date");
-			const endDateInput = $("#" + formName + "_end_date");
+				// set the default values for start and end date
+				const startDateInput = $("#" + formName + "_start_date");
+				const endDateInput = $("#" + formName + "_end_date");
 
-			let date = new Date();
+				let date = new Date();
 
-			date.setDate(date.getDate() + 1);
-			const tomorrowStr = getWebFormattedDateString(date);
-			startDateInput.attr("min", tomorrowStr); // minimum date is tomorrow
-			endDateInput.attr("min", tomorrowStr);
+				date.setDate(date.getDate() + 1);
+				const tomorrowStr = getWebFormattedDateString(date);
+				startDateInput.attr("min", tomorrowStr); // minimum date is tomorrow
+				endDateInput.attr("min", tomorrowStr);
 
-			date.setDate(date.getDate() + 3);
-			startDateInput.attr("value", getWebFormattedDateString(date)); // default value of start date is 3 full days after today
+				date.setDate(date.getDate() + 3);
+				startDateInput.attr("value", getWebFormattedDateString(date)); // default value of start date is 3 full days after today
 
-			date.setDate(date.getDate() + 7); // default end date is 1 week away
-			endDateInput.attr("value", getWebFormattedDateString(date));
+				date.setDate(date.getDate() + 7); // default end date is 1 week away
+				endDateInput.attr("value", getWebFormattedDateString(date));
 
-			// set up listeners for the date input fields
-			startDateInput.on('input', onDatesEdited);
-			endDateInput.on('input', onDatesEdited);
-		})();
+				// set up listeners for the date input fields
+				startDateInput.on('input', onDatesEdited);
+				endDateInput.on('input', onDatesEdited);
+			})();
 
-		const elements = document.getElementById(formName + "_form").elements;
-		const startDateElement = elements[formName + "_start_date"];
-		const endDateElement = elements[formName + "_end_date"];
+			const elements = document.getElementById(formName + "_form").elements;
+			const startDateElement = elements[formName + "_start_date"];
+			const endDateElement = elements[formName + "_end_date"];
 
-		const warningPrinter = getAlertPrinter(formName + "_warning");
-		const errorPrinter = getAlertPrinter(formName + "_error");
+			const warningPrinter = getAlertPrinter(formName + "_warning");
+			const errorPrinter = getAlertPrinter(formName + "_error");
+
+			function onDatesEdited() {
+				const startDateStr = startDateElement.value;
+				const endDateStr = endDateElement.value;
+
+				warningPrinter("");
+				errorPrinter("");
+
+				if (isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
+					return;
+				}
+
+				const startDate = parseInputDate(startDateStr);
+				if (startDate == null) {
+					errorPrinter("Start date is invalid");
+					return;
+				}
+
+				const endDate = parseInputDate(endDateStr);
+				if (endDate == null) {
+					errorPrinter("End date is invalid");
+					return;
+				}
+
+				let today = new Date();
+
+				if (startDate <= today) {
+					errorPrinter("Start date must be after today!");
+					return;
+				}
+
+				if (endDate <= startDate) {
+					errorPrinter("End date must be after start date!");
+					return;
+				}
+
+				const daysUntilStart = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
+				if (daysUntilStart < 4) {
+					warningPrinter("At least 3 full days is recommended for students to join class.");
+					return;
+				}
+
+				const gameLength = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
+				if (gameLength < 5 || gameLength > 9) {
+					warningPrinter("5 to 9 days is recommended for students to complete the game.");
+					return;
+				}
+			}
+
+			function parseInputDate(str) {
+				// format is yyyy-mm-dd
+				const tokens = str.split('-');
+				if (tokens.length != 3) {
+					return null;
+				}
+
+				const year = parseInt(tokens[0]);
+				const month = parseInt(tokens[1]);
+				const date = parseInt(tokens[2]);
+
+				if (isNaN(year) || isNaN(month) || isNaN(date)) {
+					return null;
+				}
+
+				if (month > 12 || month < 1 || date > 31 || date < 1) {
+					return null;
+				}
+
+				return new Date(year, month - 1, date, 0, 0, 0);
+			}
+
+			function processCreateClass() {
+				if (profCommands.getIsProcessing()) return;
+
+				const className = elements[formName + "_name"].value;
+				const startDateStr = startDateElement.value;
+				const endDateStr = endDateElement.value;
+
+				if (isNullOrEmpty(className) || isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
+					errorPrinter("All fields must be filled out!");
+					return;
+				}
+
+				const startDate = parseInputDate(startDateStr);
+				const endDate = parseInputDate(endDateStr);
+
+				let today = new Date();
+
+				if (startDate == null || endDate == null || startDate <= today || endDate <= startDate) {
+					return;
+				}
+
+				const submitButton = $("#button_" + formName);
+				submitButton.prop("disabled", true);
+				errorPrinter("");
+				warningPrinter("");
+
+				profCommands.createClass(
+					className,
+					getSlidersFormattedDateString(startDate),
+					getSlidersFormattedDateString(endDate),
+					function(classCode) {
+						goToPageSafe("/manageclass/?code=" + classCode);
+					},
+					function(msg) {
+						submitButton.prop("disabled", false);
+						errorPrinter(msg);
+					}
+				);
+			}
+
+			return {
+				onDatesEdited:onDatesEdited,
+				processCreateClass:processCreateClass
+			}
+		}();
 
 		function onDatesEdited() {
-			const startDateStr = startDateElement.value;
-			const endDateStr = endDateElement.value;
-
-			warningPrinter("");
-			errorPrinter("");
-
-			if (isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
-				return;
-			}
-
-			const startDate = parseInputDate(startDateStr);
-			if (startDate == null) {
-				errorPrinter("Start date is invalid");
-				return;
-			}
-
-			const endDate = parseInputDate(endDateStr);
-			if (endDate == null) {
-				errorPrinter("End date is invalid");
-				return;
-			}
-
-			let today = new Date();
-
-			if (startDate <= today) {
-				errorPrinter("Start date must be after today!");
-				return;
-			}
-
-			if (endDate <= startDate) {
-				errorPrinter("End date must be after start date!");
-				return;
-			}
-
-			const daysUntilStart = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
-			if (daysUntilStart < 4) {
-				warningPrinter("At least 3 full days is recommended for students to join class.");
-				return;
-			}
-
-			const gameLength = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
-			if (gameLength < 5 || gameLength > 9) {
-				warningPrinter("5 to 9 days is recommended for students to complete the game.");
-				return;
-			}
-		}
-
-		function parseInputDate(str) {
-			// format is yyyy-mm-dd
-			const tokens = str.split('-');
-			if (tokens.length != 3) {
-				return null;
-			}
-
-			const year = parseInt(tokens[0]);
-			const month = parseInt(tokens[1]);
-			const date = parseInt(tokens[2]);
-
-			if (isNaN(year) || isNaN(month) || isNaN(date)) {
-				return null;
-			}
-
-			if (month > 12 || month < 1 || date > 31 || date < 1) {
-				return null;
-			}
-
-			return new Date(year, month - 1, date, 0, 0, 0);
+			createClassHelpers.onDatesEdited();
 		}
 
 		function processCreateClass() {
-			if (profCommands.getIsProcessing()) return;
-
-			const className = elements[formName + "_name"].value;
-			const startDateStr = startDateElement.value;
-			const endDateStr = endDateElement.value;
-
-			if (isNullOrEmpty(className) || isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
-				errorPrinter("All fields must be filled out!");
-				return;
-			}
-
-			const startDate = parseInputDate(startDateStr);
-			const endDate = parseInputDate(endDateStr);
-
-			let today = new Date();
-
-			if (startDate == null || endDate == null || startDate <= today || endDate <= startDate) {
-				return;
-			}
-
-			const submitButton = $("#button_" + formName);
-			submitButton.prop("disabled", true);
-			errorPrinter("");
-			warningPrinter("");
-
-			profCommands.createClass(
-				className,
-				getSlidersFormattedDateString(startDate),
-				getSlidersFormattedDateString(endDate),
-				function(classCode) {
-					goToPageSafe("/manageclass/?code=" + classCode);
-				},
-				function(msg) {
-					submitButton.prop("disabled", false);
-					errorPrinter(msg);
-				}
-			);
+			createClassHelpers.processCreateClass();
 		}
-
-		return {
-			onDatesEdited:onDatesEdited,
-			processCreateClass:processCreateClass
-		}
-	}();
-
-
-
-	function onDatesEdited() {
-		createClassHelpers.onDatesEdited();
-	}
-
-	function processCreateClass() {
-		createClassHelpers.processCreateClass();
 	}
 </script>

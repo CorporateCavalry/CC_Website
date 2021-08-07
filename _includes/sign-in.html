@@ -9,43 +9,47 @@
 {% include alert-message.html id="login" type="error" %}
 
 <script>
-	clearAlertPrinter("login");
+	if (loginManager.isProfessor() || loginManager.isStudent()) {
+		urlReplaceSafe("/"); // go there and don't let us come back
+	} else {
+		clearAlertPrinter("login");
 
-	function processLogin() {
-		if (profCommands.getIsProcessing()) return;
-		if (studentCommands.getIsProcessing()) return;
+		function processLogin() {
+			if (profCommands.getIsProcessing()) return;
+			if (studentCommands.getIsProcessing()) return;
 
-		const formName = "login";
+			const formName = "login";
 
-		const elements = document.getElementById(formName + "_form").elements;
-		const accountKey = elements[formName + "_key"].value;
-		const password = elements[formName + "_password"].value;
-		const printer = getAlertPrinter(formName);
+			const elements = document.getElementById(formName + "_form").elements;
+			const accountKey = elements[formName + "_key"].value;
+			const password = elements[formName + "_password"].value;
+			const printer = getAlertPrinter(formName);
 
-		if (isNullOrEmpty(accountKey) || isNullOrEmpty(password)) {
-			printer("All fields must be filled out!");
-			return;
-		}
+			if (isNullOrEmpty(accountKey) || isNullOrEmpty(password)) {
+				printer("All fields must be filled out!");
+				return;
+			}
 
-		const submitButton = $("#button_" + formName);
-		printer("");
+			const submitButton = $("#button_" + formName);
+			printer("");
 
-		const onComplete = function(msg) {
-			submitButton.prop("disabled", false);
-			printer(msg);
-		}
+			const onComplete = function(msg) {
+				submitButton.prop("disabled", false);
+				printer(msg);
+			}
 
-		const accountID = parseInt(accountKey);
-		if (isValidStudentID(accountKey, accountID)) { // valid student ID
-			submitButton.prop("disabled", true);
+			const accountID = parseInt(accountKey);
+			if (isValidStudentID(accountKey, accountID)) { // valid student ID
+				submitButton.prop("disabled", true);
 
-			studentCommands.login(accountID, password, getPageRedirector("/howtoplay"), onComplete);
-		} else if (!elements[formName + "_key"].validity.typeMismatch) { // valid email
-			submitButton.prop("disabled", true);
+				studentCommands.login(accountID, password, getPageRedirector("/howtoplay"), onComplete);
+			} else if (!elements[formName + "_key"].validity.typeMismatch) { // valid email
+				submitButton.prop("disabled", true);
 
-			profCommands.login(accountKey, password, getPageRedirector("/manageclasses"), onComplete);
-		} else { // neither
-			printer("Please enter a valid Student ID or email address!");
+				profCommands.login(accountKey, password, getPageRedirector("/manageclasses"), onComplete);
+			} else { // neither
+				printer("Please enter a valid Student ID or email address!");
+			}
 		}
 	}
 </script>

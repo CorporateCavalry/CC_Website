@@ -11,44 +11,48 @@
 {% include alert-message.html id="create_professor_account" type="error" %}
 
 <script>
-	clearAlertPrinter("create_professor_account");
+	if (loginManager.isProfessor() || loginManager.isStudent()) {
+		urlReplaceSafe("/"); // go there and don't let us come back
+	} else {
+		clearAlertPrinter("create_professor_account");
 
-	function processCreateProfAccount() {
-		if (profCommands.getIsProcessing()) return;
+		function processCreateProfAccount() {
+			if (profCommands.getIsProcessing()) return;
 
-		const formName = "create_professor_account";
+			const formName = "create_professor_account";
 
-		const elements = document.getElementById(formName + "_form").elements;
-		const email = elements[formName + "_email"].value;
-		const name = elements[formName + "_name"].value;
-		const password = elements[formName + "_password"].value;
-		const confirm = elements[formName + "_confirm_password"].value;
-		const printer = getAlertPrinter(formName);
+			const elements = document.getElementById(formName + "_form").elements;
+			const email = elements[formName + "_email"].value;
+			const name = elements[formName + "_name"].value;
+			const password = elements[formName + "_password"].value;
+			const confirm = elements[formName + "_confirm_password"].value;
+			const printer = getAlertPrinter(formName);
 
-		if (isNullOrEmpty(email) || isNullOrEmpty(name) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
-			printer("All fields must be filled out!");
-			return;
+			if (isNullOrEmpty(email) || isNullOrEmpty(name) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
+				printer("All fields must be filled out!");
+				return;
+			}
+
+			if (elements[formName + "_email"].validity.typeMismatch) {
+				printer("Please enter a valid email address!");
+				return;
+			}
+
+			if (confirm !== password) {
+				printer("Passwords do not match!");
+				return;
+			}
+
+			const submitButton = $("#button_" + formName);
+			submitButton.prop("disabled", true);
+			printer("");
+
+			const onComplete = function(msg) {
+				submitButton.prop("disabled", false);
+				printer(msg);
+			}
+
+			profCommands.createAccount(email, password, name, getPageRedirector("/manageclasses"), onComplete);
 		}
-
-		if (elements[formName + "_email"].validity.typeMismatch) {
-			printer("Please enter a valid email address!");
-			return;
-		}
-
-		if (confirm !== password) {
-			printer("Passwords do not match!");
-			return;
-		}
-
-		const submitButton = $("#button_" + formName);
-		submitButton.prop("disabled", true);
-		printer("");
-
-		const onComplete = function(msg) {
-			submitButton.prop("disabled", false);
-			printer(msg);
-		}
-
-		profCommands.createAccount(email, password, name, getPageRedirector("/manageclasses"), onComplete);
 	}
 </script>

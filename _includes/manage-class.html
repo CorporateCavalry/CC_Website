@@ -6,112 +6,116 @@
 </div>
 
 <script>
-	let curClassData = null;
+	if (!loginManager.isProfessor()) {
+		urlReplaceSafe("/signin"); // go there and don't let us come back
+	} else {
+		let curClassData = null;
 
-	function fillOutIntroStatement(data, text) {
-		let formattedStartDate = getShortFormattedDateString(parseSlidersDateString(data["StartDate"]));
-		text = text.replaceAll("[start_date]", formattedStartDate);
-		let homepage = document.location.origin;
-		text = text.replaceAll("[url_join_page]", homepage + "/join?code=" + data["ClassCode"]);
-		text = text.replaceAll("[url_home_page]", homepage + "/");
-		return text;
-	}
-
-	function downloadReport() {
-		console.log("Attempting to download report");
-	}
-
-	function copyInvitation() {
-		if (curClassData == null) {
-			console.log("Current class data is null");
-			return;
+		function fillOutIntroStatement(data, text) {
+			let formattedStartDate = getShortFormattedDateString(parseSlidersDateString(data["StartDate"]));
+			text = text.replaceAll("[start_date]", formattedStartDate);
+			let homepage = document.location.origin;
+			text = text.replaceAll("[url_join_page]", homepage + "/join?code=" + data["ClassCode"]);
+			text = text.replaceAll("[url_home_page]", homepage + "/");
+			return text;
 		}
 
-		$.ajax({
-			url: "/templates/intro_statement.md",
-			async: true,
-			success: function(templateText) {
-				var text = fillOutIntroStatement(curClassData, templateText);
-				navigator.clipboard.writeText(text).then(function() {
-					console.log('Async: Copying to clipboard was successful!');
-				}, function(err) {
-					console.error('Async: Could not copy text: ', err);
-				});
-			},
-			error: function(xhr, ajaxOptions, thrownError) {
-				console.error("Could not load intro statement.");
+		function downloadReport() {
+			console.log("Attempting to download report");
+		}
+
+		function copyInvitation() {
+			if (curClassData == null) {
+				console.log("Current class data is null");
+				return;
 			}
-		});
-	}
 
-	(function() {
-		let printer = getAlertPrinter("manage_class");
-		printer("");
-
-		let classCode = getURLClassCode();
-
-		if (isNullOrEmpty(classCode)) {
-			goToPageSafe("/manageclasses");
-			return;
+			$.ajax({
+				url: "/templates/intro_statement.md",
+				async: true,
+				success: function(templateText) {
+					var text = fillOutIntroStatement(curClassData, templateText);
+					navigator.clipboard.writeText(text).then(function() {
+						console.log('Async: Copying to clipboard was successful!');
+					}, function(err) {
+						console.error('Async: Could not copy text: ', err);
+					});
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					console.error("Could not load intro statement.");
+				}
+			});
 		}
 
-		function initClassData(data) {
-			curClassData = data;
-			classCommands.initializeClassInfo(data);
+		(function() {
+			let printer = getAlertPrinter("manage_class");
+			printer("");
 
-			let status = classCommands.getClassStatus(data)["Status"];
-			if (!isNullOrEmpty(status)) {
-				if (status === "unstarted") {
-					// UNSTARTED
-					$.ajax({
-						url: "/templates/status-section-unstarted.html",
-						async: true,
-						success: function(templateText) {
-							$("#status-section").html(fillOutIntroStatement(data, templateText));
-						},
-						error: function(xhr, ajaxOptions, thrownError) {
-							printer("Could not load unstarted section.");
-						}
-					});
-				} else if (status == "started") {
-					// STARTED
-					$.ajax({
-						url: "/templates/status-section-started.html",
-						async: true,
-						success: function(templateText) {
-							$("#status-section").html(templateText);
-						},
-						error: function(xhr, ajaxOptions, thrownError) {
-							printer("Could not load started section.");
-						}
-					});
-				} else if (status == "completed") {
-					// COMPLETED
-					$.ajax({
-						url: "/templates/status-section-completed.html",
-						async: true,
-						success: function(templateText) {
-							$("#status-section").html(templateText);
-						},
-						error: function(xhr, ajaxOptions, thrownError) {
-							printer("Could not load started section.");
-						}
-					});
-				} else if (status == "expired") {
-					// EXPIRED
+			let classCode = getURLClassCode();
 
+			if (isNullOrEmpty(classCode)) {
+				urlReplaceSafe("/manageclasses"); // go there and don't let us come back
+				return;
+			}
+
+			function initClassData(data) {
+				curClassData = data;
+				classCommands.initializeClassInfo(data);
+
+				let status = classCommands.getClassStatus(data)["Status"];
+				if (!isNullOrEmpty(status)) {
+					if (status === "unstarted") {
+						// UNSTARTED
+						$.ajax({
+							url: "/templates/status-section-unstarted.html",
+							async: true,
+							success: function(templateText) {
+								$("#status-section").html(fillOutIntroStatement(data, templateText));
+							},
+							error: function(xhr, ajaxOptions, thrownError) {
+								printer("Could not load unstarted section.");
+							}
+						});
+					} else if (status == "started") {
+						// STARTED
+						$.ajax({
+							url: "/templates/status-section-started.html",
+							async: true,
+							success: function(templateText) {
+								$("#status-section").html(templateText);
+							},
+							error: function(xhr, ajaxOptions, thrownError) {
+								printer("Could not load started section.");
+							}
+						});
+					} else if (status == "completed") {
+						// COMPLETED
+						$.ajax({
+							url: "/templates/status-section-completed.html",
+							async: true,
+							success: function(templateText) {
+								$("#status-section").html(templateText);
+							},
+							error: function(xhr, ajaxOptions, thrownError) {
+								printer("Could not load started section.");
+							}
+						});
+					} else if (status == "expired") {
+						// EXPIRED
+
+					}
 				}
 			}
-		}
 
-		classCommands.fetchClassData(
-			classCode,
-			classCommands.classInfoAttributes(),
-			initClassData,
-			function(msg) {
-				printer(msg);
-				classCommands.hideClassInfo();
-			}
-		);
-	})();
+			classCommands.fetchClassData(
+				classCode,
+				classCommands.classInfoAttributes(),
+				initClassData,
+				function(msg) {
+					printer(msg);
+					classCommands.hideClassInfo();
+				}
+			);
+		})();
+	}
 </script>

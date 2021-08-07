@@ -24,6 +24,12 @@ function goToPageSafe(path) {
 
     window.location.href = path;
 }
+function urlReplaceSafe(path) {
+    if (profCommands.getIsProcessing()) return;
+    if (studentCommands.getIsProcessing()) return;
+
+    window.location.replace(path);
+}
 
 function getURLClassCode() {
     return new URLSearchParams(window.location.search).get('code');

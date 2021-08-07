@@ -8,7 +8,7 @@
 		let classCode = getURLClassCode();
 
 		if (isNullOrEmpty(classCode)) {
-			goToPageSafe("/");
+			urlReplaceSafe("/"); // go there and don't let us come back
 			return;
 		}
 

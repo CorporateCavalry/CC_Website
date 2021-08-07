@@ -5,92 +5,96 @@
 {% include alert-message.html id="manage_classes" type="error" %}
 
 <script>
-	function goToCreateNewClass() {
-		goToPageSafe("/createclass");
-	}
-
-	(function(){
-		let classList = null;
-		let classElementTemplate = null;
-
-		let printer = getAlertPrinter("manage_classes")
-		printer("");
-
-		function initClassElementTemplate(newTemplate) {
-			classElementTemplate = newTemplate;
-
-			if (classList !== null) {
-				displayClassData();
-			}
+	if (!loginManager.isProfessor()) {
+		urlReplaceSafe("/signin"); // go there and don't let us come back
+	} else {
+		function goToCreateNewClass() {
+			goToPageSafe("/createclass");
 		}
 
-		function initClassList(newList) {
-			classList = newList;
-			classList.sort(function(a, b) {
-				let comp = b["StartDate"].localeCompare(a["StartDate"]); // newer classes on top
-				if (comp == 0) {
-					comp = a["EndDate"].localeCompare(b["EndDate"]); // classes that will end sooner on top
+		(function(){
+			let classList = null;
+			let classElementTemplate = null;
+
+			let printer = getAlertPrinter("manage_classes")
+			printer("");
+
+			function initClassElementTemplate(newTemplate) {
+				classElementTemplate = newTemplate;
+
+				if (classList !== null) {
+					displayClassData();
+				}
+			}
+
+			function initClassList(newList) {
+				classList = newList;
+				classList.sort(function(a, b) {
+					let comp = b["StartDate"].localeCompare(a["StartDate"]); // newer classes on top
 					if (comp == 0) {
-						comp = a["Name"].localeCompare(b["Name"]); // sort alphabetically by name
+						comp = a["EndDate"].localeCompare(b["EndDate"]); // classes that will end sooner on top
 						if (comp == 0) {
-							comp = a["ClassCode"].localeCompare(b["ClassCode"]); // sort alphabetically by code
+							comp = a["Name"].localeCompare(b["Name"]); // sort alphabetically by name
+							if (comp == 0) {
+								comp = a["ClassCode"].localeCompare(b["ClassCode"]); // sort alphabetically by code
+							}
 						}
 					}
+					return comp;
+				});
+
+				if (classElementTemplate !== null) {
+					displayClassData();
 				}
-				return comp;
+			}
+
+			function displayClassData() {
+				const generateClassElementHTML = function(classData) {
+					const statusData = classCommands.getClassStatus(classData);
+
+					let html = classElementTemplate;
+					html = html.replaceAll("[code]", classData["ClassCode"]);
+					html = html.replaceAll("[name]", classData["Name"]);
+					html = html.replaceAll("[status]", statusData["Status"]);
+					html = html.replaceAll("[studentCount]", classData["StudentCount"]);
+					html = html.replaceAll("[statusMessage]", statusData["Message"]);
+
+					return html;
+				}
+
+				const len = classList.length;
+				if (len > 0) {
+					const list = document.getElementById("manage_classes_list");
+					list.innerHTML = ""; // clear anything inside of it
+
+					let newElement;
+
+					for (let i = 0; i < len; i++) {
+						newElement = document.createElement("li");
+						newElement.innerHTML = generateClassElementHTML(classList[i]);
+						list.appendChild(newElement);
+					}
+				}
+			}
+
+			$.ajax({
+	            url: "/templates/class_element.html",
+	            async: true,
+	            success: initClassElementTemplate,
+				error: function(xhr, ajaxOptions, thrownError) {
+					printer("Could not load intro statement.");
+				}
+	        });
+
+			document.addEventListener("DOMContentLoaded", function(event) {
+				if (loginManager.isProfessor()) {
+					profCommands.getClassList(
+						["ClassCode", "Name", "StartDate", "EndDate", "StudentCount"],
+						initClassList,
+						printer
+					);
+				}
 			});
-
-			if (classElementTemplate !== null) {
-				displayClassData();
-			}
-		}
-
-		function displayClassData() {
-			const generateClassElementHTML = function(classData) {
-				const statusData = classCommands.getClassStatus(classData);
-
-				let html = classElementTemplate;
-				html = html.replaceAll("[code]", classData["ClassCode"]);
-				html = html.replaceAll("[name]", classData["Name"]);
-				html = html.replaceAll("[status]", statusData["Status"]);
-				html = html.replaceAll("[studentCount]", classData["StudentCount"]);
-				html = html.replaceAll("[statusMessage]", statusData["Message"]);
-
-				return html;
-			}
-
-			const len = classList.length;
-			if (len > 0) {
-				const list = document.getElementById("manage_classes_list");
-				list.innerHTML = ""; // clear anything inside of it
-
-				let newElement;
-
-				for (let i = 0; i < len; i++) {
-					newElement = document.createElement("li");
-					newElement.innerHTML = generateClassElementHTML(classList[i]);
-					list.appendChild(newElement);
-				}
-			}
-		}
-
-		$.ajax({
-            url: "/templates/class_element.html",
-            async: true,
-            success: initClassElementTemplate,
-			error: function(xhr, ajaxOptions, thrownError) {
-				printer("Could not load intro statement.");
-			}
-        });
-
-		document.addEventListener("DOMContentLoaded", function(event) {
-			if (loginManager.isProfessor()) {
-				profCommands.getClassList(
-					["ClassCode", "Name", "StartDate", "EndDate", "StudentCount"],
-					initClassList,
-					printer
-				);
-			}
-		});
-	})();
+		})();
+	}
 </script>

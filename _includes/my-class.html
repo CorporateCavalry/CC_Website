@@ -3,48 +3,52 @@
 {% include alert-message.html id="my_class" type="warning" %}
 
 <script>
-	(function() {
-		let printer = getAlertPrinter("my_class");
-		printer("");
-		classCommands.hideClassInfo();
+	if (!loginManager.isStudent()) {
+		urlReplaceSafe("/signin"); // go there and don't let us come back
+	} else {
+		(function() {
+			let printer = getAlertPrinter("my_class");
+			printer("");
+			classCommands.hideClassInfo();
 
-		const onNoClass = function() {
-			printer("You are not currently in a class.");
-			$("#button_leave_class").css("display", "none");
-		};
+			const onNoClass = function() {
+				printer("You are not currently in a class.");
+				$("#button_leave_class").css("display", "none");
+			};
 
-		if (!loginManager.isStudent() || !loginManager.isPropertyNonEmpty("ClassCode")) {
-			onNoClass();
-			return;
-		}
-
-		studentCommands.getMyClassData(
-			classCommands.classInfoAttributes(),
-			function(classData) { // found class code
-				classCommands.initializeClassInfo(classData);
-				if (classCommands.getClassStatus(classData)["Status"] == "unstarted") {
-					$("#button_leave_class").css("display", "");
-				} else {
-					$("#button_leave_class").css("display", "none");
-				}
-			},
-			function() { // no class code
+			if (!loginManager.isStudent() || !loginManager.isPropertyNonEmpty("ClassCode")) {
 				onNoClass();
 				return;
-			},
-			function(msg) { // error
-				printer(msg);
-				classCommands.hideClassInfo();
 			}
-		);
-	})();
 
-	function leaveClass() {
-		studentCommands.leaveClass(
-			function() { // successfully left the class
-				goToPageSafe("/");
-			},
-			getAlertPrinter("my_class")
-		);
+			studentCommands.getMyClassData(
+				classCommands.classInfoAttributes(),
+				function(classData) { // found class code
+					classCommands.initializeClassInfo(classData);
+					if (classCommands.getClassStatus(classData)["Status"] == "unstarted") {
+						$("#button_leave_class").css("display", "");
+					} else {
+						$("#button_leave_class").css("display", "none");
+					}
+				},
+				function() { // no class code
+					onNoClass();
+					return;
+				},
+				function(msg) { // error
+					printer(msg);
+					classCommands.hideClassInfo();
+				}
+			);
+		})();
+
+		function leaveClass() {
+			studentCommands.leaveClass(
+				function() { // successfully left the class
+					goToPageSafe("/");
+				},
+				getAlertPrinter("my_class")
+			);
+		}
 	}
 </script>
