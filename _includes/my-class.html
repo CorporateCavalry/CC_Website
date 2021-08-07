@@ -4,13 +4,19 @@
 
 <script>
 	(function() {
-		if (!loginManager.isStudent() || !loginManager.isPropertyNonEmpty("ClassCode")) {
-			goToPageSafe("/");
-			return;
-		}
-
 		let printer = getAlertPrinter("my_class");
 		printer("");
+		classCommands.hideClassInfo();
+
+		const onNoClass = function() {
+			printer("You are not currently in a class.");
+			$("#button_leave_class").css("display", "none");
+		};
+
+		if (!loginManager.isStudent() || !loginManager.isPropertyNonEmpty("ClassCode")) {
+			onNoClass();
+			return;
+		}
 
 		studentCommands.getMyClassData(
 			classCommands.classInfoAttributes(),
@@ -23,7 +29,7 @@
 				}
 			},
 			function() { // no class code
-				goToPageSafe("/");
+				onNoClass();
 				return;
 			},
 			function(msg) { // error
