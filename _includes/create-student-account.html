@@ -34,7 +34,7 @@
 			const confirm = elements[formName + "_confirm_password"].value;
 			const printer = getAlertPrinter(formName);
 
-			if (!isValidStudentID(accountKey, accountID)) {
+			if (!isValidStudentID(accountIDStr, accountID)) {
 				printer("Please enter a valid Student ID");
 				return;
 			}
