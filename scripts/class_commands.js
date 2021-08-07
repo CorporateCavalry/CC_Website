@@ -55,6 +55,7 @@ classCommands = function() {
                     "StartDate": startDate,
                     "EndDate": endDate,
                     "GroupCount": 0,
+                    "StudentCount": 0,
                     "Owner": owner,
                     "Name": className
                 }
