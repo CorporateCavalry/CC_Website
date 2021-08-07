@@ -3,8 +3,10 @@
 {% include alert-message.html id="my_class" type="warning" %}
 
 <script>
-	if (!loginManager.isStudent()) {
-		urlReplaceSafe("/signin"); // go there and don't let us come back
+	if (loginManager.isProfessor()) {
+		urlReplaceSafe("/"); // go to homepage if we are a professor
+	} else if (!loginManager.isStudent()) {
+		urlReplaceSafe("/signin/"); // have us sign in if we're signed out
 	} else {
 		(function() {
 			let printer = getAlertPrinter("my_class");
