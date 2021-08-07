@@ -50,7 +50,8 @@ $button-text-horizontal-padding: 2rem;
 $button-background-color: black;
 $button-text-color: white;
 $button-hover-color: #333333;
-$button-press-color: #9F9F9F;
+$button-press-color: #686868;
+$button-disabled-color: #AAAAAA;
 
 $text-hover-brightness: 50%;
 
@@ -425,6 +426,9 @@ form {
 }
 .button:active {
   background-color: $button-press-color;
+}
+.button:disabled {
+  background-color: $button-disabled-color;
 }
 
 /* WHERE TO PLAY LIST */
