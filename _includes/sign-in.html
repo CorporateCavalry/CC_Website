@@ -36,7 +36,7 @@
 		}
 
 		const accountID = parseInt(accountKey);
-		if (!isNaN(accountID)) { // valid student ID
+		if (isValidStudentID(accountKey, accountID)) { // valid student ID
 			submitButton.prop("disabled", true);
 
 			studentCommands.login(accountID, password, getPageRedirector("/howtoplay"), onComplete);

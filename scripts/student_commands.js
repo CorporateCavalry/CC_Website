@@ -60,6 +60,11 @@ studentCommands = function() {
             return;
         }
 
+        if (accountID < 0) {
+            failPrinter("Student ID cannot be negative!");
+            return;
+        }
+
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -106,6 +111,11 @@ studentCommands = function() {
     function login(accountID, password, onSuccess, failPrinter) {
         if (!isInt(accountID) || !isString(password)) {
             logError("Invalid data type", failPrinter);
+            return;
+        }
+
+        if (accountID < 0) {
+            failPrinter("Student ID cannot be negative!");
             return;
         }
 

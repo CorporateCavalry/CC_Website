@@ -23,13 +23,15 @@
 		const formName = "create_student_account";
 
 		const elements = document.getElementById(formName + "_form").elements;
-		const accountID = parseInt(elements[formName + "_studentID"].value);
+
+		const accountIDStr = elements[formName + "_studentID"].value;
+		const accountID = parseInt(accountIDStr);
 		const name = elements[formName + "_name"].value;
 		const password = elements[formName + "_password"].value;
 		const confirm = elements[formName + "_confirm_password"].value;
 		const printer = getAlertPrinter(formName);
 
-		if (isNaN(accountID)) {
+		if (!isValidStudentID(accountKey, accountID)) {
 			printer("Please enter a valid Student ID");
 			return;
 		}

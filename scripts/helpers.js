@@ -42,6 +42,10 @@ function getHtmlSafeText(text) {
     return $('<span>').text(text).html();
 }
 
+function isValidStudentID(str, id) {
+    return !isNaN(id) && (new String(id) == str) && id >= 0;
+}
+
 // date formatting
 function getPaddedNumStr(num, digits) {
     return new String(num).padStart(digits, '0');
