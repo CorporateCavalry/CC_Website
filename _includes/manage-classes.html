@@ -26,6 +26,19 @@
 
 		function initClassList(newList) {
 			classList = newList;
+			classList.sort(function(a, b) {
+				let comp = b["StartDate"].localeCompare(a["StartDate"]); // newer classes on top
+				if (comp == 0) {
+					comp = a["EndDate"].localeCompare(b["EndDate"]); // classes that will end sooner on top
+					if (comp == 0) {
+						comp = a["Name"].localeCompare(b["Name"]); // sort alphabetically by name
+						if (comp == 0) {
+							comp = a["ClassCode"].localeCompare(b["ClassCode"]); // sort alphabetically by code
+						}
+					}
+				}
+				return comp;
+			});
 
 			if (classElementTemplate !== null) {
 				displayClassData();
