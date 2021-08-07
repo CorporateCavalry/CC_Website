@@ -48,7 +48,15 @@ function getPaddedNumStr(num, digits) {
 }
 
 function parseSlidersDateString(datestring) {
-    return new Date(Date.parse(datestring + "+00:00"));
+    // format is "yyyy MM/dd HH:mm:ss", where the time is in UTC
+    return new Date(Date.UTC(
+        parseInt(datestring.substring(0, 4)), //year
+        parseInt(datestring.substring(5, 7)) - 1, //month
+        parseInt(datestring.substring(8, 10)), // date
+        parseInt(datestring.substring(11, 13)), // hour
+        parseInt(datestring.substring(14, 16)), // minute
+        parseInt(datestring.substring(17, 19)) // seconds
+    ));
 }
 
 function getSlidersFormattedDateString(timestamp) {
