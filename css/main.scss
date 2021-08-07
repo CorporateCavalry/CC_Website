@@ -21,6 +21,7 @@ $mobile-icon-size-ratio: 0.66;
 
 $narrow-page-max-width: 64rem;
 $mobile-page-width: 45rem;
+$mobile-page-narrow-width: 30rem;
 
 $nav-bar-padding: 1rem;
 $nav-bar-icon-size: 4rem;
@@ -339,11 +340,19 @@ form {
   display: flex;
   align-items: center;
   flex-direction: column;
+
+  li {
+    width: 100%;
+  }
+  .hidden-divider {
+    width: $standard-spacing * 2;
+  }
 }
 
 .form-date-range {
   display: flex;
   justify-content: space-between;
+  flex-direction: row;
 
   .form-line {
       align-items: center;
@@ -351,6 +360,8 @@ form {
   }
 
   .form-line > input {
+      font-size: $small-font-size;
+      font-weight: $medium-font-weight;
       padding-left: 96px;
   }
 
@@ -369,7 +380,6 @@ form {
 }
 
 .form-line {
-  width: 100%;
   input {
     ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
       font-size: $medium-font-size;
@@ -681,6 +691,20 @@ form {
       height: $mobile-icon-size-ratio * $status-icon-size;
       width: $mobile-icon-size-ratio * $status-icon-size;
     }
+    .form-date-range > .form-line {
+        input {
+          font-size: $mobile-small-font-size-ratio * $small-font-size;
+          padding-left: 84px;
+        }
+        label {
+          font-size: $mobile-small-font-size-ratio * $small-font-size;
+        }
+    }
+}
+@media only screen and (max-width: $mobile-page-narrow-width) {
+  .form-date-range {
+    flex-direction: column;
+  }
 }
 
 /* CODE SNIPPETS */
