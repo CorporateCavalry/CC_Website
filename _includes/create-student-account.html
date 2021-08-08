@@ -11,60 +11,56 @@
 {% include alert-message.html id="create_student_account" type="error" %}
 
 <script>
-	if (loginManager.isProfessor() || loginManager.isStudent()) {
-		urlReplaceSafe("/"); // go there and don't let us come back
-	} else {
-		clearAlertPrinter("create_student_account");
+	clearAlertPrinter("create_student_account");
 
-		function goToHowToPlay() {
-			goToPageSafe("/howtoplay");
+	function goToHowToPlay() {
+		goToPageSafe("/howtoplay");
+	}
+
+	function processCreateStudentAccount() {
+		if (studentCommands.getIsProcessing()) return;
+
+		const formName = "create_student_account";
+
+		const elements = document.getElementById(formName + "_form").elements;
+
+		const accountIDStr = elements[formName + "_studentID"].value;
+		const accountID = parseInt(accountIDStr);
+		const name = elements[formName + "_name"].value;
+		const password = elements[formName + "_password"].value;
+		const confirm = elements[formName + "_confirm_password"].value;
+		const printer = getAlertPrinter(formName);
+
+		if (!isValidStudentID(accountIDStr, accountID)) {
+			printer("Please enter a valid Student ID");
+			return;
 		}
 
-		function processCreateStudentAccount() {
-			if (studentCommands.getIsProcessing()) return;
-
-			const formName = "create_student_account";
-
-			const elements = document.getElementById(formName + "_form").elements;
-
-			const accountIDStr = elements[formName + "_studentID"].value;
-			const accountID = parseInt(accountIDStr);
-			const name = elements[formName + "_name"].value;
-			const password = elements[formName + "_password"].value;
-			const confirm = elements[formName + "_confirm_password"].value;
-			const printer = getAlertPrinter(formName);
-
-			if (!isValidStudentID(accountIDStr, accountID)) {
-				printer("Please enter a valid Student ID");
-				return;
-			}
-
-			if (isNullOrEmpty(name) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
-				printer("All fields must be filled out!");
-				return;
-			}
-
-			if (confirm !== password) {
-				printer("Passwords do not match!");
-				return;
-			}
-
-			const submitButton = $("#button_" + formName);
-			submitButton.prop("disabled", true);
-			printer("");
-
-			const onComplete = function(msg) {
-				submitButton.prop("disabled", false);
-				printer(msg);
-			}
-
-			studentCommands.createAccount(
-				accountID,
-				name,
-				password,
-				{{ include.onSignUpSuccess }},
-				onComplete
-			);
+		if (isNullOrEmpty(name) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
+			printer("All fields must be filled out!");
+			return;
 		}
+
+		if (confirm !== password) {
+			printer("Passwords do not match!");
+			return;
+		}
+
+		const submitButton = $("#button_" + formName);
+		submitButton.prop("disabled", true);
+		printer("");
+
+		const onComplete = function(msg) {
+			submitButton.prop("disabled", false);
+			printer(msg);
+		}
+
+		studentCommands.createAccount(
+			accountID,
+			name,
+			password,
+			{{ include.onSignUpSuccess }},
+			onComplete
+		);
 	}
 </script>

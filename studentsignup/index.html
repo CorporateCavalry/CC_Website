@@ -9,3 +9,9 @@ title: Student Sign Up
 		</div>
 	</div>
 </div>
+
+<script>
+	if (loginManager.isProfessor() || loginManager.isStudent()) {
+		urlReplaceSafe("/"); // go there and don't let us come back
+	}
+</script>
