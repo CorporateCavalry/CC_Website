@@ -57,6 +57,11 @@
 			}
 
 			function initClassData(data) {
+				if (data["Owner"] !== loginManager.getProperty("Name")) {
+					urlReplaceSafe("/manageclasses"); // this isn't our class, so abort
+					return;
+				}
+
 				curClassData = data;
 				classCommands.initializeClassInfo(data);
 
