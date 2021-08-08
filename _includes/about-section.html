@@ -10,8 +10,23 @@
 			<div class="gallery-panel">
 				{% capture my_include %}{% include about-panel-1.md %}{% endcapture %}
 				{{ my_include | markdownify }}
+				<div class="button-container">
+					{% include button.html id="setup_start" label="Get Started" function="profSetupStart"%}
+				</div>
 			</div>
 			<img class="gallery-panel" src="/assets/about/waterCoolerIntro.png">
 		</div>
 	</div>
 </div>
+
+<script>
+	function profSetupStart() {
+		if (loginManager.isProfessor()) {
+			goToPageSafe("/manageclasses");
+		} else if (loginManager.isStudent()) {
+			goToPageSafe("/howtoplay");
+		} else {
+			goToPageSafe("/professorsignup");
+		}
+	}
+</script>

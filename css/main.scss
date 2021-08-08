@@ -244,6 +244,12 @@ p {
     ol li {
       list-style-type: decimal;
     }
+    .button-container {
+      display: flex;
+      .button {
+        margin: $standard-spacing auto;
+      }
+    }
   }
 }
 
