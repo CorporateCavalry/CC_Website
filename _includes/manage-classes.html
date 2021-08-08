@@ -1,4 +1,8 @@
 <div class="section-header">Manage Classes</div>
+<div class="section">
+	{% capture my_include %}{% include no-classes-message.md %}{% endcapture %}
+	{{ my_include | markdownify }}
+</div>
 <ul id="manage_classes_list" class="class-element-list">
 </ul>
 {% include button.html label="Create New" id="goto_create_class" function="goToCreateNewClass" %}
@@ -66,6 +70,7 @@
 
 				const len = classList.length;
 				if (len > 0) {
+					$(".no-classes-message").css("display", "none");
 					const list = document.getElementById("manage_classes_list");
 					list.innerHTML = ""; // clear anything inside of it
 
@@ -76,6 +81,8 @@
 						newElement.innerHTML = generateClassElementHTML(classList[i]);
 						list.appendChild(newElement);
 					}
+				} else {
+					$(".no-classes-message").css("display", ""); // show custom message
 				}
 			}
 
