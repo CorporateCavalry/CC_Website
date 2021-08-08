@@ -9,9 +9,7 @@
 {% include alert-message.html id="login" type="error" %}
 
 <script>
-	if (loginManager.isProfessor() || loginManager.isStudent()) {
-		urlReplaceSafe("/"); // go there and don't let us come back
-	} else {
+	if (!loginManager.isStudent() && !loginManager.isProfessor()) {
 		clearAlertPrinter("login");
 
 		function processLogin() {

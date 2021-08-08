@@ -2,6 +2,14 @@
 layout: default
 title: Create Class
 ---
+<script>
+	if (loginManager.isStudent()) {
+		urlReplaceSafe("/"); // go to homepage if we are a student
+	} else if (!loginManager.isProfessor()) {
+		urlReplaceSafe("/signin/"); // have us sign in if we're signed out
+	}
+</script>
+
 <div class="narrow-page">
 	<div class="prof-logged-in">
 		<div class="section">

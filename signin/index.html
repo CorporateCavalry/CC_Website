@@ -2,6 +2,12 @@
 layout: default
 title: Sign in
 ---
+<script>
+	if (loginManager.isProfessor() || loginManager.isStudent()) {
+		urlReplaceSafe("/"); // go there and don't let us come back
+	}
+</script>
+
 <div class="narrow-page">
 	<div class="logged-out">
 		<div class="section">

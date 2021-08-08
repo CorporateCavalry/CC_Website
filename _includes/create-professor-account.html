@@ -11,9 +11,7 @@
 {% include alert-message.html id="create_professor_account" type="error" %}
 
 <script>
-	if (loginManager.isProfessor() || loginManager.isStudent()) {
-		urlReplaceSafe("/"); // go there and don't let us come back
-	} else {
+	if (!loginManager.isProfessor() && !loginManager.isStudent()) {
 		clearAlertPrinter("create_professor_account");
 
 		function processCreateProfAccount() {

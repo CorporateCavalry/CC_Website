@@ -2,6 +2,14 @@
 layout: default
 title: My Class
 ---
+<script>
+	if (loginManager.isProfessor()) {
+		urlReplaceSafe("/"); // go to homepage if we are a professor
+	} else if (!loginManager.isStudent()) {
+		urlReplaceSafe("/signin/"); // have us sign in if we're signed out
+	}
+</script>
+
 <div class="narrow-page">
 	<div class="section">
 		{% include my-class.html %}

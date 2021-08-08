@@ -16,11 +16,7 @@
 {% include alert-message.html id="create_class_error" type="error" %}
 
 <script>
-	if (loginManager.isStudent()) {
-		urlReplaceSafe("/"); // go to homepage if we are a student
-	} else if (!loginManager.isProfessor()) {
-		urlReplaceSafe("/signin/"); // have us sign in if we're signed out
-	} else {
+	if (loginManager.isProfessor()) {
 		createClassHelpers = function(){
 			const formName = "create_class";
 
