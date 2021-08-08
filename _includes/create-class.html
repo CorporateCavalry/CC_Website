@@ -15,6 +15,9 @@
 {% include alert-message.html id="create_class_warning" type="warning" %}
 {% include alert-message.html id="create_class_error" type="error" %}
 
+{% capture my_include %}{% include create-class-help.md %}{% endcapture %}
+{{ my_include | markdownify }}
+
 <script>
 	if (loginManager.isProfessor()) {
 		createClassHelpers = function(){

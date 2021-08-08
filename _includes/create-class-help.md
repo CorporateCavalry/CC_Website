@@ -1,0 +1,1 @@
+Students will be able to start playing the game on the start date, so they should be given a few days beforehand to sign up and install the app. Once the game starts, they will have until the end date to complete the game.
