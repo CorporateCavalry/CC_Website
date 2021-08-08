@@ -7,15 +7,11 @@ profCommands = function() {
         return { TableName: PROF_TABLE_NAME, Key: { "Email": email }, AttributesToGet: attributes };
     }
 
-    function getProfKeyAll(email) {
-        return { TableName: PROF_TABLE_NAME, Key: { "Email": email } };
-    }
-
     function printBusy(printer) {
         printer("Professor database busy!");
     }
 
-    function validateLogin(getAll, onValid, onInvalid, printer) {
+    function validateLogin(attributes, onValid, onInvalid, printer) {
         if (!loginManager.isProfessor()) {
             onInvalid();
             return;
@@ -34,10 +30,8 @@ profCommands = function() {
             return;
         }
 
-        let params = getAll ? getProfKeyAll(cachedEmail) : getProfKey(cachedEmail, ["Email", "Password"]);
-
         awsManager.get(
-            params,
+            getProfKey(cachedEmail, attributes.concat("Email", "Password")),
             function(data) {
                 if (data["Password"] === cachedPassword) {
                     onValid(data);
@@ -150,7 +144,7 @@ profCommands = function() {
         }
 
         validateLogin(
-            false,
+            [],
             function(profData) {
                 classCommands.createClass(
                     loginManager.getProperty("Name"),
@@ -195,7 +189,7 @@ profCommands = function() {
         };
 
         validateLogin(
-            true,
+            ["Classes"],
             function(profData) { // login credentials valid
                 if (profData.hasOwnProperty("Classes")) {
                     classCommands.getClassList(
@@ -209,6 +203,40 @@ profCommands = function() {
                     );
                 } else {
                     completeProcessing();
+                    onSuccess([]);
+                }
+            },
+            function() {
+                onFail("Invalid login credentials.");
+            },
+            onFail
+        );
+    }
+
+    function getOwnedClassCodes(onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        const onFail = function(msg) {
+            completeProcessing();
+            failPrinter(msg);
+        };
+
+        if (!loginManager.isProfessor()) {
+            onFail("Not logged in as a professor!");
+            return;
+        }
+
+        validateLogin(
+            ["Classes"],
+            function(profData) { // login credentials valid
+                completeProcessing();
+                if (profData.hasOwnProperty("Classes")) {
+                    onSuccess(profData["Classes"])
+                } else {
                     onSuccess([]);
                 }
             },
@@ -237,6 +265,7 @@ profCommands = function() {
         login:login,
         getCurrentUser:getCurrentUser,
         createClass:createClass,
-        getClassList:getClassList
+        getClassList:getClassList,
+        getOwnedClassCodes:getOwnedClassCodes
     }
 }();

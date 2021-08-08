@@ -57,11 +57,6 @@
 			}
 
 			function initClassData(data) {
-				if (data["Owner"] !== loginManager.getProperty("Name")) {
-					urlReplaceSafe("/manageclasses"); // this isn't our class, so abort
-					return;
-				}
-
 				curClassData = data;
 				classCommands.initializeClassInfo(data);
 
@@ -110,13 +105,24 @@
 				}
 			}
 
-			classCommands.fetchClassData(
-				classCode,
-				classCommands.classInfoAttributes(),
-				initClassData,
+			profCommands.getOwnedClassCodes(
+				function(ownedCodes) {
+					if (ownedCodes.includes(classCode)) {
+						classCommands.fetchClassData(
+							classCode,
+							classCommands.classInfoAttributes(),
+							initClassData,
+							function(msg) {
+								printer(msg);
+								classCommands.hideClassInfo();
+							}
+						);
+					} else {
+						urlReplaceSafe("/manageclasses"); // this isn't our class, so abort
+					}
+				},
 				function(msg) {
-					printer(msg);
-					classCommands.hideClassInfo();
+					urlReplaceSafe("/manageclasses"); // this isn't our class, so abort
 				}
 			);
 		})();
