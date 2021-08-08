@@ -8,18 +8,11 @@ studentCommands = function() {
         return { TableName: ACCT_TABLE_NAME, Key: { "AccountID": id }, AttributesToGet: attributes };
     }
 
-    function getAccountKeyAll(id) {
-        return { TableName: ACCT_TABLE_NAME, Key: { "AccountID": id } };
-    }
-
     function printBusy(printer) {
         printer("Professor database busy!");
     }
 
-    function getAccount(accountID) {
-    }
-
-    function validateLogin(getAll, onValid, onInvalid, printer) {
+    function validateLogin(attributes, onValid, onInvalid, printer) {
         if (!loginManager.isStudent()) {
             onInvalid();
             return;
@@ -38,10 +31,8 @@ studentCommands = function() {
             return;
         }
 
-        let params = getAll ? getAccountKeyAll(cachedAccountID) : getAccountKey(cachedAccountID, ["AccountID", "Password"]);
-
         awsManager.get(
-            params,
+            getAccountKey(cachedAccountID, attributes.concat("AccountID", "Password")),
             function(data) {
                 if (data.hasOwnProperty("Password") && data["Password"] === cachedPassword) {
                     onValid(data);
@@ -167,7 +158,7 @@ studentCommands = function() {
         }
 
         validateLogin(
-            false,
+            [],
             function(data) { // valid login
                 classCommands.fetchClassData(
                     loginManager.getProperty("ClassCode"),
@@ -199,7 +190,7 @@ studentCommands = function() {
         }
 
         validateLogin(
-            true,
+            ["ClassCode", "GroupID"],
             function(data) { // valid login
                 if (!data.hasOwnProperty("ClassCode") || isNullOrEmpty(data["ClassCode"])) {
                     classCommands.addAccountToClass(
@@ -250,7 +241,7 @@ studentCommands = function() {
         }
 
         validateLogin(
-            true,
+            ["ClassCode", "GroupID"],
             function(data) { // valid login
                 if (!data.hasOwnProperty("ClassCode") || isNullOrEmpty(data["ClassCode"])) {
                     onFail("Student is not in a class!");
@@ -301,7 +292,6 @@ studentCommands = function() {
         getIsProcessing:getIsProcessing,
         createAccount:createAccount,
         login:login,
-        getAccount:getAccount,
         getMyClassData:getMyClassData,
         joinClass:joinClass,
         leaveClass:leaveClass
