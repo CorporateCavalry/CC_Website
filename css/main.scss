@@ -20,6 +20,7 @@ $mobile-text-snippet-font-size-ratio: 0.85;
 $mobile-icon-size-ratio: 0.66;
 
 $narrow-page-max-width: 64rem;
+$nav-bar-compress-width: 84rem;
 $mobile-page-width: 45rem;
 $mobile-page-narrow-width: 30rem;
 
@@ -228,6 +229,9 @@ p {
     width: $standard-panel-width;
     height: $standard-panel-width;
     margin-bottom: $standard-spacing;
+    h2 {
+      font-family: 'Bungee', cursive;
+    }
     ul {
       margin-left: $standard-spacing * 1.5;
     }
@@ -255,6 +259,8 @@ p {
 
 /* TITLE BAR */
 .nav-bar {
+  font-family: 'Bungee', cursive;
+
   font-size: $large-font-size;
   font-weight: $large-font-weight;
 
@@ -313,6 +319,8 @@ p {
   justify-content: center;
   align-items: center;
 
+  font-family: 'Bungee', cursive;
+
   font-size: $large-font-size;
   font-weight: $large-font-weight;
 }
@@ -327,6 +335,7 @@ p {
   background-color: black;
   padding: $section-padding;
   .section-title {
+    font-family: 'Bungee', cursive;
     color: white;
   }
 }
@@ -424,6 +433,8 @@ form {
   background-color: $button-background-color;
   color: $button-text-color;
   font-size: $large-font-size;
+  text-align: center;
+  //font-family: 'Bungee', cursive;
   font-family: inherit;
 }
 
@@ -606,14 +617,7 @@ form {
 }
 
 /* Responsive */
-@media only screen and (max-width: $narrow-page-max-width) {
-  .section {
-    padding: 0 $standard-spacing $standard-spacing $standard-spacing;
-  }
-  .narrow-page {
-    max-width: none;
-    width: 100%;
-  }
+@media only screen and (max-width: $nav-bar-compress-width) {
   .nav-bar {
     flex-direction: column;
     padding: $nav-bar-padding;
@@ -630,6 +634,16 @@ form {
     .nav-bar-accounts {
       justify-content: center;
     }
+  }
+}
+
+@media only screen and (max-width: $narrow-page-max-width) {
+  .section {
+    padding: 0 $standard-spacing $standard-spacing $standard-spacing;
+  }
+  .narrow-page {
+    max-width: none;
+    width: 100%;
   }
 }
 @media only screen and (max-width: $mobile-page-width) {
