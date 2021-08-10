@@ -32,6 +32,7 @@ $standard-panel-width: 48.5%;
 
 $content-top-padding: 4rem;
 $section-header-height: 4rem;
+$section-header-image-max-width: 20rem;
 $section-padding: 2rem;
 
 $form-max-width: 32rem;
@@ -187,7 +188,7 @@ p {
   width:  90%;
   max-width: $narrow-page-max-width;
   margin: 0 auto;
-  padding-top: $content-top-padding;
+  //padding-top: $content-top-padding;
   margin-bottom: 1rem;
   margin-top: $standard-spacing;
 
@@ -329,6 +330,10 @@ p {
   .section-title > a {
     color: white;
   }
+}
+.section-header-image {
+  width: 75%;
+  max-width: $section-header-image-max-width;
 }
 /* SECTIONS */
 .section-divider {
