@@ -1,25 +1,23 @@
 ---
-layout: default
+layout: narrow-page
 title: Join Class
 ---
-<div class="narrow-page">
+<div class="section">
+	{% include join-class.html %}
+</div>
+<div class="student-logged-in">
 	<div class="section">
-		{% include join-class.html %}
-	</div>
-	<div class="student-logged-in">
-		<div class="section">
-			{% include button.html function="joinClass" label="Join" id="join_class" %}
-		</div>
-	</div>
-	<div class="section">
-		{% include alert-message.html id="join_class" type="error" %}
-	</div>
-	<div class="logged-out">
-		<div class="section">
-			{% include create-student-account.html onSignUpSuccess="joinClass" buttonLabel="Sign Up and Join" %}
-		</div>
+		{% include button.html function="joinClass" label="Join" id="join_class" %}
 	</div>
 </div>
+<div class="section">
+	{% include alert-message.html id="join_class" type="error" %}
+</div>
+<div class="logged-out">
+	<div class="section">
+		{% include create-student-account.html onSignUpSuccess="joinClass" buttonLabel="Sign Up and Join" %}
+	</div>
+	</div>
 
 <script>
 	clearAlertPrinter("join_class");

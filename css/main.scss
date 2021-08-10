@@ -19,13 +19,17 @@ $mobile-small-font-size-ratio: 0.85;
 $mobile-text-snippet-font-size-ratio: 0.85;
 $mobile-icon-size-ratio: 0.66;
 
-$narrow-page-max-width: 64rem;
+$min-page-height: 52rem;
+
+$narrow-page-max-width: 52rem;
 $nav-bar-compress-width: 84rem;
 $mobile-page-width: 45rem;
 $mobile-page-narrow-width: 30rem;
 
 $nav-bar-padding: 1rem;
 $nav-bar-icon-size: 4rem;
+
+$background-tile-size: 40rem;
 
 $standard-spacing: 1rem;
 $standard-panel-width: 48.5%;
@@ -217,6 +221,20 @@ p {
   }
 }
 
+// MAKE THE PAGE FULL HEIGHT
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+}
+.container {
+  height: 100%;
+}
+.page-container{
+  height: 100%;
+}
+
 .content {
   margin-bottom: $standard-spacing;
 }
@@ -310,6 +328,29 @@ p {
 .nav-bar-icon {
   width: $nav-bar-icon-size;
   height: $nav-bar-icon-size;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: row;
+}
+
+/* WALLPAPER */
+.wall-paper-right {
+  background-position-x: left;
+  background-position-y: top;
+  flex-grow: 1;
+  background-image: url("/assets/wallPaperTile.png");
+  background-repeat: repeat;
+  background-size: $background-tile-size;
+}
+.wall-paper-left {
+  background-position-x: right;
+  background-position-y: top;
+  flex-grow: 1;
+  background-image: url("/assets/wallPaperTile.png");
+  background-repeat: repeat;
+  background-size: $background-tile-size;
 }
 
 /* SECTION HEADERS */

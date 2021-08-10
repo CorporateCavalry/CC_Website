@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: narrow-page
 title: Student Sign Up
 ---
 <script>
@@ -8,10 +8,8 @@ title: Student Sign Up
 	}
 </script>
 
-<div class="narrow-page">
-	<div class="logged-out">
-		<div class="section">
-				{% include create-student-account.html onSignUpSuccess="goToHowToPlay" buttonLabel="Sign Up" %}
-		</div>
+<div class="logged-out">
+	<div class="section">
+			{% include create-student-account.html onSignUpSuccess="goToHowToPlay" buttonLabel="Sign Up" %}
 	</div>
 </div>
