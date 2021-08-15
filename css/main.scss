@@ -37,6 +37,7 @@ $standard-panel-width: 48.5%;
 $content-top-padding: 4rem;
 $section-header-height: 4rem;
 $section-header-image-max-width: 20rem;
+$section-header-image-wide-max-width: 40rem;
 $section-padding: 2rem;
 
 $form-max-width: 32rem;
@@ -375,6 +376,10 @@ body {
 .section-header-image {
   width: 75%;
   max-width: $section-header-image-max-width;
+}
+.section-header-image-wide {
+  width: 100%;
+  max-width: $section-header-image-wide-max-width;
 }
 /* SECTIONS */
 .section-divider {
