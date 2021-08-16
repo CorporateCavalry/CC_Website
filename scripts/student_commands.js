@@ -1,4 +1,4 @@
-studentCommands = function() {
+const studentCommands = function() {
     const ACCT_TABLE_NAME = "Accounts";
     const CACHED_LOGIN_KEY = "student_login";
 

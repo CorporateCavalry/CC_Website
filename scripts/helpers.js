@@ -91,7 +91,7 @@ function getShortFormattedDateString(date) {
 }
 
 // login caching
-loginManager = function() {
+const loginManager = function() {
     const CACHED_LOGIN_KEY = "login_data";
     const LOGIN_TYPE_KEY = "LoginType";
 

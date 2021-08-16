@@ -1,4 +1,4 @@
-awsManager = function() {
+const awsManager = function() {
     AWS.config.update(getCredentials());
     let docClient = new AWS.DynamoDB.DocumentClient();
 

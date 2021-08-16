@@ -1,4 +1,4 @@
-classCommands = function() {
+const classCommands = function() {
     const CLASS_TABLE_NAME = "Classes";
     const GROUP_TABLE_NAME = "Groups";
 

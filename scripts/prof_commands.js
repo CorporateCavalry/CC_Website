@@ -1,4 +1,4 @@
-profCommands = function() {
+const profCommands = function() {
     const PROF_TABLE_NAME = "Professors";
 
     let isProcessing = false;
