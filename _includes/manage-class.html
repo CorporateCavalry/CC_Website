@@ -10,7 +10,7 @@
 		let curClassData = null;
 
 		function fillOutIntroStatement(data, text) {
-			let formattedStartDate = getShortFormattedDateString(parseSlidersDateString(data["StartDate"]));
+			let formattedStartDate = dateHelpers.getShortFormattedDateString(dateHelpers.parseSlidersDateString(data["StartDate"]));
 			text = text.replaceAll("[start_date]", formattedStartDate);
 			let homepage = document.location.origin;
 			text = text.replaceAll("[url_join_page]", homepage + "/join?code=" + data["ClassCode"]);

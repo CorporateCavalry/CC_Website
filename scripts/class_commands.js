@@ -43,20 +43,20 @@ const classCommands = function() {
 
     // helpers for class data parsing
     function getClassStatus(classData) {
-        const today = new Date();
+        const today = dateHelpers.getCurrentDate();
 
-        let startDate = parseSlidersDateString(classData["StartDate"]);
+        let startDate = dateHelpers.parseSlidersDateString(classData["StartDate"]);
         if (today < startDate) {
             return {
                 "Status": "unstarted",
-                "Message": "Unstarted: Starts " + getShortFormattedDateString(startDate)
+                "Message": "Unstarted: Starts " + dateHelpers.getShortFormattedDateString(startDate)
             };
         } else {
-            let endDate = parseSlidersDateString(classData["EndDate"]);
+            let endDate = dateHelpers.parseSlidersDateString(classData["EndDate"]);
             if (today < endDate) {
                 return {
                     "Status": "started",
-                    "Message": "Started: Ends " + getShortFormattedDateString(endDate)
+                    "Message": "Started: Ends " + dateHelpers.getShortFormattedDateString(endDate)
                 };
             } else {
                 return {
@@ -76,9 +76,9 @@ const classCommands = function() {
         $(".class-title-text").text(title);
         $(".student-count-text").text(classData["StudentCount"]);
         $(".class-date-range").text(
-            getShortFormattedDateString(parseSlidersDateString(classData["StartDate"])) +
+            dateHelpers.getShortFormattedDateString(dateHelpers.parseSlidersDateString(classData["StartDate"])) +
             " - " +
-            getShortFormattedDateString(parseSlidersDateString(classData["EndDate"]))
+            dateHelpers.getShortFormattedDateString(dateHelpers.parseSlidersDateString(classData["EndDate"]))
         );
 
         const statusData = getClassStatus(classData);

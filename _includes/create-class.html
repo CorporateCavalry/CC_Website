@@ -33,18 +33,18 @@
 				const startDateInput = $("#" + formName + "_start_date");
 				const endDateInput = $("#" + formName + "_end_date");
 
-				let date = new Date();
+				let date = dateHelpers.getCurrentDate();
 
 				date.setDate(date.getDate() + 1);
-				const tomorrowStr = getWebFormattedDateString(date);
+				const tomorrowStr = dateHelpers.getWebFormattedDateString(date);
 				startDateInput.attr("min", tomorrowStr); // minimum date is tomorrow
 				endDateInput.attr("min", tomorrowStr);
 
 				date.setDate(date.getDate() + 3);
-				startDateInput.attr("value", getWebFormattedDateString(date)); // default value of start date is 3 full days after today
+				startDateInput.attr("value", dateHelpers.getWebFormattedDateString(date)); // default value of start date is 3 full days after today
 
 				date.setDate(date.getDate() + 7); // default end date is 1 week away
-				endDateInput.attr("value", getWebFormattedDateString(date));
+				endDateInput.attr("value", dateHelpers.getWebFormattedDateString(date));
 
 				// set up listeners for the date input fields
 				startDateInput.on('input', onDatesEdited);
@@ -81,7 +81,7 @@
 					return;
 				}
 
-				let today = new Date();
+				let today = dateHelpers.getCurrentDate();
 
 				if (startDate <= today) {
 					errorPrinter("Start date must be after today!");
@@ -143,7 +143,7 @@
 				const startDate = parseInputDate(startDateStr);
 				const endDate = parseInputDate(endDateStr);
 
-				let today = new Date();
+				let today = dateHelpers.getCurrentDate();
 
 				if (startDate == null || endDate == null || startDate <= today || endDate <= startDate) {
 					return;
@@ -156,8 +156,8 @@
 
 				profCommands.createClass(
 					className,
-					getSlidersFormattedDateString(startDate),
-					getSlidersFormattedDateString(endDate),
+					dateHelpers.getSlidersFormattedDateString(startDate),
+					dateHelpers.getSlidersFormattedDateString(endDate),
 					function(classCode) {
 						goToPageSafe("/manageclass/?code=" + classCode);
 					},

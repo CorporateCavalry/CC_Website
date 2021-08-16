@@ -57,42 +57,56 @@ function isValidStudentID(str, id) {
 }
 
 // date formatting
-function getPaddedNumStr(num, digits) {
-    return new String(num).padStart(digits, '0');
-}
+const dateHelpers = function() {
+    function getCurrentDate() {
+        return new Date();
+    }
 
-function parseSlidersDateString(datestring) {
-    // format is "yyyy MM/dd HH:mm:ss", where the time is in UTC
-    return new Date(Date.UTC(
-        parseInt(datestring.substring(0, 4)), //year
-        parseInt(datestring.substring(5, 7)) - 1, //month
-        parseInt(datestring.substring(8, 10)), // date
-        parseInt(datestring.substring(11, 13)), // hour
-        parseInt(datestring.substring(14, 16)), // minute
-        parseInt(datestring.substring(17, 19)) // seconds
-    ));
-}
+    function getPaddedNumStr(num, digits) {
+        return new String(num).padStart(digits, '0');
+    }
 
-function getSlidersFormattedDateString(timestamp) {
-    // format is "yyyy MM/dd HH:mm:ss", where the time is in UTC
-    return timestamp.getUTCFullYear() + " " +
-        getPaddedNumStr(timestamp.getUTCMonth() + 1, 2) + "/" + // months are 0-indexed
-        getPaddedNumStr(timestamp.getUTCDate(), 2) + " " +
-        getPaddedNumStr(timestamp.getUTCHours(), 2) + ":" +
-        getPaddedNumStr(timestamp.getUTCMinutes(), 2) + ":" +
-        getPaddedNumStr(timestamp.getUTCSeconds(), 2);
-}
+    function parseSlidersDateString(datestring) {
+        // format is "yyyy MM/dd HH:mm:ss", where the time is in UTC
+        return new Date(Date.UTC(
+            parseInt(datestring.substring(0, 4)), //year
+            parseInt(datestring.substring(5, 7)) - 1, //month
+            parseInt(datestring.substring(8, 10)), // date
+            parseInt(datestring.substring(11, 13)), // hour
+            parseInt(datestring.substring(14, 16)), // minute
+            parseInt(datestring.substring(17, 19)) // seconds
+        ));
+    }
 
-function getWebFormattedDateString(timestamp) {
-    // format is "yyyy-MM-dd"
-    return timestamp.getFullYear() + "-" +
-        getPaddedNumStr(timestamp.getMonth() + 1, 2) + "-" + // months are 0-indexed
-        getPaddedNumStr(timestamp.getDate(), 2);
-}
+    function getSlidersFormattedDateString(timestamp) {
+        // format is "yyyy MM/dd HH:mm:ss", where the time is in UTC
+        return timestamp.getUTCFullYear() + " " +
+            getPaddedNumStr(timestamp.getUTCMonth() + 1, 2) + "/" + // months are 0-indexed
+            getPaddedNumStr(timestamp.getUTCDate(), 2) + " " +
+            getPaddedNumStr(timestamp.getUTCHours(), 2) + ":" +
+            getPaddedNumStr(timestamp.getUTCMinutes(), 2) + ":" +
+            getPaddedNumStr(timestamp.getUTCSeconds(), 2);
+    }
 
-function getShortFormattedDateString(date) {
-    return new String(date.getMonth() + 1) + "/" + new String(date.getDate());
-}
+    function getWebFormattedDateString(timestamp) {
+        // format is "yyyy-MM-dd"
+        return timestamp.getFullYear() + "-" +
+            getPaddedNumStr(timestamp.getMonth() + 1, 2) + "-" + // months are 0-indexed
+            getPaddedNumStr(timestamp.getDate(), 2);
+    }
+
+    function getShortFormattedDateString(date) {
+        return new String(date.getMonth() + 1) + "/" + new String(date.getDate());
+    }
+
+    return {
+        getCurrentDate:getCurrentDate,
+        parseSlidersDateString:parseSlidersDateString,
+        getSlidersFormattedDateString:getSlidersFormattedDateString,
+        getWebFormattedDateString:getWebFormattedDateString,
+        getShortFormattedDateString:getShortFormattedDateString
+    }
+}();
 
 // login caching
 const loginManager = function() {
