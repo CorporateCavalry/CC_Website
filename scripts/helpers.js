@@ -35,8 +35,12 @@ function getURLClassCode() {
     return new URLSearchParams(window.location.search).get('code');
 }
 
-function logError(err, printer) {
+function printUnexpected(printer) {
     printer("Unexpected error: See console for details.");
+}
+
+function logError(err, printer) {
+    printUnexpected(printer);
     console.log("Error: " + JSON.stringify(err, undefined, 2));
 }
 
