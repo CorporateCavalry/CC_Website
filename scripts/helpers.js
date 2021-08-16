@@ -127,18 +127,10 @@ const loginManager = function() {
     const PROF_LOGIN_KEY_TYPE = "p";
     const STUDENT_LOGIN_KEY_TYPE = "s";
 
-    function getProfCachedAttributes() {
-        return ["Email", "Password", "Name"];
-    }
-
-    function getStudentCachedAttributes() {
-        return ["AccountID", "Password", "Name", "ClassCode"];
-    }
-
     function loginAsProfessor(profData) {
         cacheLogin(
             profData,
-            getProfCachedAttributes(),
+            ["Email", "Password", "Name"],
             PROF_LOGIN_KEY_TYPE
         );
     }
@@ -146,7 +138,7 @@ const loginManager = function() {
     function loginAsStudent(studentData) {
         cacheLogin(
             studentData,
-            getStudentCachedAttributes(),
+            ["AccountID", "Password", "Name", "ClassCode"],
             STUDENT_LOGIN_KEY_TYPE
         );
     }
@@ -203,8 +195,6 @@ const loginManager = function() {
         isStudent:isStudent,
         hasProperty:hasProperty,
         getProperty:getProperty,
-        isPropertyNonEmpty:isPropertyNonEmpty,
-        getProfCachedAttributes:getProfCachedAttributes,
-        getStudentCachedAttributes:getStudentCachedAttributes
+        isPropertyNonEmpty:isPropertyNonEmpty
     }
 }();

@@ -1,179 +1,118 @@
 const studentCommands = function() {
-    const ACCT_TABLE_NAME = "Accounts";
-    const CACHED_LOGIN_KEY = "student_login";
+    const MSG_INVALID_ID = "Student ID is not valid";
+    const MSG_ACCOUNT_NOT_FOUND = "No account found with this Student ID";
+    const MSG_INCORRECT_PASSWORD = "Password is incorrect";
+    const MSG_INVALID_CREDENTIALS = "Credentials are invalid";
+    const MSG_CLASS_NOT_FOUND = "Class could not be found";
+    const MSG_ALREADY_IN_CLASS = "You are already in a class";
+    const MSG_NOT_IN_CLASS = "You are not in a class";
 
     let isProcessing = false;
 
-    function getAccountKey(id, attributes) {
-        return { TableName: ACCT_TABLE_NAME, Key: { "AccountID": id }, AttributesToGet: attributes };
+    function getAccountID() {
+        return loginManager.getProperty("AccountID");
+    }
+
+    function getPassword() {
+        return loginManager.getProperty("Password");
     }
 
     function printBusy(printer) {
         printer("Professor database busy!");
     }
 
-    function validateLogin(attributes, onValid, onInvalid, printer) {
-        if (!loginManager.isStudent()) {
-            onInvalid();
-            return;
+    function onFail(failPrinter) {
+        return function(msg) {
+            completeProcessing();
+            failPrinter(msg);
         }
-
-        if (!loginManager.hasProperty("AccountID") || !loginManager.hasProperty("Password")) {
-            onInvalid();
-            return;
-        }
-
-        let cachedAccountID = loginManager.getProperty("AccountID");
-        let cachedPassword = loginManager.getProperty("Password");
-
-        if (!isInt(cachedAccountID) || isNullOrEmpty(cachedPassword)) {
-            onInvalid();
-            return;
-        }
-
-        awsManager.get(
-            getAccountKey(cachedAccountID, attributes.concat("AccountID", "Password")),
-            function(data) {
-                if (data.hasOwnProperty("Password") && data["Password"] === cachedPassword) {
-                    onValid(data);
-                } else {
-                    onInvalid();
-                }
-            },
-            onInvalid,
-            printer
-        );
     }
 
     function createAccount(accountID, username, password, onSuccess, failPrinter) {
-        if (!isInt(accountID) || !isString(username) || !isString(password)) {
-            logError("Invalid data type", failPrinter);
-            return;
-        }
-
-        if (accountID < 0) {
-            failPrinter("Student ID cannot be negative!");
-            return;
-        }
-
         if (isProcessing) {
             printBusy(failPrinter);
             return;
         }
         isProcessing = true;
+        studentData = {"AccountID": accountID, "Password": password, "Name": username};
 
-        const onFail = function(msg) {
-            completeProcessing();
-            failPrinter(msg);
-        }
-
-        awsManager.get(
-            getAccountKey(accountID, ["AccountID"]),
-            function(data) { // account taken
-                onFail("An account for this ID already exists!");
+        lambdaManager.post(
+            "student/createAccount",
+            studentData,
+            function(json) { // on success
+                loginManager.loginAsStudent(studentData);
+                completeProcessing();
+                onSuccess();
             },
-            function() { // account available
-                const data = {
-                    "AccountID": accountID,
-                    "Name": username,
-                    "Password": password,
-                    "GroupID": -1
-                };
-
-                const putParams = {
-                    TableName: ACCT_TABLE_NAME,
-                    Item: data
-                };
-
-                awsManager.put(
-                    putParams,
-                    function() { // on success
-                        loginManager.loginAsStudent(data);
-                        completeProcessing();
-                        onSuccess();
-                    },
-                    onFail
-                );
+            { // error translation
+                "INVALID_ID": MSG_INVALID_ID,
+                "ACCOUNT_TAKEN": "An account with this Student ID already exists"
             },
-            onFail
+            onFail(failPrinter)
         );
     }
 
     function login(accountID, password, onSuccess, failPrinter) {
-        if (!isInt(accountID) || !isString(password)) {
-            logError("Invalid data type", failPrinter);
-            return;
-        }
-
-        if (accountID < 0) {
-            failPrinter("Student ID cannot be negative!");
-            return;
-        }
-
         if (isProcessing) {
             printBusy(failPrinter);
             return;
         }
         isProcessing = true;
 
-        const onFail = function(msg) {
-            completeProcessing();
-            failPrinter(msg);
-        }
+        lambdaManager.post(
+            "student/login",
+            {"AccountID": accountID, "Password": password},
+            function(json) { // on success
+                let studentData = json["data"];
+                studentData["AccountID"] = accountID;
+                studentData["Password"] = password;
 
-        awsManager.get(
-            getAccountKey(accountID, loginManager.getStudentCachedAttributes()),
-            function(data) { // account found
-                if (data.hasOwnProperty("Password") && data["Password"] === password) {
-                    loginManager.loginAsStudent(data);
-                    completeProcessing();
-                    onSuccess();
-                } else {
-                    onFail("Password is incorrect.");
-                }
+                loginManager.loginAsStudent(studentData);
+                completeProcessing();
+                onSuccess();
             },
-            function() { // account not found
-                onFail("No account was found with this student ID.");
+            { // error translation
+                "INVALID_ID": MSG_INVALID_ID,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INCORRECT_PASSWORD
             },
-            onFail
+            onFail(failPrinter)
         );
     }
 
-    function getMyClassData(attributes, onSuccess, onNoClass, failPrinter) {
+    function getMyClassData(onSuccess, onNoClass, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
             return;
         }
-        isProcessing = true;
 
-        const onFail = function(msg) {
-            completeProcessing();
-            failPrinter(msg);
-        }
-
+        // we shouldn't be in a class
         if (!loginManager.isPropertyNonEmpty("ClassCode")) {
-            completeProcessing();
             onNoClass();
             return;
         }
 
-        validateLogin(
-            [],
-            function(data) { // valid login
-                classCommands.fetchClassData(
-                    loginManager.getProperty("ClassCode"),
-                    attributes,
-                    function (data) {
-                        completeProcessing();
-                        onSuccess(data);
-                    },
-                    onFail
-                );
+        isProcessing = true;
+
+        lambdaManager.get(
+            "student/getMyClassData",
+            {"AccountID": getAccountID(), "Password": getPassword()},
+            function(json) { // on success
+                completeProcessing();
+
+                if (json.hasOwnProperty("data")) {
+                    onSuccess(json["data"]);
+                } else {
+                    onNoClass();
+                }
             },
-            function() { // invalid login
-                onFail("Invalid login credentials");
+            { // error translation
+                "INVALID_ID": MSG_INVALID_ID,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND
             },
-            onFail
+            onFail(failPrinter)
         );
     }
 
@@ -182,49 +121,40 @@ const studentCommands = function() {
             printBusy(failPrinter);
             return;
         }
-        isProcessing = true;
 
-        const onFail = function(msg) {
-            completeProcessing();
-            failPrinter(msg);
+        // we are already in a class
+        if (loginManager.isPropertyNonEmpty("ClassCode")) {
+            failPrinter(MSG_ALREADY_IN_CLASS);
+            return;
         }
 
-        validateLogin(
-            ["ClassCode", "GroupID"],
-            function(data) { // valid login
-                if (!data.hasOwnProperty("ClassCode") || isNullOrEmpty(data["ClassCode"])) {
-                    classCommands.addAccountToClass(
-                        classCode,
-                        data["AccountID"],
-                        function (newGroupID) {
-                            data["GroupID"] = newGroupID;
-                            data["ClassCode"] = classCode;
+        isProcessing = true;
 
-                            awsManager.update(
-                                {
-                                    TableName: ACCT_TABLE_NAME,
-                                    Key: { "AccountID": data["AccountID"] },
-                                    UpdateExpression: "SET GroupID = :groupID, ClassCode = :classCode",
-                                    ExpressionAttributeValues: { ":groupID": newGroupID, ":classCode": classCode }
-                                },
-                                function() { // finished updating local account, now cache this information
-                                    loginManager.loginAsStudent(data);
-                                    completeProcessing();
-                                    onSuccess();
-                                },
-                                onFail
-                            );
-                        },
-                        onFail
-                    );
-                } else {
-                    onFail("Student is already in a class!");
-                }
+        const accountID = getAccountID();
+        const password = getPassword();
+
+        lambdaManager.post(
+            "student/joinClass",
+            {"AccountID": accountID, "Password": password, "ClassCode": classCode},
+            function(json) { // on success
+                let studentData = {
+                    "AccountID": accountID,
+                    "Password": password,
+                    "ClassCode": classCode
+                };
+
+                loginManager.loginAsStudent(studentData);
+                completeProcessing();
+                onSuccess();
             },
-            function() { // invalid login
-                onFail("Invalid login credentials");
+            { // error translation
+                "INVALID_ID": MSG_INVALID_ID,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
+                "ALREADY_IN_CLASS": MSG_ALREADY_IN_CLASS,
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND
             },
-            onFail
+            onFail(failPrinter)
         );
     }
 
@@ -233,50 +163,44 @@ const studentCommands = function() {
             printBusy(failPrinter);
             return;
         }
-        isProcessing = true;
 
-        const onFail = function(msg) {
-            completeProcessing();
-            failPrinter(msg);
+        // we are not even in a class
+        if (!loginManager.isPropertyNonEmpty("ClassCode")) {
+            failPrinter(MSG_NOT_IN_CLASS);
+            return;
         }
 
-        validateLogin(
-            ["ClassCode", "GroupID"],
-            function(data) { // valid login
-                if (!data.hasOwnProperty("ClassCode") || isNullOrEmpty(data["ClassCode"])) {
-                    onFail("Student is not in a class!");
-                } else {
-                    classCommands.removeAccountFromClass(
-                        data["ClassCode"],
-                        data["GroupID"],
-                        data["AccountID"],
-                        function () { // on successfully removed
-                            data["GroupID"] = -1;
-                            data["ClassCode"] = "";
+        isProcessing = true;
 
-                            awsManager.update(
-                                {
-                                    TableName: ACCT_TABLE_NAME,
-                                    Key: { "AccountID": data["AccountID"] },
-                                    UpdateExpression: "SET GroupID = :groupID, ClassCode = :classCode",
-                                    ExpressionAttributeValues: { ":groupID": -1, ":classCode": "" }
-                                },
-                                function() { // finished updating local account, now cache this information
-                                    loginManager.loginAsStudent(data);
-                                    completeProcessing();
-                                    onSuccess();
-                                },
-                                onFail
-                            );
-                        },
-                        onFail
-                    );
-                }
+        const accountID = getAccountID();
+        const password = getPassword();
+
+        lambdaManager.post(
+            "student/leaveClass",
+            {"AccountID": accountID, "Password": password},
+            function(json) { // on success
+                let studentData = {
+                    "AccountID": accountID,
+                    "Password": password,
+                    "ClassCode": ""
+                };
+
+                loginManager.loginAsStudent(studentData);
+                completeProcessing();
+                onSuccess();
             },
-            function() { // invalid login
-                onFail("Invalid login credentials");
+            { // error translation
+                "INVALID_ID": MSG_INVALID_ID,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
+                "NOT_IN_CLASS": MSG_NOT_IN_CLASS,
+                "NOT_IN_GROUP": "You are not in a group",
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND,
+                "CLASS_IS_STARTED": "You cannot leave a class after it has started",
+                "GROUP_NOT_FOUND": "Could not find your group",
+                "NOT_FOUND_IN_GROUP": "Your account could not be found in your group"
             },
-            onFail
+            onFail(failPrinter)
         );
     }
 

@@ -20,7 +20,6 @@
 			}
 
 			studentCommands.getMyClassData(
-				classCommands.classInfoAttributes(),
 				function(classData) { // found class code
 					classCommands.initializeClassInfo(classData);
 					if (classCommands.getClassStatus(classData)["Status"] == "unstarted") {

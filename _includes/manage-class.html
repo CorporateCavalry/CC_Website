@@ -105,12 +105,13 @@
 				}
 			}
 
-			profCommands.getOwnedClassCodes(
-				function(ownedCodes) {
-					if (ownedCodes.includes(classCode)) {
-						classCommands.fetchClassData(
+			profCommands.isClassOwner(
+				classCode,
+				function(isOwner) { // on success
+					console.log(isOwner);
+					if (isOwner) {
+						classCommands.fetchClassInfo(
 							classCode,
-							classCommands.classInfoAttributes(),
 							initClassData,
 							function(msg) {
 								printer(msg);
@@ -120,9 +121,9 @@
 					} else {
 						urlReplaceSafe("/manageclasses"); // this isn't our class, so abort
 					}
-				},
+				}, // on fail
 				function(msg) {
-					urlReplaceSafe("/manageclasses"); // this isn't our class, so abort
+					printer("Could not verify ownership of this class");
 				}
 			);
 		})();

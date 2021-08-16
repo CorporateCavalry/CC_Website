@@ -1,249 +1,153 @@
 const profCommands = function() {
-    const PROF_TABLE_NAME = "Professors";
+    const MSG_INVALID_EMAIL = "Email address is not valid";
+    const MSG_ACCOUNT_NOT_FOUND = "No account found with this email";
+    const MSG_INCORRECT_PASSWORD = "Password is incorrect";
+    const MSG_INVALID_CREDENTIALS = "Credentials are invalid";
 
     let isProcessing = false;
 
-    function getProfKey(email, attributes) {
-        return { TableName: PROF_TABLE_NAME, Key: { "Email": email }, AttributesToGet: attributes };
+    function getEmail() {
+        return loginManager.getProperty("Email");
+    }
+
+    function getPassword() {
+        return loginManager.getProperty("Password");
     }
 
     function printBusy(printer) {
         printer("Professor database busy!");
     }
 
-    function validateLogin(attributes, onValid, onInvalid, printer) {
-        if (!loginManager.isProfessor()) {
-            onInvalid();
-            return;
+    function onFail(failPrinter) {
+        return function(msg) {
+            completeProcessing();
+            failPrinter(msg);
         }
-
-        if (!loginManager.hasProperty("Email") || !loginManager.hasProperty("Password")) {
-            onInvalid();
-            return;
-        }
-
-        let cachedEmail = loginManager.getProperty("Email");
-        let cachedPassword = loginManager.getProperty("Password");
-
-        if (isNullOrEmpty(cachedEmail) || isNullOrEmpty(cachedPassword)) {
-            onInvalid();
-            return;
-        }
-
-        awsManager.get(
-            getProfKey(cachedEmail, attributes.concat("Email", "Password")),
-            function(data) {
-                if (data["Password"] === cachedPassword) {
-                    onValid(data);
-                } else {
-                    onInvalid();
-                }
-            },
-            onInvalid,
-            printer
-        );
     }
 
     function createAccount(email, password, name, onSuccess, failPrinter) {
-        if (!isString(email) || !isString(password) || !isString(name)) {
-			logError("Invalid data type", failPrinter);
-			return;
-		}
-
         if (isProcessing) {
             printBusy(failPrinter);
             return;
         }
         isProcessing = true;
+        profData = {"Email": email, "Password": password, "Name": name};
 
-        const onFail = function(msg) {
-            completeProcessing();
-            failPrinter(msg);
-        }
-
-        awsManager.get(
-            getProfKey(email, ["Email"]),
-            function(data) { // account taken
-                onFail("This email is already taken!");
+        lambdaManager.post(
+            "professor/createAccount",
+            profData,
+            function(json) { // on success
+                loginManager.loginAsProfessor(profData);
+                completeProcessing();
+                onSuccess();
             },
-            function() { // account available
-                const data = {
-                    "Email": email,
-                    "Password": password,
-                    "Name": name
-                }
-                const putParams = {
-                    TableName: PROF_TABLE_NAME,
-                    Item: data
-                };
-
-                awsManager.put(
-                    putParams,
-                    function() { // success
-                        loginManager.loginAsProfessor(data);
-                        completeProcessing();
-                        onSuccess();
-                    },
-                    onFail
-                );
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_TAKEN": "An account with this email address already exists"
             },
-            onFail
+            onFail(failPrinter)
         );
     }
 
     function login(email, password, onSuccess, failPrinter) {
-        if (!isString(email) || !isString(password)) {
-            logError("Invalid data type", failPrinter);
-			return;
-		}
-
         if (isProcessing) {
             printBusy(failPrinter);
             return;
         }
         isProcessing = true;
 
-        const onFail = function(msg) {
-            completeProcessing();
-            failPrinter(msg);
-        }
+        lambdaManager.post(
+            "professor/login",
+            {"Email": email, "Password": password},
+            function(json) { // on success
+                let profData = json["data"];
+                profData["Email"] = email;
+                profData["Password"] = password;
 
-        awsManager.get(
-            getProfKey(email, loginManager.getProfCachedAttributes()),
-            function(data) { // email found
-                if (data["Password"] === password) {
-                    loginManager.loginAsProfessor(data);
-                    completeProcessing();
-                    onSuccess();
-                } else {
-                    onFail("Password is incorrect.");
-                }
+                loginManager.loginAsProfessor(profData);
+                completeProcessing();
+                onSuccess();
             },
-            function() { // email not found
-                onFail("No account was found for this email.");
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INCORRECT_PASSWORD
             },
-            onFail
+            onFail(failPrinter)
         );
     }
 
     function createClass(className, startDate, endDate, onSuccess, failPrinter) {
-        if (!isString(className) || !isString(startDate) || !isString(endDate)) {
-            logError("Invalid data type", failPrinter);
-			return;
-		}
-
         if (isProcessing) {
             printBusy(failPrinter);
             return;
         }
         isProcessing = true;
 
-        const onFail = function(msg) {
-            completeProcessing();
-            failPrinter(msg);
-        }
-
-        validateLogin(
-            [],
-            function(profData) {
-                classCommands.createClass(
-                    loginManager.getProperty("Name"),
-                    className,
-                    startDate,
-                    endDate,
-                    function(classCode) {
-                        awsManager.update(
-                            {
-                                TableName: PROF_TABLE_NAME,
-                                Key: { "Email": profData["Email"] },
-                                UpdateExpression: "SET Classes = list_append(if_not_exists(Classes, :emptyList), :newClass)",
-                                ExpressionAttributeValues: { ":emptyList": [], ":newClass": [ classCode ] }
-                            },
-                            function() {
-                                completeProcessing();
-                                onSuccess(classCode);
-                            },
-                            onFail
-                        );
-                    },
-                    onFail
-                );
-            },
-            function() {
-                onFail("Login credentials invalid.");
-            },
-            onFail
-        );
-    }
-
-    function getClassList(attributes, onSuccess, failPrinter) {
-        if (isProcessing) {
-            printBusy(failPrinter);
-            return;
-        }
-        isProcessing = true;
-
-        const onFail = function(msg) {
-            completeProcessing();
-            failPrinter(msg);
-        };
-
-        validateLogin(
-            ["Classes"],
-            function(profData) { // login credentials valid
-                if (profData.hasOwnProperty("Classes")) {
-                    classCommands.getClassList(
-                        profData["Classes"],
-                        attributes,
-                        function(list) {
-                            completeProcessing();
-                            onSuccess(list);
-                        },
-                        onFail
-                    );
-                } else {
-                    completeProcessing();
-                    onSuccess([]);
-                }
-            },
-            function() {
-                onFail("Invalid login credentials.");
-            },
-            onFail
-        );
-    }
-
-    function getOwnedClassCodes(onSuccess, failPrinter) {
-        if (isProcessing) {
-            printBusy(failPrinter);
-            return;
-        }
-        isProcessing = true;
-
-        const onFail = function(msg) {
-            completeProcessing();
-            failPrinter(msg);
-        };
-
-        if (!loginManager.isProfessor()) {
-            onFail("Not logged in as a professor!");
-            return;
-        }
-
-        validateLogin(
-            ["Classes"],
-            function(profData) { // login credentials valid
+        lambdaManager.post(
+            "professor/createClass",
+            {"Email": getEmail(), "Password": getPassword(), "StartDate": startDate, "EndDate": endDate, "ClassName": className},
+            function(json) { // on success
                 completeProcessing();
-                if (profData.hasOwnProperty("Classes")) {
-                    onSuccess(profData["Classes"])
-                } else {
-                    onSuccess([]);
-                }
+                onSuccess(json["data"]["ClassCode"]);
             },
-            function() {
-                onFail("Invalid login credentials.");
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "INVALID_START_DATE": "Start date is not valid",
+                "INVALID_END_DATE": "End date is not valid",
+                "START_DATE_EARLY": "Start date must be after today",
+                "END_DATE_EARLY": "End date must be after start date",
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
+                "CREATE_ATTEMPTS_EXCEEDED": "Could not add class at this time"
             },
-            onFail
+            onFail(failPrinter)
+        );
+    }
+
+    function getClassList(onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        lambdaManager.get(
+            "professor/getClassList",
+            {"Email": getEmail(), "Password": getPassword()},
+            function(json) { // on success
+                completeProcessing();
+                onSuccess(json["data"]);
+            },
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS
+            },
+            onFail(failPrinter)
+        );
+    }
+
+    function isClassOwner(classCode, onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        lambdaManager.get(
+            "professor/isClassOwner",
+            {"Email": getEmail(), "Password": getPassword(), "ClassCode": classCode},
+            function(json) { // on success
+                completeProcessing();
+                onSuccess(json["data"]["value"]);
+            },
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS
+            },
+            onFail(failPrinter)
         );
     }
 
@@ -263,9 +167,9 @@ const profCommands = function() {
         getIsProcessing:getIsProcessing,
         createAccount:createAccount,
         login:login,
-        getCurrentUser:getCurrentUser,
         createClass:createClass,
         getClassList:getClassList,
-        getOwnedClassCodes:getOwnedClassCodes
+        isClassOwner:isClassOwner,
+        getCurrentUser:getCurrentUser
     }
 }();

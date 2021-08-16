@@ -46,7 +46,6 @@ const lambdaManager = function() {
             },
             error: function(xhr, ajaxOptions, thrownError) {
                 parseError(xhr, errorTranslator, failPrinter);
-
             },
             method: "POST",
             data: JSON.stringify(params)

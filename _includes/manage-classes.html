@@ -94,7 +94,6 @@
 			document.addEventListener("DOMContentLoaded", function(event) {
 				if (loginManager.isProfessor()) {
 					profCommands.getClassList(
-						["ClassCode", "Name", "StartDate", "EndDate", "StudentCount"],
 						initClassList,
 						printer
 					);
