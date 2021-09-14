@@ -1,3 +1,7 @@
 <li class="form-line">
+	{% if include.isPin == "true" %}
+	<input type="{{ include.inputType }}" name="{{ include.formName }}_{{ include.inputID }}" id="{{ include.formName }}_{{ include.inputID }}" maxlength="4" pattern="[0-9]{4}" placeholder="{{ include.placeholder }}">
+	{% else %}
 	<input type="{{ include.inputType }}" name="{{ include.formName }}_{{ include.inputID }}" id="{{ include.formName }}_{{ include.inputID }}" placeholder="{{ include.placeholder }}">
+	{% endif %}
 </li>

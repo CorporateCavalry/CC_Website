@@ -6,6 +6,7 @@ const studentCommands = function() {
     const MSG_CLASS_NOT_FOUND = "Class could not be found";
     const MSG_ALREADY_IN_CLASS = "You are already in a class";
     const MSG_NOT_IN_CLASS = "You are not in a class";
+    const MSG_INVALID_PASSWORD = "Please enter a 4-digit PIN";
 
     let isProcessing = false;
 
@@ -33,6 +34,12 @@ const studentCommands = function() {
             printBusy(failPrinter);
             return;
         }
+
+        if (!password.match(/^\d{4}$/)){
+            failPrinter("PIN must be 4 digits");
+            return;
+        }
+
         isProcessing = true;
         studentData = {"AccountID": accountID, "Password": password, "Name": username};
 
@@ -46,7 +53,8 @@ const studentCommands = function() {
             },
             { // error translation
                 "INVALID_ID": MSG_INVALID_ID,
-                "ACCOUNT_TAKEN": "An account with this Student ID already exists"
+                "ACCOUNT_TAKEN": "An account with this Student ID already exists",
+                "INVALID_PASSWORD": MSG_INVALID_PASSWORD
             },
             onFail(failPrinter)
         );
@@ -74,7 +82,8 @@ const studentCommands = function() {
             { // error translation
                 "INVALID_ID": MSG_INVALID_ID,
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
-                "INCORRECT_PASSWORD": MSG_INCORRECT_PASSWORD
+                "INCORRECT_PASSWORD": MSG_INCORRECT_PASSWORD,
+                "INVALID_PASSWORD": MSG_INVALID_PASSWORD
             },
             onFail(failPrinter)
         );

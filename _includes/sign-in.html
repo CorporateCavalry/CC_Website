@@ -2,7 +2,7 @@
 <form id="login_form">
 	<ul class="form-list">
 		{% include form-line.html formName="login" inputID="key" inputType="email" placeholder="Professor Email or UC Davis Student ID"%}
-		{% include form-line.html formName="login" inputID="password" inputType="password" placeholder="Password"%}
+		{% include form-line.html formName="login" inputID="password" inputType="password" placeholder="Password or PIN"%}
 	</ul>
 </form>
 {% include button.html function="processLogin" id="login" label="Sign In" %}
