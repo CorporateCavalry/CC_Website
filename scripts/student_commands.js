@@ -33,6 +33,12 @@ const studentCommands = function() {
             printBusy(failPrinter);
             return;
         }
+        
+        if (!password.match(/^\d{4}$/)){
+            failPrinter("PIN must be 4 digits");
+            return;
+        }
+
         isProcessing = true;
         studentData = {"AccountID": accountID, "Password": password, "Name": username};
 
