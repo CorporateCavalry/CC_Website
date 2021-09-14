@@ -1,44 +1,6 @@
 <div class="nav-bar">
-	<ul class="nav-bar-general">
-		<li>
-			<img class="nav-bar-icon" src="/assets/icon.png" onclick="goToPageSafe('/')"></img>
-		</li>
-		<li>
-			<a onclick="goToPageSafe('/')">Home</a>
-		</li>
-		<li>
-			<a onclick="goToPageSafe('/#about')">About</a>
-		</li>
-		<li>
-			<a onclick="goToPageSafe('/howtoplay')">How to Play</a>
-		</li>
-		<li>
-			<a onclick="goToPageSafe('/#contact')">Contact</a>
-		</li>
-	</ul>
-	<ul class="nav-bar-accounts">
-		<li class="logged-out">
-			<a onclick="goToPageSafe('/studentsignup')">Student Sign Up</a>
-		</li>
-		<li class="logged-out">
-			<a onclick="goToPageSafe('/professorsignup')">Professor Sign Up</a>
-		</li>
-		<li class="logged-out">
-			<a onclick="goToPageSafe('/signin')">Sign In</a>
-		</li>
-		<li class="student-has-class">
-			<a onclick="goToPageSafe('/myclass')">My Class</a>
-		</li>
-		<li class="student-logged-in">
-			<a onclick="goToPageSafe('/play')">Play</a>
-		</li>
-		<li class="prof-logged-in">
-			<a onclick="goToPageSafe('/manageclasses')">Manage Classes</a>
-		</li>
-		<li class="logged-in">
-			<a onclick="processLogout()">Log out</a>
-		</li>
-	</ul>
+	{% include title-bar-desktop.html %}
+	{% include title-bar-mobile.html %}
 </div>
 
 <script>

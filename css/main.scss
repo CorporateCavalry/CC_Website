@@ -22,7 +22,7 @@ $mobile-icon-size-ratio: 0.66;
 $min-page-height: 52rem;
 
 $narrow-page-max-width: 52rem;
-$nav-bar-compress-width: 84rem;
+$nav-bar-compress-width: 90rem;
 $mobile-page-width: 45rem;
 $mobile-page-narrow-width: 30rem;
 
@@ -33,6 +33,8 @@ $background-tile-size: 40rem;
 
 $standard-spacing: 1rem;
 $standard-panel-width: 48.5%;
+
+$line-divider-height: 3px;
 
 $content-top-padding: 4rem;
 $section-header-height: 4rem;
@@ -284,13 +286,7 @@ body {
   font-size: $large-font-size;
   font-weight: $large-font-weight;
 
-  padding: $nav-bar-padding $nav-bar-padding * 3 $nav-bar-padding $nav-bar-padding;
-
-  display: flex;
-  flex-direction: row;
-  flex-grow: 1;
-  align-items: center;
-  justify-content: space-between;
+  padding: $nav-bar-padding;
 
   background-color: #000;
 
@@ -300,6 +296,46 @@ body {
   a:hover {
     filter: brightness($text-hover-brightness);
   }
+}
+.nav-bar-mobile {
+  .hamburger {
+    width: $large-font-size;
+    height: $large-font-size;
+  }
+  .hamburger:hover {
+    filter: brightness($text-hover-brightness);
+  }
+  .nav-bar-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dropdown-carrot {
+    width: $large-font-size / 2;
+    height: $large-font-size / 2;
+  }
+
+  ul {
+    li {
+      padding-top: $nav-bar-padding;
+      //padding-bottom: $nav-bar-padding / 2;
+    }
+  }
+  // items should be right alligned
+  .nav-bar-signup {
+    direction: rtl;
+  }
+}
+.nav-bar-desktop {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: $nav-bar-padding $nav-bar-padding * 3 $nav-bar-padding $nav-bar-padding;
+
   .nav-bar-general {
     list-style: none;
 
@@ -382,6 +418,11 @@ body {
   max-width: $section-header-image-wide-max-width;
 }
 /* SECTIONS */
+.line-divider {
+  background-color: white;
+  width: 100%;
+  height: $line-divider-height;
+}
 .section-divider {
   background-color: black;
   padding: $section-padding;
@@ -669,7 +710,7 @@ form {
 
 /* Responsive */
 @media only screen and (max-width: $nav-bar-compress-width) {
-  .nav-bar {
+  .nav-bar-desktop {
     flex-direction: column;
     padding: $nav-bar-padding;
 
@@ -695,6 +736,11 @@ form {
   .narrow-page {
     max-width: none;
     width: 100%;
+  }
+}
+@media only screen and (min-width: $mobile-page-width) {
+  .nav-bar-mobile {
+    display: none;
   }
 }
 @media only screen and (max-width: $mobile-page-width) {
@@ -744,6 +790,9 @@ form {
     }
     .nav-bar {
       font-size: $mobile-large-font-size-ratio * $large-font-size;
+      .nav-bar-desktop {
+        display: none;
+      }
     }
     .section-header {
       font-size: $mobile-large-font-size-ratio * $large-font-size;

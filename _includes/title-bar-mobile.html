@@ -1,0 +1,92 @@
+<div class="nav-bar-mobile">
+	<div class="nav-bar-top">
+		<img class="hamburger" src="/assets/hamburger.png" onclick="toggleGeneral()">
+		<div class="nav-bar-accounts">
+			<div class="logged-out">
+				<div clas="nav-signup">
+					<img class="dropdown-carrot" src="/assets/dropDownTriangle.png">
+					<a onclick="toggleSignup()">Sign Up</a>
+				</div>
+			</div>
+			<div class="prof-logged-in">
+				<a onclick="goToPageSafe('/manageclasses')">Manage Classes</a>
+			</div>
+			<div class="student-has-class">
+				<a onclick="goToPageSafe('/myclass')">My Class</a>
+			</div>
+		</div>
+	</div>
+	<!-- <div class = "line-divider"></div> -->
+	<ul class="nav-bar-general-dropdown">
+		<li>
+			<a onclick="goToPageSafe('/')">Home</a>
+		</li>
+		<li>
+			<a onclick="goToPageSafe('/#about')">About</a>
+		</li>
+		<li>
+			<a onclick="goToPageSafe('/howtoplay')">How to Play</a>
+		</li>
+		<li>
+			<a onclick="goToPageSafe('/#contact')">Contact</a>
+		</li>
+		<li class="logged-out">
+			<a onclick="goToPageSafe('/signin')">Sign In</a>
+		</li>
+		<li class="logged-in">
+			<a onclick="processLogout()">Log out</a>
+		</li>
+	</ul>
+	<ul class="nav-bar-signup">
+		<li>
+			<a onclick="goToPageSafe('/professorsignup')">Professor</a>
+		</li>
+		<li>
+			<a onclick="goToPageSafe('/studentsignup')">Student</a>
+		</li>
+	</ul>
+</div>
+
+<script>
+	let generalOpen = true;
+	let signupOpen = true;
+
+	function toggleGeneral() {
+		if (generalOpen) {
+			closeGeneral();
+		} else {
+			expandGeneral();
+		}
+	}
+	function expandGeneral() {
+		$(".nav-bar-general-dropdown").css("display", "");
+		generalOpen = true;
+		closeSignup();
+	}
+	function closeGeneral() {
+		$(".nav-bar-general-dropdown").css("display", "none");
+		generalOpen = false;
+	}
+
+	function toggleSignup() {
+		if (signupOpen) {
+			closeSignup();
+		} else {
+			expandSignup();
+		}
+	}
+	function expandSignup() {
+		$(".dropdown-carrot").css("transform", "rotate(90deg)");
+		$(".nav-bar-signup").css("display", "");
+		signupOpen = true;
+		closeGeneral();
+	}
+	function closeSignup() {
+		$(".dropdown-carrot").css("transform", "rotate(0deg)");
+		$(".nav-bar-signup").css("display", "none");
+		signupOpen = false;
+	}
+
+	closeGeneral();
+  closeSignup();
+</script>
