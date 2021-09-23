@@ -195,7 +195,6 @@ p {
   width:  90%;
   max-width: $narrow-page-max-width;
   margin: 0 auto;
-  //padding-top: $content-top-padding;
   margin-bottom: 1rem;
   margin-top: $standard-spacing;
 
@@ -204,6 +203,7 @@ p {
     margin-bottom: 1rem;
   }
   .hero-video {
+    width: 100%;
     position: relative;
   	padding-bottom: 56.25%; /* 16:9 */
   	padding-top: 25px;
@@ -334,7 +334,7 @@ body {
   align-items: center;
   justify-content: space-between;
 
-  padding: $nav-bar-padding $nav-bar-padding * 3 $nav-bar-padding $nav-bar-padding;
+  padding-right: $nav-bar-padding;
 
   .nav-bar-general {
     list-style: none;
