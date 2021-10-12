@@ -2,7 +2,7 @@
 <form id="create_student_account_form">
 	<ul class="form-list">
 		{% include form-line.html formName="create_student_account" inputID="name" inputType="text" placeholder="Name (visible to teammates)" %}
-		{% include form-line.html formName="create_student_account" inputID="studentID" inputType="text" placeholder="UC Davis Student ID" %}
+		{% include form-line.html formName="create_student_account" inputID="email" inputType="email" placeholder="Email" %}
 		{% include form-line.html formName="create_student_account" inputID="password" inputType="password" isPin="true" placeholder="PIN (4 digits)" %}
 		{% include form-line.html formName="create_student_account" inputID="confirm_password" inputType="password" isPin="true" placeholder="Confirm PIN" %}
 	</ul>
@@ -25,19 +25,13 @@
 
 			const elements = document.getElementById(formName + "_form").elements;
 
-			const accountIDStr = elements[formName + "_studentID"].value;
-			const accountID = parseInt(accountIDStr);
+			const email = elements[formName + "_email"].value;
 			const name = elements[formName + "_name"].value;
 			const password = elements[formName + "_password"].value;
 			const confirm = elements[formName + "_confirm_password"].value;
 			const printer = getAlertPrinter(formName);
 
-			if (!isValidStudentID(accountIDStr, accountID)) {
-				printer("Please enter a valid Student ID");
-				return;
-			}
-
-			if (isNullOrEmpty(name) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
+			if (isNullOrEmpty(email) || isNullOrEmpty(name) || isNullOrEmpty(password) || isNullOrEmpty(confirm)) {
 				printer("All fields must be filled out!");
 				return;
 			}
@@ -57,7 +51,7 @@
 			}
 
 			studentCommands.createAccount(
-				accountID,
+				email,
 				name,
 				password,
 				{{ include.onSignUpSuccess }},

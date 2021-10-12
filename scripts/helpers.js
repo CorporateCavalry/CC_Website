@@ -152,7 +152,7 @@ const loginManager = function() {
     function loginAsStudent(studentData) {
         cacheLogin(
             studentData,
-            ["AccountID", "Password", "Name", "ClassCode"],
+            ["Email", "Password", "Name", "ClassCode"],
             STUDENT_LOGIN_KEY_TYPE
         );
     }

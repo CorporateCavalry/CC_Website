@@ -40,11 +40,19 @@
 		})();
 
 		function leaveClass() {
+			const submitButton = $("#button_leave_class");
+			submitButton.prop("disabled", true);
+
+			const onComplete = function(msg) {
+				submitButton.prop("disabled", false);
+				getAlertPrinter("my_class")(msg);
+			}
+
 			studentCommands.leaveClass(
 				function() { // successfully left the class
 					goToPageSafe("/");
 				},
-				getAlertPrinter("my_class")
+				onComplete
 			);
 		}
 	}

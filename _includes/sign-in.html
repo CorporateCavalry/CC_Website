@@ -1,52 +1,60 @@
 <div class="section-header">Student and Professor Sign In</div>
 <form id="login_form">
 	<ul class="form-list">
-		{% include form-line.html formName="login" inputID="key" inputType="email" placeholder="Professor Email or UC Davis Student ID"%}
+		{% include form-line.html formName="login" inputID="email" inputType="email" placeholder="Email"%}
 		{% include form-line.html formName="login" inputID="password" inputType="password" placeholder="Password or PIN"%}
 	</ul>
 </form>
-{% include button.html function="processLogin" id="login" label="Sign In" %}
+{% include button.html function="processProfLogin" id="prof_login" label="Professor Sign In" %}
+{% include button.html function="processStudentLogin" id="student_login" label="Student Sign In" %}
 {% include alert-message.html id="login" type="error" %}
 
 <script>
 	if (!loginManager.isStudent() && !loginManager.isProfessor()) {
 		clearAlertPrinter("login");
 
-		function processLogin() {
-			if (profCommands.getIsProcessing()) return;
+		function setButtonsEnabled(enabled) {
+			$("#button_prof_login").prop("disabled", !enabled);
+			$("#button_student_login").prop("disabled", !enabled);
+		}
+
+		function processStudentLogin() {
 			if (studentCommands.getIsProcessing()) return;
 
+			processLogin(true);
+		}
+
+		function processProfLogin() {
+			if (profCommands.getIsProcessing()) return;
+
+			processLogin(false);
+		}
+
+		function processLogin(isStudent) {
 			const formName = "login";
 
 			const elements = document.getElementById(formName + "_form").elements;
-			const accountKey = elements[formName + "_key"].value;
+			const email = elements[formName + "_email"].value;
 			const password = elements[formName + "_password"].value;
 			const printer = getAlertPrinter(formName);
 
-			if (isNullOrEmpty(accountKey) || isNullOrEmpty(password)) {
+			if (isNullOrEmpty(email) || isNullOrEmpty(password)) {
 				printer("All fields must be filled out!");
 				return;
 			}
 
-			const submitButton = $("#button_" + formName);
 			printer("");
 
 			const onComplete = function(msg) {
-				submitButton.prop("disabled", false);
+				setButtonsEnabled(true);
 				printer(msg);
 			}
 
-			const accountID = parseInt(accountKey);
-			if (isValidStudentID(accountKey, accountID)) { // valid student ID
-				submitButton.prop("disabled", true);
-
-				studentCommands.login(accountID, password, getPageRedirector("/howtoplay"), onComplete);
-			} else if (!elements[formName + "_key"].validity.typeMismatch) { // valid email
-				submitButton.prop("disabled", true);
-
-				profCommands.login(accountKey, password, getPageRedirector("/manageclasses"), onComplete);
-			} else { // neither
-				printer("Please enter a valid Student ID or email address!");
+			setButtonsEnabled(false);
+			if (isStudent) {
+				studentCommands.login(email, password, getPageRedirector("/howtoplay"), onComplete);
+			} else {
+				profCommands.login(email, password, getPageRedirector("/manageclasses"), onComplete);
 			}
 		}
 	}

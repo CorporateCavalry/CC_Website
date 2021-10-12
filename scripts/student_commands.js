@@ -1,6 +1,6 @@
 const studentCommands = function() {
-    const MSG_INVALID_ID = "Student ID is not valid";
-    const MSG_ACCOUNT_NOT_FOUND = "No account found with this Student ID";
+    const MSG_INVALID_EMAIL = "Email is not valid";
+    const MSG_ACCOUNT_NOT_FOUND = "No account found with this email";
     const MSG_INCORRECT_PASSWORD = "Password is incorrect";
     const MSG_INVALID_CREDENTIALS = "Credentials are invalid";
     const MSG_CLASS_NOT_FOUND = "Class could not be found";
@@ -10,8 +10,8 @@ const studentCommands = function() {
 
     let isProcessing = false;
 
-    function getAccountID() {
-        return loginManager.getProperty("AccountID");
+    function getEmail() {
+        return loginManager.getProperty("Email");
     }
 
     function getPassword() {
@@ -19,7 +19,7 @@ const studentCommands = function() {
     }
 
     function printBusy(printer) {
-        printer("Professor database busy!");
+        printer("Student database busy!");
     }
 
     function onFail(failPrinter) {
@@ -29,7 +29,7 @@ const studentCommands = function() {
         }
     }
 
-    function createAccount(accountID, username, password, onSuccess, failPrinter) {
+    function createAccount(email, username, password, onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -41,7 +41,7 @@ const studentCommands = function() {
         }
 
         isProcessing = true;
-        studentData = {"AccountID": accountID, "Password": password, "Name": username};
+        studentData = {"Email": email, "Password": password, "Name": username};
 
         lambdaManager.post(
             "student/createAccount",
@@ -52,15 +52,15 @@ const studentCommands = function() {
                 onSuccess();
             },
             { // error translation
-                "INVALID_ID": MSG_INVALID_ID,
-                "ACCOUNT_TAKEN": "An account with this Student ID already exists",
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_TAKEN": "An account with this email already exists",
                 "INVALID_PASSWORD": MSG_INVALID_PASSWORD
             },
             onFail(failPrinter)
         );
     }
 
-    function login(accountID, password, onSuccess, failPrinter) {
+    function login(email, password, onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -69,10 +69,10 @@ const studentCommands = function() {
 
         lambdaManager.post(
             "student/login",
-            {"AccountID": accountID, "Password": password},
+            {"Email": email, "Password": password},
             function(json) { // on success
                 let studentData = json["data"];
-                studentData["AccountID"] = accountID;
+                studentData["Email"] = email;
                 studentData["Password"] = password;
 
                 loginManager.loginAsStudent(studentData);
@@ -80,7 +80,7 @@ const studentCommands = function() {
                 onSuccess();
             },
             { // error translation
-                "INVALID_ID": MSG_INVALID_ID,
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
                 "INCORRECT_PASSWORD": MSG_INCORRECT_PASSWORD,
                 "INVALID_PASSWORD": MSG_INVALID_PASSWORD
@@ -105,7 +105,7 @@ const studentCommands = function() {
 
         lambdaManager.get(
             "student/getMyClassData",
-            {"AccountID": getAccountID(), "Password": getPassword()},
+            {"Email": getEmail(), "Password": getPassword()},
             function(json) { // on success
                 completeProcessing();
 
@@ -116,7 +116,7 @@ const studentCommands = function() {
                 }
             },
             { // error translation
-                "INVALID_ID": MSG_INVALID_ID,
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
                 "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND
@@ -139,15 +139,15 @@ const studentCommands = function() {
 
         isProcessing = true;
 
-        const accountID = getAccountID();
+        const email = getEmail();
         const password = getPassword();
 
         lambdaManager.post(
             "student/joinClass",
-            {"AccountID": accountID, "Password": password, "ClassCode": classCode},
+            {"Email": email, "Password": password, "ClassCode": classCode},
             function(json) { // on success
                 let studentData = {
-                    "AccountID": accountID,
+                    "Email": email,
                     "Password": password,
                     "ClassCode": classCode
                 };
@@ -157,7 +157,7 @@ const studentCommands = function() {
                 onSuccess();
             },
             { // error translation
-                "INVALID_ID": MSG_INVALID_ID,
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
                 "ALREADY_IN_CLASS": MSG_ALREADY_IN_CLASS,
@@ -181,15 +181,15 @@ const studentCommands = function() {
 
         isProcessing = true;
 
-        const accountID = getAccountID();
+        const email = getEmail();
         const password = getPassword();
 
         lambdaManager.post(
             "student/leaveClass",
-            {"AccountID": accountID, "Password": password},
+            {"Email": email, "Password": password},
             function(json) { // on success
                 let studentData = {
-                    "AccountID": accountID,
+                    "Email": email,
                     "Password": password,
                     "ClassCode": ""
                 };
@@ -199,7 +199,7 @@ const studentCommands = function() {
                 onSuccess();
             },
             { // error translation
-                "INVALID_ID": MSG_INVALID_ID,
+                "MSG_INVALID_EMAIL": MSG_INVALID_EMAIL,
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
                 "NOT_IN_CLASS": MSG_NOT_IN_CLASS,
