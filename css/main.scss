@@ -443,12 +443,19 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
+  padding-top: $standard-spacing;
   a {
-    padding-left: $standard-spacing;
+    color: white;
+    font-size: $medium-font-size;
+    font-weight: $medium-font-weight;
+    text-align: center;
+    text-decoration: none;
   }
   img {
     width: $medium-font-size;
     height: $medium-font-size;
+    margin-right: $standard-spacing / 2;
   }
 }
 
