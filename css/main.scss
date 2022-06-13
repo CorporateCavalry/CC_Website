@@ -438,6 +438,20 @@ body {
   align-items: center;
 }
 
+/* CONTACT */
+.contact-pannel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  a {
+    padding-left: $standard-spacing;
+  }
+  img {
+    width: $medium-font-size;
+    height: $medium-font-size;
+  }
+}
+
 /* FORMS */
 form {
   width: 100%;
@@ -759,10 +773,6 @@ form {
     }
     .about-section > .about-pannel {
       width: 100%;
-    }
-    .contact-section {
-      flex-direction: column;
-      justify-content: flex-start;
     }
 
     .where-to-play-list > li > .where-to-play-list-mobile {
