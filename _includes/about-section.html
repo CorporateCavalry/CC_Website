@@ -20,6 +20,8 @@
 				</div>
 				<img class="gallery-panel" src="/assets/about/waterCoolerEnd.jpeg">
 			</div>
+			{% capture my_include %}{% include about-footer.md %}{% endcapture %}
+			{{ my_include | markdownify }}
 		</div>
 	</div>
 	<div class="wall-paper-right">

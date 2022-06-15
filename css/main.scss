@@ -22,7 +22,7 @@ $mobile-icon-size-ratio: 0.66;
 $min-page-height: 52rem;
 
 $narrow-page-max-width: 52rem;
-$nav-bar-compress-width: 90rem;
+$nav-bar-compress-width: 85rem;
 $mobile-page-width: 45rem;
 $mobile-page-narrow-width: 30rem;
 
@@ -438,6 +438,27 @@ body {
   align-items: center;
 }
 
+/* CONTACT */
+.contact-pannel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding-top: $standard-spacing;
+  a {
+    color: white;
+    font-size: $medium-font-size;
+    font-weight: $medium-font-weight;
+    text-align: center;
+    text-decoration: none;
+  }
+  img {
+    width: $medium-font-size;
+    height: $medium-font-size;
+    margin-right: $standard-spacing / 2;
+  }
+}
+
 /* FORMS */
 form {
   width: 100%;
@@ -759,10 +780,6 @@ form {
     }
     .about-section > .about-pannel {
       width: 100%;
-    }
-    .contact-section {
-      flex-direction: column;
-      justify-content: flex-start;
     }
 
     .where-to-play-list > li > .where-to-play-list-mobile {
