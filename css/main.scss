@@ -729,6 +729,26 @@ form {
   }
 }
 
+// Loading
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: $standard-spacing;
+  .loading-icon {
+    width: $large-font-size * 3;
+    height: $large-font-size * 3;
+    //margin-right: $standard-spacing / 2;
+    animation: spin 3s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+}
+
 /* Responsive */
 @media only screen and (max-width: $nav-bar-compress-width) {
   .nav-bar-desktop {

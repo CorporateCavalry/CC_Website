@@ -1,10 +1,10 @@
 <div class="section-header">Manage Classes</div>
-<div class="section" id="no_classes_message">
+<div class="section loadable" id="no_classes_message">
 	{% capture my_include %}{% include no-classes-message.md %}{% endcapture %}
 	{{ my_include | markdownify }}
 </div>
-<ul id="manage_classes_list" class="class-element-list">
-</ul>
+{% include loading-indicator.html %}
+<ul id="manage_classes_list" class="class-element-list loadable"></ul>
 {% include button.html label="Create New" id="goto_create_class" function="goToCreateNewClass" %}
 {% include alert-message.html id="manage_classes" type="error" %}
 

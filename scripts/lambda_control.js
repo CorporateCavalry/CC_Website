@@ -21,13 +21,16 @@ const lambdaManager = function() {
     }
 
     function get(path, params, onSuccess, errorTranslator, failPrinter) {
+        onBeginLoading();
         $.ajax({
             url: API_PATH + path,
             async: true,
             success: function(response) {
+                onEndLoading();
                 onSuccess(JSON.parse(response));
             },
             error: function(xhr, ajaxOptions, thrownError) {
+                onEndLoading();
                 parseError(xhr, errorTranslator, failPrinter);
             },
             method: "GET",
@@ -38,13 +41,16 @@ const lambdaManager = function() {
     }
 
     function post(path, params, onSuccess, errorTranslator, failPrinter) {
+        onBeginLoading();
         $.ajax({
             url: API_PATH + path,
             async: true,
             success: function(response) {
+                onEndLoading();
                 onSuccess(JSON.parse(response));
             },
             error: function(xhr, ajaxOptions, thrownError) {
+                onEndLoading();
                 parseError(xhr, errorTranslator, failPrinter);
             },
             method: "POST",
