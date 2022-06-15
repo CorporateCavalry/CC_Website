@@ -1,0 +1,16 @@
+---
+layout: narrow-page
+title: Reset Password
+---
+<script>
+	if (loginManager.isProfessor() || loginManager.isStudent()) {
+		urlReplaceSafe("/"); // go there and don't let us come back
+	}
+</script>
+
+<div class="logged-out">
+	<div class="section">
+		<!-- <img class="section-header-image" src="/assets/signIn.png"> -->
+		{% include reset-student-password.html %}
+	</div>
+</div>

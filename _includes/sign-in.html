@@ -9,6 +9,10 @@
 {% include button.html function="processStudentLogin" id="student_login" label="Student Sign In" %}
 {% include alert-message.html id="login" type="error" %}
 
+<a class="forgot-password-link" href="/requestpasswordreset" title="Forgot Password">
+	Forgot password?
+</a>
+
 <script>
 	if (!loginManager.isStudent() && !loginManager.isProfessor()) {
 		clearAlertPrinter("login");

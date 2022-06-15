@@ -583,6 +583,12 @@ form {
   }
 }
 
+.forgot-password-link {
+  text-decoration: none;
+  color: black;
+  padding-top: $standard-spacing * 2;
+}
+
 /* CLASS LIST ELEMENTS */
 .class-element-list {
   width: 100%;
