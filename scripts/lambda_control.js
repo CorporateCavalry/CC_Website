@@ -1,6 +1,6 @@
 // lambda controls
 const lambdaManager = function() {
-    const API_PATH = "https://3oesfmcnh2.execute-api.us-west-1.amazonaws.com/Prod/";
+    const API_PATH = "https://7i1m6jcd21.execute-api.us-west-1.amazonaws.com/Prod/";
 
     function parseError(xhr, errorTranslator, failPrinter) {
         if (xhr.responseText == null) {
