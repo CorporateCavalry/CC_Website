@@ -71,7 +71,7 @@ $class-element-field-text-color: black;
 $class-element-hover-background-color: #D0D0D0;
 $class-element-press-background-color: #ADADAD;
 
-$group-icon-size: 1.75rem;
+$group-icon-size: 1.6rem;
 
 $status-icon-size: 1rem;
 $status-color-unstarted: #939393;
@@ -611,10 +611,6 @@ form {
       justify-content: space-between;
 
       height: 100%;
-
-      h1 {
-        margin: $standard-spacing / 2;
-      }
     }
   }
 }
@@ -625,8 +621,8 @@ form {
   margin-left: $standard-spacing;
   margin-right: $standard-spacing;
 
-  h1 {
-    margin: $standard-spacing / 2;
+  .student-count-text {
+    margin: 0;
   }
   img {
     height: $group-icon-size;
