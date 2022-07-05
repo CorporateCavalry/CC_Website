@@ -1,0 +1,30 @@
+<div class="class-progress-bar loadable">
+  <div class="progress-bar-background">
+    <div class="progress-bar-fill" style="background:
+    {% if include.completed %}
+        #00E517
+    {% else %}
+        #0085FF
+    {% endif %}
+    "></div>
+  </div>
+  <h1 class="progress-bar-percentage">23%</h1>
+</div>
+
+<script>
+  if (loginManager.isProfessor()) {
+    let failPrinter = getConsolePrinter();
+
+    profCommands.getClassProgress(
+      getURLClassCode(),
+      function(progressRatio) { // found class code
+        let percentage = String(Math.round(progressRatio * 100)) + "%";
+        $(".progress-bar-percentage").text(percentage);
+        $(".progress-bar-fill").css("width", percentage);
+      },
+      function(msg) { // error
+        failPrinter(msg);
+      }
+    );
+  }
+</script>

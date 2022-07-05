@@ -83,6 +83,10 @@ $alert-icon-size: 2rem;
 $alert-error-color: #FF0000;
 $alert-warning-color: #FFB800;
 
+$progress-bar-background-color: #D4D4D4;
+$progress-bar-height: 1.25rem;
+$progress-bar-corner-radius: $corner-radius;
+
 /* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
    License: none (public domain)
@@ -713,6 +717,39 @@ form {
     height: $alert-icon-size;
   }
 }
+
+/* PROGRESS BAR */
+.class-progress-bar {
+  padding: $standard-spacing 0 $standard-spacing * 4 0;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+
+  .progress-bar-background {
+    width: 100%;
+    height: $progress-bar-height;
+    border-radius: $progress-bar-corner-radius;
+
+    background-color: $progress-bar-background-color;
+
+    .progress-bar-fill {
+      background-color: green;
+      width: 33%;
+      height: 100%;
+      border-radius: $progress-bar-corner-radius;
+    }
+  }
+
+  .progress-bar-percentage {
+    margin: 0 0 0 $standard-spacing;
+  }
+}
+
 
 /* TEXT SNIPPETS */
 .text-snippet-box {
