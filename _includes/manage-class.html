@@ -20,7 +20,23 @@
 		}
 
 		function downloadReport() {
-			console.log("Attempting to download report");
+			profCommands.getProgressReport(
+				getURLClassCode(),
+				function(report) {
+					const element = document.createElement("a");
+				    const file = new Blob([report], {
+				      type: "text/plain",
+				    });
+				    element.href = URL.createObjectURL(file);
+				    element.download = curClassData["Name"] + ".csv";
+				    document.body.appendChild(element);
+				    element.click();
+				},
+				function(msg) {
+					let printer = getAlertPrinter("manage_class");
+					printer("Could not download report");
+				}
+			);
 		}
 
 		function copyInvitation() {

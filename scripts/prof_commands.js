@@ -175,6 +175,30 @@ const profCommands = function() {
         );
     }
 
+    function getProgressReport(classCode, onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        lambdaManager.get(
+            "professor/getProgressReport",
+            {"Email": getEmail(), "Password": getPassword(), "ClassCode": classCode},
+            function(json) { // on success
+                completeProcessing();
+                onSuccess(json["data"]["value"]);
+            },
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
+                "CLASS_NOT_FOUND": "Class not found."
+            },
+            onFail(failPrinter)
+        );
+    }
+
     function getCurrentUser() {
         return loginManager.getCachedEmail();
     }
@@ -195,6 +219,7 @@ const profCommands = function() {
         getClassList:getClassList,
         isClassOwner:isClassOwner,
         getCurrentUser:getCurrentUser,
-        getClassProgress:getClassProgress
+        getClassProgress:getClassProgress,
+        getProgressReport:getProgressReport
     }
 }();
