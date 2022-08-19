@@ -215,13 +215,11 @@ const loginManager = function() {
 
 // loading
 function onBeginLoading() {
-  console.log("BEGIN");
   $(".loadable").css("display", "none");
   $(".loading").css("display", "");
 }
 
 function onEndLoading() {
-  console.log("END");
   $(".loadable").css("display", "");
   $(".loading").css("display", "none");
 }

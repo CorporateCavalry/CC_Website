@@ -1,5 +1,8 @@
+{% include loading-indicator.html %}
 {% include class-info.html %}
-{% include button.html id="leave_class" function="leaveClass" label="Leave Class" %}
+<div class="loadable">
+	{% include button.html id="leave_class" function="leaveClass" label="Leave Class" %}
+</div>
 {% include alert-message.html id="my_class" type="warning" %}
 
 <script>

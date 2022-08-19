@@ -2,6 +2,15 @@
 ---
 <div class="section">
     <h2>The game has ended. Below is the final overall progress of your class.</h2>
-    <h2>The game tracks the progress of each student. You can download a spreadsheet containing this information and the associated UC Davis student IDs.</h2>
+    {% include class-progress-bar.html completed=true %}
+    <h2>The game has automatically tracked the progress and participation of each student. The student participation report contains a grade for each student based on this information associated with their email address.</h2>
     {% include button.html label="Download Report" id="download_report" function="downloadReport" %}
+    <p>Grading is based on how many of the 5 levels a student's group completed as well as how many times their teammates had to play for them due to inactivity. In general, completing:</p>
+    <p>5 levels: A+</p>
+    <p>4 levels: A  </p>
+    <p>3 levels: A-</p>
+    <p>2 levels: B </p>
+    <p>1 level:  C+</p>
+    <p>0 levels: D </p>
+    <p>Students who are inactive within the game will face up a grade penalty of up to 15%.</p>
 </div>

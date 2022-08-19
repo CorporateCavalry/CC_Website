@@ -7,7 +7,7 @@ title: Join Class
 	{% include join-class.html %}
 </div>
 <div class="student-logged-in">
-	<div class="section">
+	<div class="section loadable">
 		{% include button.html function="joinClass" label="Join" id="join_class" %}
 	</div>
 </div>
@@ -15,10 +15,10 @@ title: Join Class
 	{% include alert-message.html id="join_class" type="error" %}
 </div>
 <div class="logged-out">
-	<div class="section">
+	<div class="section loadable">
 		{% include create-student-account.html onSignUpSuccess="joinClass" buttonLabel="Sign Up and Join" %}
 	</div>
-	</div>
+</div>
 
 <script>
 	clearAlertPrinter("join_class");
