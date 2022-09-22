@@ -1,0 +1,33 @@
+---
+layout: narrow-page
+title: Test Clean
+---
+<script>
+	if (loginManager.isStudent()) {
+		urlReplaceSafe("/"); // go to homepage if we are a student
+	} else if (!loginManager.isProfessor()) {
+		urlReplaceSafe("/signin/"); // have us sign in if we're signed out
+	}
+</script>
+
+Test Clean
+
+<script>
+	function onSuccess(data) {
+		console.log(JSON.stringify(data));
+	}
+
+	function onFail(stuff) {
+		console.log(stuff)
+	}
+
+	profCommands.doClean(
+		onSuccess, onFail
+	);
+</script>
+
+<!-- <div class="prof-logged-in">
+	<div class="section">
+		{% include manage-classes.html %}
+	</div>
+</div> -->
