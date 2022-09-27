@@ -31,8 +31,12 @@ function urlReplaceSafe(path) {
     window.location.replace(path);
 }
 
+function getURLParam(key) {
+    return new URLSearchParams(window.location.search).get(key);
+}
+
 function getURLClassCode() {
-    return new URLSearchParams(window.location.search).get('code');
+    return getURLParam('code');
 }
 
 function printUnexpected(printer) {

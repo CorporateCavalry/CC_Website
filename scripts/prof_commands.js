@@ -199,6 +199,29 @@ const profCommands = function() {
         );
     }
 
+    function doClean(onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        lambdaManager.post(
+            "professor/clean",
+            {"Email": getEmail(), "Password": getPassword()},
+            function(json) { // on success
+                completeProcessing();
+                onSuccess(json["data"]);
+            },
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS
+            },
+            onFail(failPrinter)
+        );
+    }
+
     function getCurrentUser() {
         return loginManager.getCachedEmail();
     }
@@ -220,6 +243,7 @@ const profCommands = function() {
         isClassOwner:isClassOwner,
         getCurrentUser:getCurrentUser,
         getClassProgress:getClassProgress,
-        getProgressReport:getProgressReport
+        getProgressReport:getProgressReport,
+        doClean:doClean
     }
 }();
