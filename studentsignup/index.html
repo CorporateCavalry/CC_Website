@@ -3,9 +3,10 @@ layout: narrow-page
 title: Student Sign Up
 ---
 <script>
-	if (loginManager.isProfessor() || loginManager.isStudent()) {
+	// disable functionality for now since we don't need this page
+	// if (loginManager.isProfessor() || loginManager.isStudent()) {
 		urlReplaceSafe("/"); // go there and don't let us come back
-	}
+	// }
 </script>
 
 <div class="logged-out">
