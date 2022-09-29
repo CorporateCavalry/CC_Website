@@ -151,23 +151,38 @@
 					return;
 				}
 
-				const submitButton = $("#button_" + formName);
-				submitButton.prop("disabled", true);
-				errorPrinter("");
-				warningPrinter("");
+				(async () => {
+					let manualAssignData = null;
+					const hasFile = elements[formName + "_manual_assign"].files != null && elements[formName + "_manual_assign"].files.length > 0;
 
-				profCommands.createClass(
-					className,
-					dateHelpers.getSlidersFormattedDateString(startDate),
-					dateHelpers.getSlidersFormattedDateString(endDate),
-					function(classCode) {
-						goToPageSafe("/manageclass/?code=" + classCode);
-					},
-					function(msg) {
-						submitButton.prop("disabled", false);
-						errorPrinter(msg);
+					if (hasFile) {
+						manualAssignData = await elements[formName + "_manual_assign"].files[0].text();
+						if (manualAssignData.length > 128000) {
+							errorPrinter("File is too large!"); // for now, limit to 128kb
+							return;
+						}
 					}
-				);
+
+					const submitButton = $("#button_" + formName);
+					submitButton.prop("disabled", true);
+					errorPrinter("");
+					warningPrinter("");
+
+					profCommands.createClass(
+						className,
+						dateHelpers.getSlidersFormattedDateString(startDate),
+						dateHelpers.getSlidersFormattedDateString(endDate),
+						manualAssignData,
+						function(classCode) {
+							goToPageSafe("/manageclass/?code=" + classCode);
+						},
+						function(msg) {
+							submitButton.prop("disabled", false);
+							errorPrinter(msg);
+						}
+					);
+
+				})();
 			}
 
 			return {

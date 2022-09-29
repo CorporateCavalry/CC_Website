@@ -77,16 +77,21 @@ const profCommands = function() {
         );
     }
 
-    function createClass(className, startDate, endDate, onSuccess, failPrinter) {
+    function createClass(className, startDate, endDate, manualAssignData, onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
             return;
         }
         isProcessing = true;
 
+        let inputData = {"Email": getEmail(), "Password": getPassword(), "StartDate": startDate, "EndDate": endDate, "ClassName": className};
+        if (manualAssignData != null && manualAssignData != "") {
+            inputData["ManualAssign"] = manualAssignData;
+        }
+
         lambdaManager.post(
             "professor/createClass",
-            {"Email": getEmail(), "Password": getPassword(), "StartDate": startDate, "EndDate": endDate, "ClassName": className},
+            inputData,
             function(json) { // on success
                 completeProcessing();
                 onSuccess(json["data"]["ClassCode"]);
@@ -99,7 +104,8 @@ const profCommands = function() {
                 "END_DATE_EARLY": "End date must be after start date",
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
-                "CREATE_ATTEMPTS_EXCEEDED": "Could not add class at this time"
+                "CREATE_ATTEMPTS_EXCEEDED": "Could not add class at this time",
+                "INVALID_MANUAL_ASSIGN": null
             },
             onFail(failPrinter)
         );
