@@ -12,7 +12,11 @@ const lambdaManager = function() {
         if (json.hasOwnProperty("err_type")) {
             type = json["err_type"];
             if (errorTranslator.hasOwnProperty(type)) {
-                failPrinter(errorTranslator[type]);
+                if (errorTranslator[type] == null) {
+                    failPrinter(json["message"]); // use the already known message
+                } else {
+                    failPrinter(errorTranslator[type]);
+                }
                 return;
             }
         }
