@@ -50,10 +50,17 @@
 				printer(msg);
 			}
 
+			let classCode = getURLClassCode();
+
+			if (isNullOrEmpty(classCode)) {
+				classCode = null;
+			}
+
 			studentCommands.createAccount(
 				email,
 				name,
 				password,
+				classCode,
 				{{ include.onSignUpSuccess }},
 				onComplete
 			);

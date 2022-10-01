@@ -7,6 +7,7 @@ const studentCommands = function() {
     const MSG_ALREADY_IN_CLASS = "You are already in a class";
     const MSG_NOT_IN_CLASS = "You are not in a class";
     const MSG_INVALID_PASSWORD = "Please enter a 4-digit PIN";
+    const MSG_NOT_MANUALLY_ASSIGNED = "You are not registered to be in this class";
 
     let isProcessing = false;
 
@@ -29,7 +30,7 @@ const studentCommands = function() {
         }
     }
 
-    function createAccount(email, username, password, onSuccess, failPrinter) {
+    function createAccount(email, username, password, classCode, onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -41,7 +42,7 @@ const studentCommands = function() {
         }
 
         isProcessing = true;
-        studentData = {"Email": email, "Password": password, "Name": username};
+        studentData = {"Email": email, "Password": password, "Name": username, "ClassCode": classCode};
 
         lambdaManager.post(
             "student/createAccount",
@@ -54,7 +55,9 @@ const studentCommands = function() {
             { // error translation
                 "INVALID_EMAIL": MSG_INVALID_EMAIL,
                 "ACCOUNT_TAKEN": "An account with this email already exists",
-                "INVALID_PASSWORD": MSG_INVALID_PASSWORD
+                "INVALID_PASSWORD": MSG_INVALID_PASSWORD,
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND,
+                "NOT_MANUALLY_ASSIGNED": MSG_NOT_MANUALLY_ASSIGNED
             },
             onFail(failPrinter)
         );
@@ -161,7 +164,8 @@ const studentCommands = function() {
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
                 "ALREADY_IN_CLASS": MSG_ALREADY_IN_CLASS,
-                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND,
+                "NOT_MANUALLY_ASSIGNED": MSG_NOT_MANUALLY_ASSIGNED
             },
             onFail(failPrinter)
         );
