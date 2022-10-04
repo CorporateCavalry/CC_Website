@@ -48,6 +48,8 @@ const studentCommands = function() {
             "student/createAccount",
             studentData,
             function(json) { // on success
+                // we are not yet in a class, so don't include that
+                studentData["ClassCode"] = null;
                 loginManager.loginAsStudent(studentData);
                 completeProcessing();
                 onSuccess();
