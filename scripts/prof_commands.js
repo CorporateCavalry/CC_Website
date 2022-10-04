@@ -3,6 +3,7 @@ const profCommands = function() {
     const MSG_ACCOUNT_NOT_FOUND = "No account found with this email";
     const MSG_INCORRECT_PASSWORD = "Password is incorrect";
     const MSG_INVALID_CREDENTIALS = "Credentials are invalid";
+    const MSG_CLASS_NOT_FOUND = "Class not found"
 
     let isProcessing = false;
 
@@ -152,7 +153,7 @@ const profCommands = function() {
                 "INVALID_EMAIL": MSG_INVALID_EMAIL,
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
-                "CLASS_NOT_FOUND": "Class not found."
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND
             },
             onFail(failPrinter)
         );
@@ -176,7 +177,7 @@ const profCommands = function() {
                 "INVALID_EMAIL": MSG_INVALID_EMAIL,
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
-                "CLASS_NOT_FOUND": "Class not found."
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND
             },
             onFail(failPrinter)
         );
