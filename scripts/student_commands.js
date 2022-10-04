@@ -214,7 +214,8 @@ const studentCommands = function() {
                 "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND,
                 "CLASS_IS_STARTED": "You cannot leave a class after it has started",
                 "GROUP_NOT_FOUND": "Could not find your group",
-                "NOT_FOUND_IN_GROUP": "Your account could not be found in your group"
+                "NOT_FOUND_IN_GROUP": "Your account could not be found in your group",
+                "NOT_FOUND_IN_CLASS": "Your account could not be found in this class"
             },
             onFail(failPrinter)
         );
