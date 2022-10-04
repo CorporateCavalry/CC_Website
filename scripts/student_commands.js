@@ -167,7 +167,8 @@ const studentCommands = function() {
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
                 "ALREADY_IN_CLASS": MSG_ALREADY_IN_CLASS,
                 "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND,
-                "NOT_MANUALLY_ASSIGNED": MSG_NOT_MANUALLY_ASSIGNED
+                "NOT_MANUALLY_ASSIGNED": MSG_NOT_MANUALLY_ASSIGNED,
+                "CLASS_IS_OVER": "Cannot join a class that is already over"
             },
             onFail(failPrinter)
         );
