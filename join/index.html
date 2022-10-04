@@ -51,6 +51,13 @@ title: Join Class
 		function initClassData(data) {
 			classCommands.initializeClassInfo(data);
 
+			if (loginManager.isPropertyNonEmpty("ClassCode")) {
+				// we are already in a class
+				hideJoinInfo();
+				printer("You are already in a class");
+				return;
+			}
+
 			const statusData = classCommands.getClassStatus(data);
 			if (statusData["Status"] == "unstarted" || statusData["Status"] == "started") {
 				showJoinInfo();
