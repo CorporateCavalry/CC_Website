@@ -539,6 +539,36 @@ form {
   }
 }
 
+.form-file-line {
+    label {
+        display: flex;
+        -webkit-appearance: none;
+        font-family : inherit;
+        margin-bottom: $standard-spacing;
+        width: 100%;
+        padding: $input-field-padding;
+        box-sizing: border-box;
+        height: $input-field-height;
+        border-width: $input-field-border-thickness;
+        border-radius: $corner-radius;
+        font-size: $small-font-size;
+        color: $input-field-placeholder-text-color;
+        border-color: $input-field-border-color;
+        border-style: solid;
+        overflow: hidden;
+        white-space: nowrap;
+
+        i {
+            justify-self: flex-right;
+            flex-grow: 1;
+            text-align: right;
+            display: block;
+            color: $input-field-text-color;
+            transform: translateY(-15%);
+        }
+    }
+}
+
 .button {
   -webkit-appearance: none;
   height: $button-height;
@@ -689,6 +719,14 @@ form {
   .status-message-expired {
     color: $status-color-expired;
   }
+}
+
+/* CREATE CLASS FORMAT */
+.create-class-div {
+    p {
+      margin-top: 0;
+      margin-bottom: $standard-spacing;
+    }
 }
 
 /* ALERTS */

@@ -1,4 +1,23 @@
+<div class="section-header">Assign Groups (optional)</div>
+
+<div class="manual-assign-help create-class-div">
+{% capture my_include %}{% include manual-assign-help.md %}{% endcapture %}
+{{ my_include | markdownify }}
+</div>
+
+<form id="manual_assign_form">
+	<ul class="form-list">
+		{% include form-file-line.html formName="manual_assign_form" inputID="upload" label="Upload a CSV file" %}
+	</ul>
+</form>
+
 <div class="section-header">Create New Class</div>
+
+<div class="create-class-div">
+{% capture my_include %}{% include create-class-help.md %}{% endcapture %}
+{{ my_include | markdownify }}
+</div>
+
 <form id="create_class_form">
 	<ul class="form-list">
 		{% include form-line.html formName="create_class" inputID="name" inputType="text" placeholder="Class Name (visible to students)" %}
@@ -9,27 +28,26 @@
 				{% include form-date-line.html formName="create_class" inputID="end_date" label="End Date" %}
 			</ul>
 		</li>
-
-		{% include form-file-line.html formName="create_class" inputID="manual_assign" label="Manually Assign Groups (optional)"%}
 	</ul>
 </form>
 {% include button.html function="processCreateClass" label="Create" id="create_class" %}
 {% include alert-message.html id="create_class_warning" type="warning" %}
 {% include alert-message.html id="create_class_error" type="error" %}
 
-{% capture my_include %}{% include create-class-help.md %}{% endcapture %}
-{{ my_include | markdownify }}
-
 <script>
 	if (loginManager.isProfessor()) {
 		const createClassHelpers = function(){
 			const formName = "create_class";
+
+			const manualAssignElement = document.getElementById("manual_assign_form").elements["manual_assign_form_upload"];
 
 			// called on "start"
 			(function(){
 				// clear the alert messages
 				clearAlertPrinter(formName + "_warning");
 				clearAlertPrinter(formName + "_error");
+
+				$(".manual-assign-help a").prop("target", "_blank");
 
 				// set the default values for start and end date
 				const startDateInput = $("#" + formName + "_start_date");
@@ -51,6 +69,18 @@
 				// set up listeners for the date input fields
 				startDateInput.on('input', onDatesEdited);
 				endDateInput.on('input', onDatesEdited);
+
+				const fileText = $('#manual_assign_form_upload_label');
+
+				manualAssignElement.addEventListener('change', function(){
+					if (this.files == null || this.files.length < 1) {
+						fileText.text("Upload a CSV file");
+						fileText.css({"color": "#939393"});
+					} else {
+						fileText.text(this.files[0].name);
+						fileText.css({"color": "black"});
+					}
+				})
 			})();
 
 			const elements = document.getElementById(formName + "_form").elements;
@@ -153,10 +183,10 @@
 
 				(async () => {
 					let manualAssignData = null;
-					const hasFile = elements[formName + "_manual_assign"].files != null && elements[formName + "_manual_assign"].files.length > 0;
+					const hasFile = manualAssignElement.files != null && manualAssignElement.files.length > 0;
 
 					if (hasFile) {
-						manualAssignData = await elements[formName + "_manual_assign"].files[0].text();
+						manualAssignData = await manualAssignElement.files[0].text();
 						if (manualAssignData.length > 128000) {
 							errorPrinter("File is too large!"); // for now, limit to 128kb
 							return;
