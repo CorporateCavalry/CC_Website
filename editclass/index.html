@@ -1,0 +1,15 @@
+---
+layout: narrow-page
+title: Edit Groups
+---
+<script>
+	if (loginManager.isStudent()) {
+		urlReplaceSafe("/"); // go to homepage if we are a student
+	} else if (!loginManager.isProfessor()) {
+		urlReplaceSafe("/signin/"); // have us sign in if we're signed out
+	}
+</script>
+
+<div class="prof-logged-in">
+	{% include edit-class.html %}
+</div>

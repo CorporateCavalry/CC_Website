@@ -183,6 +183,30 @@ const profCommands = function() {
         );
     }
 
+    function getManualAssignData(classCode, onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        lambdaManager.get(
+            "professor/getManualAssignData",
+            {"Email": getEmail(), "Password": getPassword(), "ClassCode": classCode},
+            function(json) { // on success
+                completeProcessing();
+                onSuccess(json["data"]);
+            },
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND
+            },
+            onFail(failPrinter)
+        );
+    }
+
     function doClean(onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
@@ -227,6 +251,7 @@ const profCommands = function() {
         getCurrentUser:getCurrentUser,
         getClassData:getClassData,
         getProgressReport:getProgressReport,
+        getManualAssignData:getManualAssignData,
         doClean:doClean
     }
 }();
