@@ -174,10 +174,10 @@
 
 				manualAssignElement.addEventListener('change', function(){
 					if (this.files == null || this.files.length < 1) {
-						fileText.text("Upload a CSV file");
+						fileText.html("Upload a CSV file<i class='material-icons'>upload</i>");
 						fileText.css({"color": "#939393"});
 					} else {
-						fileText.text(this.files[0].name);
+						fileText.html(getHtmlSafeText(this.files[0].name) + "<i class='material-icons'>upload</i>");
 						fileText.css({"color": "black"});
 					}
 				})
