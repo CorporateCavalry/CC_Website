@@ -103,7 +103,7 @@
 				// $("#game-length-helper").text("This class will last for " + gameLength + " days.");
 				// $("#game-start-end-helper").text("Students can start playing on " + getDateDisplay(startDate) + " and will have until " + getDateDisplay(endDate) + " to finish.");
 
-				$("#game-length-helper").text("Students will be able to start playing on " + getDateDisplay(startDate));
+				$("#game-length-helper").text("Students will be able to start playing on " + getDateDisplay(startDate) + ".");
 				$("#game-start-end-helper").text("They will have " + gameLength + " days to finish, until " + getDateDisplay(endDate) + ".");
 
 				const daysUntilStart = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
