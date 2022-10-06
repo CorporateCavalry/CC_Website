@@ -1,1 +1,1 @@
-Students should be given a few days before the start date to sign up and install the app. They will not be able to start playing the game until the start date, and will have until the end date to complete the game.
+Students should be given a few days before the start date to sign up and install the app. We recommend giving students around 5 to 9 days to finish the entire game.

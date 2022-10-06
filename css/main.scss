@@ -729,6 +729,12 @@ form {
     }
 }
 
+.create-class-form-helper {
+    h2 {
+        margin-bottom: $standard-spacing / 2;
+    }
+}
+
 /* ALERTS */
 .alert-message {
   // padding: $standard-spacing;

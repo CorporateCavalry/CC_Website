@@ -31,6 +31,14 @@
 	</ul>
 </form>
 {% include button.html function="processCreateClass" label="Create" id="create_class" %}
+
+<div class="create-class-form-helper">
+	<h2 id="game-length-helper">
+	</h2>
+	<h2 id="game-start-end-helper">
+
+	</h2>
+</div>
 {% include alert-message.html id="create_class_warning" type="warning" %}
 {% include alert-message.html id="create_class_error" type="error" %}
 
@@ -41,12 +49,104 @@
 
 			const manualAssignElement = document.getElementById("manual_assign_form").elements["manual_assign_form_upload"];
 
+			const elements = document.getElementById(formName + "_form").elements;
+			const startDateElement = elements[formName + "_start_date"];
+			const endDateElement = elements[formName + "_end_date"];
+
+			const warningPrinter = getAlertPrinter(formName + "_warning");
+			const errorPrinter = getAlertPrinter(formName + "_error");
+
+			function getDateDisplay(date) {
+				return date.toLocaleString('default', {month: 'short', day: 'numeric'}) + " (" + date.toLocaleString( 'default', {weekday: 'long'} ) + ")";
+			}
+
+			function onDatesEdited() {
+				const startDateStr = startDateElement.value;
+				const endDateStr = endDateElement.value;
+
+				warningPrinter("");
+				errorPrinter("");
+
+				$("#game-length-helper").text("");
+				$("#game-start-end-helper").text("");
+
+				if (isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
+					return;
+				}
+
+				const startDate = parseInputDate(startDateStr);
+				if (startDate == null) {
+					errorPrinter("Start date is invalid");
+					return;
+				}
+
+				const endDate = parseInputDate(endDateStr);
+				if (endDate == null) {
+					errorPrinter("End date is invalid");
+					return;
+				}
+
+				let today = dateHelpers.getCurrentDate();
+
+				if (startDate <= today) {
+					errorPrinter("Start date must be after today!");
+					return;
+				}
+
+				if (endDate <= startDate) {
+					errorPrinter("End date must be after start date!");
+					return;
+				}
+
+				const gameLength = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
+
+				// $("#game-length-helper").text("This class will last for " + gameLength + " days.");
+				// $("#game-start-end-helper").text("Students can start playing on " + getDateDisplay(startDate) + " and will have until " + getDateDisplay(endDate) + " to finish.");
+
+				$("#game-length-helper").text("Students will be able to start playing on " + getDateDisplay(startDate));
+				$("#game-start-end-helper").text("They will have " + gameLength + " days to finish, until " + getDateDisplay(endDate) + ".");
+
+				const daysUntilStart = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
+				if (daysUntilStart < 4) {
+					warningPrinter("At least 3 full days is recommended for students to sign up.");
+					return;
+				}
+
+				if (gameLength < 5 || gameLength > 9) {
+					warningPrinter("5 to 9 days is recommended for students to complete the game.");
+					return;
+				}
+			}
+
+			function parseInputDate(str) {
+				// format is yyyy-mm-dd
+				const tokens = str.split('-');
+				if (tokens.length != 3) {
+					return null;
+				}
+
+				const year = parseInt(tokens[0]);
+				const month = parseInt(tokens[1]);
+				const date = parseInt(tokens[2]);
+
+				if (isNaN(year) || isNaN(month) || isNaN(date)) {
+					return null;
+				}
+
+				if (month > 12 || month < 1 || date > 31 || date < 1) {
+					return null;
+				}
+
+				return new Date(year, month - 1, date, 0, 0, 0);
+			}
+
 			// called on "start"
 			(function(){
 				// clear the alert messages
 				clearAlertPrinter(formName + "_warning");
 				clearAlertPrinter(formName + "_error");
 
+				// make all links open in a separate tab
 				$(".manual-assign-help a").prop("target", "_blank");
 
 				// set the default values for start and end date
@@ -81,84 +181,9 @@
 						fileText.css({"color": "black"});
 					}
 				})
+
+				onDatesEdited();
 			})();
-
-			const elements = document.getElementById(formName + "_form").elements;
-			const startDateElement = elements[formName + "_start_date"];
-			const endDateElement = elements[formName + "_end_date"];
-
-			const warningPrinter = getAlertPrinter(formName + "_warning");
-			const errorPrinter = getAlertPrinter(formName + "_error");
-
-			function onDatesEdited() {
-				const startDateStr = startDateElement.value;
-				const endDateStr = endDateElement.value;
-
-				warningPrinter("");
-				errorPrinter("");
-
-				if (isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
-					return;
-				}
-
-				const startDate = parseInputDate(startDateStr);
-				if (startDate == null) {
-					errorPrinter("Start date is invalid");
-					return;
-				}
-
-				const endDate = parseInputDate(endDateStr);
-				if (endDate == null) {
-					errorPrinter("End date is invalid");
-					return;
-				}
-
-				let today = dateHelpers.getCurrentDate();
-
-				if (startDate <= today) {
-					errorPrinter("Start date must be after today!");
-					return;
-				}
-
-				if (endDate <= startDate) {
-					errorPrinter("End date must be after start date!");
-					return;
-				}
-
-				const daysUntilStart = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
-				if (daysUntilStart < 4) {
-					warningPrinter("At least 3 full days is recommended for students to join class.");
-					return;
-				}
-
-				const gameLength = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
-				if (gameLength < 5 || gameLength > 9) {
-					warningPrinter("5 to 9 days is recommended for students to complete the game.");
-					return;
-				}
-			}
-
-			function parseInputDate(str) {
-				// format is yyyy-mm-dd
-				const tokens = str.split('-');
-				if (tokens.length != 3) {
-					return null;
-				}
-
-				const year = parseInt(tokens[0]);
-				const month = parseInt(tokens[1]);
-				const date = parseInt(tokens[2]);
-
-				if (isNaN(year) || isNaN(month) || isNaN(date)) {
-					return null;
-				}
-
-				if (month > 12 || month < 1 || date > 31 || date < 1) {
-					return null;
-				}
-
-				return new Date(year, month - 1, date, 0, 0, 0);
-			}
 
 			function processCreateClass() {
 				if (profCommands.getIsProcessing()) return;
