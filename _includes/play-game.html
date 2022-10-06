@@ -16,21 +16,19 @@
 {% include alert-message.html id="play_game_error" type="error" %}
 {% include alert-message.html id="play_game_warning" type="warning" %}
 
-<div class="section">
-    <ul class="where-to-play-list">
-        <li>
-            <ul class="where-to-play-list-mobile">
-                <li>
-                    {% include button.html function="onIOSAppStoreButtonPressed" id="download_for_iOS" label="Download for iOS" %}
-                </li>
-                <li class="hidden-divider">
-                <li>
-                    {% include button.html function="onGooglePlayStoreButtonPressed" id="download_for_android" label="Download for Android" %}
-                </li>
-            </ul>
-        </li>
-    </ul>
-</div>
+<ul class="where-to-play-list">
+    <li>
+        <ul class="where-to-play-list-mobile">
+            <li>
+                {% include button.html function="onIOSAppStoreButtonPressed" id="download_for_iOS" label="Download for iOS" %}
+            </li>
+            <li class="hidden-divider">
+            <li>
+                {% include button.html function="onGooglePlayStoreButtonPressed" id="download_for_android" label="Download for Android" %}
+            </li>
+        </ul>
+    </li>
+</ul>
 
 <script>
     function onIOSAppStoreButtonPressed() {
