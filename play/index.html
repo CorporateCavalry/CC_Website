@@ -2,6 +2,12 @@
 layout: narrow-page
 title: Play Game
 ---
+<script>
+	if (!loginManager.isStudent()) {
+		urlReplaceSafe("/"); // go there and don't let us come back
+	}
+</script>
+
 <div class="section">
 	{% include play-game.html %}
 </div>

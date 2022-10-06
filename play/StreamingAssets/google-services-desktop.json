@@ -1,41 +1,34 @@
 {
   "project_info": {
-    "project_number": "264078993556",
-    "project_id": "corporate-cavalry",
-    "storage_bucket": "corporate-cavalry.appspot.com"
+    "project_number": "1032851692340",
+    "project_id": "ucdavis-corporate-cavalry",
+    "storage_bucket": "ucdavis-corporate-cavalry.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:264078993556:android:6d447a1a0d1a0207d4ac81",
+        "mobilesdk_app_id": "1:1032851692340:android:4445a269bef51e220b2361",
         "android_client_info": {
-          "package_name": "com.TrassGames.CorporateCavalry"
+          "package_name": "edu.ucdavis.corporatecavalry"
         }
       },
       "oauth_client": [
         {
-          "client_id": "264078993556-tkhnprq08bf7mhsh5cmi8vvt79e7044o.apps.googleusercontent.com",
+          "client_id": "1032851692340-vmv5rkdk845mkq51u9cr84kjqtt0ausn.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD5PGUhKZfPBMtF0BDEs0P7gpHKMvEn4js"
+          "current_key": "AIzaSyCg7wQkM_Q1LhpDCQNGhxz5FzLgFvIuaO4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "264078993556-tkhnprq08bf7mhsh5cmi8vvt79e7044o.apps.googleusercontent.com",
+              "client_id": "1032851692340-vmv5rkdk845mkq51u9cr84kjqtt0ausn.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "264078993556-ss2d517clmvs59lgmbek1tf4t8acjk4g.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.TrassGames.SlidersICNC"
-              }
             }
           ]
         }
