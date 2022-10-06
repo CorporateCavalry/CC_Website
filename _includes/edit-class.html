@@ -35,12 +35,12 @@
 				for (let elem of groupList) {
 					let newGroupElement = document.createElement("li");
 					let newHTML = groupTemplate;
-					newHTML = newHTML.replaceAll("[name]", "Group " + elem["groupID"]);
+					newHTML = newHTML.replaceAll("[name]", getHtmlSafeText("Group " + elem["groupID"]));
 					newGroupElement.innerHTML = newHTML;
 
 					for (let student of elem["students"]) {
 						let newStudentElement = document.createElement("li");
-						newStudentElement.innerHTML = student["email"];
+						newStudentElement.innerHTML = getHtmlSafeText(student["email"]);
 						if (!student["registered"]) {
 							newStudentElement.innerHTML += " (not registered)";
 						}

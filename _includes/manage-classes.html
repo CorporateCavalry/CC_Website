@@ -55,11 +55,11 @@
 					const statusData = classCommands.getClassStatus(classData);
 
 					let html = classElementTemplate;
-					html = html.replaceAll("[code]", classData["ClassCode"]);
-					html = html.replaceAll("[name]", classData["Name"]);
-					html = html.replaceAll("[status]", statusData["Status"]);
-					html = html.replaceAll("[studentCount]", classData["StudentCount"]);
-					html = html.replaceAll("[statusMessage]", statusData["Message"]);
+					html = html.replaceAll("[code]", getHtmlSafeText(classData["ClassCode"]));
+					html = html.replaceAll("[name]", getHtmlSafeText(classData["Name"]));
+					html = html.replaceAll("[status]", getHtmlSafeText(statusData["Status"]));
+					html = html.replaceAll("[studentCount]", getHtmlSafeText(classData["StudentCount"]));
+					html = html.replaceAll("[statusMessage]", getHtmlSafeText(statusData["Message"]));
 
 					return html;
 				}
