@@ -4,7 +4,7 @@ Your team has been hired by Business Inc., and must work together to prevent emp
 
 Teamwork is vital as the challenges require every member to complete. You'll be taking turns asynchronously, so strategize together to reach a solution. Clear paths for your teammates, but be wary as the wrong move could just as easily block them.
 
-Before the challenges begin on [start_date], please sign up with your email using the following link:
+Before the challenges begin on [start_date], please sign up with your email and install the app using the following link:
 [url_join_page]
 
 For more information about Corporate Cavalry visit:
