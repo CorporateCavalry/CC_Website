@@ -2,6 +2,8 @@
 {% include class-info.html %}
 <div class="loadable">
 	{% include button.html id="leave_class" function="leaveClass" label="Leave Class" %}
+
+    {% include where-to-play.html %}
 </div>
 {% include alert-message.html id="my_class" type="warning" %}
 
@@ -25,10 +27,17 @@
 			studentCommands.getMyClassData(
 				function(classData) { // found class code
 					classCommands.initializeClassInfo(classData);
-					if (classCommands.getClassStatus(classData)["Status"] == "unstarted") {
+					const status = classCommands.getClassStatus(classData)["Status"];
+					if (status == "unstarted") {
 						$("#button_leave_class").css("display", "");
 					} else {
 						$("#button_leave_class").css("display", "none");
+					}
+
+					if (status == "started" || status == "unstarted") {
+						$(".where-to-play-list").css("display", "");
+					} else {
+						$(".where-to-play-list").css("display", "none");
 					}
 				},
 				function() { // no class code
