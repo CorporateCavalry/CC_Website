@@ -140,6 +140,17 @@
 				return new Date(year, month - 1, date, 0, 0, 0);
 			}
 
+			const fileText = $('#manual_assign_form_upload_label');
+			function onFileChanged() {
+				if (manualAssignElement.files == null || manualAssignElement.files.length < 1) {
+					fileText.html("Upload a CSV file<i class='material-icons'>upload</i>");
+					fileText.css({"color": "#939393"});
+				} else {
+					fileText.html(getHtmlSafeText(manualAssignElement.files[0].name) + "<i class='material-icons'>upload</i>");
+					fileText.css({"color": "black"});
+				}
+			}
+
 			// called on "start"
 			(function(){
 				// clear the alert messages
@@ -170,17 +181,7 @@
 				startDateInput.on('input', onDatesEdited);
 				endDateInput.on('input', onDatesEdited);
 
-				const fileText = $('#manual_assign_form_upload_label');
-
-				manualAssignElement.addEventListener('change', function(){
-					if (this.files == null || this.files.length < 1) {
-						fileText.html("Upload a CSV file<i class='material-icons'>upload</i>");
-						fileText.css({"color": "#939393"});
-					} else {
-						fileText.html(getHtmlSafeText(this.files[0].name) + "<i class='material-icons'>upload</i>");
-						fileText.css({"color": "black"});
-					}
-				})
+				manualAssignElement.addEventListener('change', onFileChanged)
 
 				onDatesEdited();
 			})();
@@ -234,6 +235,9 @@
 						function(msg) {
 							submitButton.prop("disabled", false);
 							errorPrinter(msg);
+
+							manualAssignElement.value = '';
+							onFileChanged();
 						}
 					);
 
