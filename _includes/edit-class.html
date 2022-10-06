@@ -35,7 +35,7 @@
 				for (let elem of groupList) {
 					let newGroupElement = document.createElement("li");
 					let newHTML = groupTemplate;
-					newHTML = newHTML.replaceAll("[name]", getHtmlSafeText("Group " + elem["groupID"]));
+					newHTML = newHTML.replaceAll("[name]", getHtmlSafeText("Group " + elem["groupNumber"]));
 					newGroupElement.innerHTML = newHTML;
 
 					for (let student of elem["students"]) {

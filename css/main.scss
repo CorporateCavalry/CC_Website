@@ -274,6 +274,7 @@ body {
     }
     ol li {
       list-style-type: decimal;
+      font-weight: $small-font-weight;
     }
     .button-container {
       display: flex;
@@ -727,6 +728,24 @@ form {
       margin-top: 0;
       margin-bottom: $standard-spacing;
     }
+
+    li {
+      font-size: $small-font-size;
+      font-weight: $small-font-weight;
+      text-align: left;
+      list-style-type: disc;
+      line-height: 1.5;
+    }
+
+    ol {
+      margin-left: $standard-spacing * 1.5;
+      margin-bottom: $standard-spacing;
+    }
+    ol li {
+      list-style-type: decimal;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
 }
 
 .create-class-form-helper {
@@ -956,6 +975,9 @@ form {
         label {
           font-size: $mobile-small-font-size-ratio * $small-font-size;
         }
+    }
+    .create-class-div > ol > li {
+        font-size: $mobile-small-font-size-ratio * $small-font-size;
     }
 }
 @media only screen and (max-width: $mobile-page-narrow-width) {
