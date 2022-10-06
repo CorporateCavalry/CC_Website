@@ -559,7 +559,6 @@ form {
         white-space: nowrap;
 
         i {
-            justify-self: flex-right;
             flex-grow: 1;
             text-align: right;
             display: block;
@@ -919,6 +918,13 @@ form {
     }
     .form-line > ::placeholder {
       font-size: $mobile-medium-font-size-ratio * $medium-font-size;
+    }
+    .form-file-line > label {
+      padding-top: 11px;
+      font-size: $mobile-medium-font-size-ratio * $medium-font-size;
+    }
+    .form-file-line > label > i {
+      transform: translateY(-30%);
     }
     .button {
       font-size: $mobile-large-font-size-ratio * $large-font-size;
