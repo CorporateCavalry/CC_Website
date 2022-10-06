@@ -6,18 +6,21 @@ title: Join Class
 	<img class="section-header-image" src="/assets/studentWelcome.png">
 	{% include join-class.html %}
 </div>
-<div class="student-logged-in">
-	<div class="section loadable">
-		{% include button.html function="joinClass" label="Join" id="join_class" %}
+<div class="join-content">
+	<div class="student-logged-in">
+		<div class="section loadable">
+			{% include button.html function="joinClass" label="Join" id="join_class" %}
+		</div>
+	</div>
+
+	<div class="logged-out">
+		<div class="section loadable">
+			{% include create-student-account.html onSignUpSuccess="joinClass" buttonLabel="Sign Up and Join" %}
+		</div>
 	</div>
 </div>
 <div class="section">
 	{% include alert-message.html id="join_class" type="error" %}
-</div>
-<div class="logged-out">
-	<div class="section loadable">
-		{% include create-student-account.html onSignUpSuccess="joinClass" buttonLabel="Sign Up and Join" %}
-	</div>
 </div>
 
 <script>
@@ -30,4 +33,47 @@ title: Join Class
 			getAlertPrinter("join_class")
 		);
 	}
+
+	(function() {
+		let printer = getAlertPrinter("join_class");
+		printer("");
+
+		let classCode = getURLClassCode();
+
+		if (isNullOrEmpty(classCode)) {
+			urlReplaceSafe("/"); // go there and don't let us come back
+			return;
+		}
+
+		function hideJoinInfo() { $(".join-content").css("display", "none"); }
+		function showJoinInfo() { $(".join-content").css("display", ""); }
+
+		function initClassData(data) {
+			classCommands.initializeClassInfo(data);
+
+			if (loginManager.isPropertyNonEmpty("ClassCode")) {
+				// we are already in a class
+				hideJoinInfo();
+				printer("You are already in a class");
+				return;
+			}
+
+			const statusData = classCommands.getClassStatus(data);
+			if (statusData["Status"] == "unstarted" || statusData["Status"] == "started") {
+				showJoinInfo();
+			} else {
+				hideJoinInfo();
+			}
+		}
+
+		classCommands.fetchClassInfo(
+			classCode,
+			initClassData,
+			function(msg) {
+				printer(msg);
+				classCommands.hideClassInfo();
+				hideJoinInfo();
+			}
+		);
+	})();
 </script>

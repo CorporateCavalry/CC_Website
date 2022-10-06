@@ -77,6 +77,13 @@
 				curClassData = data;
 				classCommands.initializeClassInfo(data);
 
+				function onStatusFullyLoaded() {
+					const progressRatio = data["Progress"];
+					let percentage = String(Math.round(progressRatio * 100)) + "%";
+					$(".progress-bar-percentage").text(percentage);
+					$(".progress-bar-fill").css("width", percentage);
+				}
+
 				let status = classCommands.getClassStatus(data)["Status"];
 				if (!isNullOrEmpty(status)) {
 					if (status === "unstarted") {
@@ -86,6 +93,7 @@
 							async: true,
 							success: function(templateText) {
 								$("#status-section").html(fillOutIntroStatement(data, templateText));
+								onStatusFullyLoaded();
 							},
 							error: function(xhr, ajaxOptions, thrownError) {
 								printer("Could not load unstarted section.");
@@ -98,6 +106,7 @@
 							async: true,
 							success: function(templateText) {
 								$("#status-section").html(templateText);
+								onStatusFullyLoaded();
 							},
 							error: function(xhr, ajaxOptions, thrownError) {
 								printer("Could not load started section.");
@@ -110,6 +119,7 @@
 							async: true,
 							success: function(templateText) {
 								$("#status-section").html(templateText);
+								onStatusFullyLoaded();
 							},
 							error: function(xhr, ajaxOptions, thrownError) {
 								printer("Could not load started section.");
@@ -122,25 +132,12 @@
 				}
 			}
 
-			profCommands.isClassOwner(
+			profCommands.getClassData(
 				classCode,
-				function(isOwner) { // on success
-					console.log(isOwner);
-					if (isOwner) {
-						classCommands.fetchClassInfo(
-							classCode,
-							initClassData,
-							function(msg) {
-								printer(msg);
-								classCommands.hideClassInfo();
-							}
-						);
-					} else {
-						urlReplaceSafe("/manageclasses"); // this isn't our class, so abort
-					}
-				}, // on fail
+				initClassData,
 				function(msg) {
-					printer("Could not verify ownership of this class");
+					printer(msg);
+					classCommands.hideClassInfo();
 				}
 			);
 		})();

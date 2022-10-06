@@ -1,4 +1,6 @@
-<li class="form-line">
-	<label for="{{ include.formName }}_{{ include.inputID }}">{{ include.label }}:</label>
-	<input type="file" name="{{ include.formName }}_{{ include.inputID }}" id="{{ include.formName }}_{{ include.inputID }}" accept=".csv">
+<li class="form-file-line">
+	<label id="{{ include.formName }}_{{ include.inputID }}_label" for="{{ include.formName }}_{{ include.inputID }}">
+		{{ include.label }}<i class="material-icons"">upload</i>
+	</label>
+	<input type="file" name="{{ include.formName }}_{{ include.inputID }}" id="{{ include.formName }}_{{ include.inputID }}" hidden="true" accept=".csv">
 </li>

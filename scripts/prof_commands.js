@@ -3,6 +3,7 @@ const profCommands = function() {
     const MSG_ACCOUNT_NOT_FOUND = "No account found with this email";
     const MSG_INCORRECT_PASSWORD = "Password is incorrect";
     const MSG_INVALID_CREDENTIALS = "Credentials are invalid";
+    const MSG_CLASS_NOT_FOUND = "Class not found"
 
     let isProcessing = false;
 
@@ -134,7 +135,7 @@ const profCommands = function() {
         );
     }
 
-    function isClassOwner(classCode, onSuccess, failPrinter) {
+    function getClassData(classCode, onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
             return;
@@ -142,40 +143,17 @@ const profCommands = function() {
         isProcessing = true;
 
         lambdaManager.get(
-            "professor/isClassOwner",
+            "professor/getProfessorClassData",
             {"Email": getEmail(), "Password": getPassword(), "ClassCode": classCode},
             function(json) { // on success
                 completeProcessing();
-                onSuccess(json["data"]["value"]);
-            },
-            { // error translation
-                "INVALID_EMAIL": MSG_INVALID_EMAIL,
-                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
-                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS
-            },
-            onFail(failPrinter)
-        );
-    }
-
-    function getClassProgress(classCode, onSuccess, failPrinter) {
-        if (isProcessing) {
-            printBusy(failPrinter);
-            return;
-        }
-        isProcessing = true;
-
-        lambdaManager.get(
-            "professor/getClassProgress",
-            {"Email": getEmail(), "Password": getPassword(), "ClassCode": classCode},
-            function(json) { // on success
-                completeProcessing();
-                onSuccess(json["data"]["value"]);
+                onSuccess(json["data"]);
             },
             { // error translation
                 "INVALID_EMAIL": MSG_INVALID_EMAIL,
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
-                "CLASS_NOT_FOUND": "Class not found."
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND
             },
             onFail(failPrinter)
         );
@@ -199,7 +177,31 @@ const profCommands = function() {
                 "INVALID_EMAIL": MSG_INVALID_EMAIL,
                 "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
-                "CLASS_NOT_FOUND": "Class not found."
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND
+            },
+            onFail(failPrinter)
+        );
+    }
+
+    function getManualAssignData(classCode, onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        lambdaManager.get(
+            "professor/getManualAssignData",
+            {"Email": getEmail(), "Password": getPassword(), "ClassCode": classCode},
+            function(json) { // on success
+                completeProcessing();
+                onSuccess(json["data"]);
+            },
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
+                "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND
             },
             onFail(failPrinter)
         );
@@ -246,10 +248,10 @@ const profCommands = function() {
         login:login,
         createClass:createClass,
         getClassList:getClassList,
-        isClassOwner:isClassOwner,
         getCurrentUser:getCurrentUser,
-        getClassProgress:getClassProgress,
+        getClassData:getClassData,
         getProgressReport:getProgressReport,
+        getManualAssignData:getManualAssignData,
         doClean:doClean
     }
 }();

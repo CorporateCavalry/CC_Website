@@ -1,4 +1,23 @@
+<div class="section-header">Assign Groups (optional)</div>
+
+<div class="manual-assign-help create-class-div">
+{% capture my_include %}{% include manual-assign-help.md %}{% endcapture %}
+{{ my_include | markdownify }}
+</div>
+
+<form id="manual_assign_form">
+	<ul class="form-list">
+		{% include form-file-line.html formName="manual_assign_form" inputID="upload" label="Upload a CSV file" %}
+	</ul>
+</form>
+
 <div class="section-header">Create New Class</div>
+
+<div class="create-class-div">
+{% capture my_include %}{% include create-class-help.md %}{% endcapture %}
+{{ my_include | markdownify }}
+</div>
+
 <form id="create_class_form">
 	<ul class="form-list">
 		{% include form-line.html formName="create_class" inputID="name" inputType="text" placeholder="Class Name (visible to students)" %}
@@ -9,49 +28,26 @@
 				{% include form-date-line.html formName="create_class" inputID="end_date" label="End Date" %}
 			</ul>
 		</li>
-
-		{% include form-file-line.html formName="create_class" inputID="manual_assign" label="Manually Assign Groups (optional)"%}
 	</ul>
 </form>
 {% include button.html function="processCreateClass" label="Create" id="create_class" %}
+
+<div class="create-class-form-helper">
+	<h2 id="game-length-helper">
+	</h2>
+	<h2 id="game-start-end-helper">
+
+	</h2>
+</div>
 {% include alert-message.html id="create_class_warning" type="warning" %}
 {% include alert-message.html id="create_class_error" type="error" %}
-
-{% capture my_include %}{% include create-class-help.md %}{% endcapture %}
-{{ my_include | markdownify }}
 
 <script>
 	if (loginManager.isProfessor()) {
 		const createClassHelpers = function(){
 			const formName = "create_class";
 
-			// called on "start"
-			(function(){
-				// clear the alert messages
-				clearAlertPrinter(formName + "_warning");
-				clearAlertPrinter(formName + "_error");
-
-				// set the default values for start and end date
-				const startDateInput = $("#" + formName + "_start_date");
-				const endDateInput = $("#" + formName + "_end_date");
-
-				let date = dateHelpers.getCurrentDate();
-
-				date.setDate(date.getDate() + 1);
-				const tomorrowStr = dateHelpers.getWebFormattedDateString(date);
-				startDateInput.attr("min", tomorrowStr); // minimum date is tomorrow
-				endDateInput.attr("min", tomorrowStr);
-
-				date.setDate(date.getDate() + 3);
-				startDateInput.attr("value", dateHelpers.getWebFormattedDateString(date)); // default value of start date is 3 full days after today
-
-				date.setDate(date.getDate() + 7); // default end date is 1 week away
-				endDateInput.attr("value", dateHelpers.getWebFormattedDateString(date));
-
-				// set up listeners for the date input fields
-				startDateInput.on('input', onDatesEdited);
-				endDateInput.on('input', onDatesEdited);
-			})();
+			const manualAssignElement = document.getElementById("manual_assign_form").elements["manual_assign_form_upload"];
 
 			const elements = document.getElementById(formName + "_form").elements;
 			const startDateElement = elements[formName + "_start_date"];
@@ -60,12 +56,19 @@
 			const warningPrinter = getAlertPrinter(formName + "_warning");
 			const errorPrinter = getAlertPrinter(formName + "_error");
 
+			function getDateDisplay(date) {
+				return date.toLocaleString('default', {month: 'short', day: 'numeric'}) + " (" + date.toLocaleString( 'default', {weekday: 'long'} ) + ")";
+			}
+
 			function onDatesEdited() {
 				const startDateStr = startDateElement.value;
 				const endDateStr = endDateElement.value;
 
 				warningPrinter("");
 				errorPrinter("");
+
+				$("#game-length-helper").text("");
+				$("#game-start-end-helper").text("");
 
 				if (isNullOrEmpty(startDateStr) || isNullOrEmpty(endDateStr)) {
 					return;
@@ -95,13 +98,20 @@
 					return;
 				}
 
+				const gameLength = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
+
+				// $("#game-length-helper").text("This class will last for " + gameLength + " days.");
+				// $("#game-start-end-helper").text("Students can start playing on " + getDateDisplay(startDate) + " and will have until " + getDateDisplay(endDate) + " to finish.");
+
+				$("#game-length-helper").text("Students will be able to start playing on " + getDateDisplay(startDate));
+				$("#game-start-end-helper").text("They will have " + gameLength + " days to finish, until " + getDateDisplay(endDate) + ".");
+
 				const daysUntilStart = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
 				if (daysUntilStart < 4) {
-					warningPrinter("At least 3 full days is recommended for students to join class.");
+					warningPrinter("At least 3 full days is recommended for students to sign up.");
 					return;
 				}
 
-				const gameLength = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // number of milliseconds per day
 				if (gameLength < 5 || gameLength > 9) {
 					warningPrinter("5 to 9 days is recommended for students to complete the game.");
 					return;
@@ -130,6 +140,51 @@
 				return new Date(year, month - 1, date, 0, 0, 0);
 			}
 
+			// called on "start"
+			(function(){
+				// clear the alert messages
+				clearAlertPrinter(formName + "_warning");
+				clearAlertPrinter(formName + "_error");
+
+				// make all links open in a separate tab
+				$(".manual-assign-help a").prop("target", "_blank");
+
+				// set the default values for start and end date
+				const startDateInput = $("#" + formName + "_start_date");
+				const endDateInput = $("#" + formName + "_end_date");
+
+				let date = dateHelpers.getCurrentDate();
+
+				date.setDate(date.getDate() + 1);
+				const tomorrowStr = dateHelpers.getWebFormattedDateString(date);
+				startDateInput.attr("min", tomorrowStr); // minimum date is tomorrow
+				endDateInput.attr("min", tomorrowStr);
+
+				date.setDate(date.getDate() + 3);
+				startDateInput.attr("value", dateHelpers.getWebFormattedDateString(date)); // default value of start date is 3 full days after today
+
+				date.setDate(date.getDate() + 7); // default end date is 1 week away
+				endDateInput.attr("value", dateHelpers.getWebFormattedDateString(date));
+
+				// set up listeners for the date input fields
+				startDateInput.on('input', onDatesEdited);
+				endDateInput.on('input', onDatesEdited);
+
+				const fileText = $('#manual_assign_form_upload_label');
+
+				manualAssignElement.addEventListener('change', function(){
+					if (this.files == null || this.files.length < 1) {
+						fileText.text("Upload a CSV file");
+						fileText.css({"color": "#939393"});
+					} else {
+						fileText.text(this.files[0].name);
+						fileText.css({"color": "black"});
+					}
+				})
+
+				onDatesEdited();
+			})();
+
 			function processCreateClass() {
 				if (profCommands.getIsProcessing()) return;
 
@@ -153,10 +208,10 @@
 
 				(async () => {
 					let manualAssignData = null;
-					const hasFile = elements[formName + "_manual_assign"].files != null && elements[formName + "_manual_assign"].files.length > 0;
+					const hasFile = manualAssignElement.files != null && manualAssignElement.files.length > 0;
 
 					if (hasFile) {
-						manualAssignData = await elements[formName + "_manual_assign"].files[0].text();
+						manualAssignData = await manualAssignElement.files[0].text();
 						if (manualAssignData.length > 128000) {
 							errorPrinter("File is too large!"); // for now, limit to 128kb
 							return;

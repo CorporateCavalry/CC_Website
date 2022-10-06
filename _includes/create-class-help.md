@@ -1,3 +1,1 @@
-Students will be able to start playing the game on the start date, so they should be given a few days beforehand to sign up and install the app. Once the game starts, they will have until the end date to complete the game.
-
-If you would like to manually assign groups, you can upload a CSV file based on [this template](https://docs.google.com/spreadsheets/d/11Yoz4oTOIpexApjSwr4CPdSkb6RQKhau42tq27USkGQ/edit?usp=sharing). Once you have created your spreadsheet, go to File > Download > Comma Separated Values (.csv) to download the file to your computer. Note that groups cannot have more than 4 students.
+Students should be given a few days before the start date to sign up and install the app. We recommend giving students around 5 to 9 days to finish the entire game.

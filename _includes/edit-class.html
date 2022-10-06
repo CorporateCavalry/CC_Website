@@ -1,0 +1,76 @@
+<div class="section">
+	{% include alert-message.html id="edit_class" type="warning" %}
+	{% include loading-indicator.html %}
+</div>
+
+<ul id="groups_list" class="groups-list"></ul>
+
+<script>
+	if (loginManager.isProfessor()) {
+		(function() {
+			let printer = getAlertPrinter("edit_class");
+			printer("");
+
+			let classCode = getURLClassCode();
+
+			if (isNullOrEmpty(classCode)) {
+				urlReplaceSafe("/manageclasses"); // go there and don't let us come back
+				return;
+			}
+
+			let groupTemplate = null;
+
+			function initPageData(classData) {
+				if (!classData["HasManualAssign"]) {
+					printer("No group data for this class");
+					return;
+				}
+
+				const list = document.getElementById("groups_list");
+				list.innerHTML = ""; // clear anything inside of it
+
+				console.log(classData);
+
+				const groupList = classData["ManualAssign"];
+				for (let elem of groupList) {
+					let newGroupElement = document.createElement("li");
+					let newHTML = groupTemplate;
+					newHTML = newHTML.replaceAll("[name]", "Group " + elem["groupID"]);
+					newGroupElement.innerHTML = newHTML;
+
+					for (let student of elem["students"]) {
+						let newStudentElement = document.createElement("li");
+						newStudentElement.innerHTML = student["email"];
+						if (!student["registered"]) {
+							newStudentElement.innerHTML += " (not registered)";
+						}
+
+						newGroupElement.appendChild(newStudentElement);
+					}
+
+					list.appendChild(newGroupElement);
+				}
+			}
+
+			function onTemplateLoaded(template) {
+				groupTemplate = template;
+				profCommands.getManualAssignData(
+					classCode,
+					initPageData,
+					function(msg) {
+						printer(msg);
+					}
+				);
+			}
+
+			$.ajax({
+	            url: "/templates/editclass_group_element.html",
+	            async: true,
+	            success: onTemplateLoaded,
+				error: function(xhr, ajaxOptions, thrownError) {
+					printer("Could not load intro statement.");
+				}
+	        });
+		})();
+	}
+</script>

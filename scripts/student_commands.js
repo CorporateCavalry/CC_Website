@@ -48,6 +48,8 @@ const studentCommands = function() {
             "student/createAccount",
             studentData,
             function(json) { // on success
+                // we are not yet in a class, so don't include that
+                studentData["ClassCode"] = null;
                 loginManager.loginAsStudent(studentData);
                 completeProcessing();
                 onSuccess();
@@ -165,7 +167,8 @@ const studentCommands = function() {
                 "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
                 "ALREADY_IN_CLASS": MSG_ALREADY_IN_CLASS,
                 "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND,
-                "NOT_MANUALLY_ASSIGNED": MSG_NOT_MANUALLY_ASSIGNED
+                "NOT_MANUALLY_ASSIGNED": MSG_NOT_MANUALLY_ASSIGNED,
+                "CLASS_IS_OVER": "Cannot join a class that is already over"
             },
             onFail(failPrinter)
         );
@@ -211,7 +214,8 @@ const studentCommands = function() {
                 "CLASS_NOT_FOUND": MSG_CLASS_NOT_FOUND,
                 "CLASS_IS_STARTED": "You cannot leave a class after it has started",
                 "GROUP_NOT_FOUND": "Could not find your group",
-                "NOT_FOUND_IN_GROUP": "Your account could not be found in your group"
+                "NOT_FOUND_IN_GROUP": "Your account could not be found in your group",
+                "NOT_FOUND_IN_CLASS": "Your account could not be found in this class"
             },
             onFail(failPrinter)
         );

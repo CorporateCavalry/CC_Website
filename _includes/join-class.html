@@ -1,30 +1,3 @@
 <div class="section-header">You are invited to join:</div>
 {% include loading-indicator.html %}
 {% include class-info.html %}
-
-<script>
-	(function() {
-		let printer = getAlertPrinter("join_class");
-		printer("");
-
-		let classCode = getURLClassCode();
-
-		if (isNullOrEmpty(classCode)) {
-			urlReplaceSafe("/"); // go there and don't let us come back
-			return;
-		}
-
-		function initClassData(data) {
-			classCommands.initializeClassInfo(data);
-		}
-
-		classCommands.fetchClassInfo(
-			classCode,
-			initClassData,
-			function(msg) {
-				printer(msg);
-				classCommands.hideClassInfo();
-			}
-		);
-	})();
-</script>
