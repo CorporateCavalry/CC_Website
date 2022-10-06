@@ -7,7 +7,7 @@
 
 <form id="manual_assign_form">
 	<ul class="form-list">
-		{% include form-file-line.html formName="manual_assign_form" inputID="upload" label="Upload a CSV file" %}
+		{% include form-file-line.html formName="manual_assign_form" inputID="upload" label="Upload a CSV file (if manually assigning groups)" %}
 	</ul>
 </form>
 
@@ -143,7 +143,7 @@
 			const fileText = $('#manual_assign_form_upload_label');
 			function onFileChanged() {
 				if (manualAssignElement.files == null || manualAssignElement.files.length < 1) {
-					fileText.html("Upload a CSV file<i class='material-icons'>upload</i>");
+					fileText.html("Upload a CSV file (if manually assigning groups)<i class='material-icons'>upload</i>");
 					fileText.css({"color": "#939393"});
 				} else {
 					fileText.html(getHtmlSafeText(manualAssignElement.files[0].name) + "<i class='material-icons'>upload</i>");
