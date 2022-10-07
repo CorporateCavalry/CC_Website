@@ -746,6 +746,13 @@ form {
       margin-top: 0;
       margin-bottom: 0;
     }
+    ul {
+      margin-left: $standard-spacing * 2;
+    }
+    ul li {
+      list-style-type: circle;
+      font-weight: $small-font-weight;
+    }
 }
 
 .create-class-form-helper {
