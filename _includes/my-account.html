@@ -1,17 +1,25 @@
-{% include loading-indicator.html %}
-{% include class-info.html %}
-<div class="loadable">
-	{% include button.html id="leave_class" function="leaveClass" label="Leave Class" %}
+<div class="student-has-class">
+	{% include loading-indicator.html %}
 
-    {% include where-to-play.html %}
+	{% include class-info.html %}
+	<div class="loadable">
+		{% include button.html id="leave_class" function="leaveClass" label="Leave Class" %}
+
+	    {% include where-to-play.html %}
+	</div>
 </div>
 {% include alert-message.html id="my_class" type="warning" %}
 
+<div class="my-account-email">
+</div>
+
 <script>
+	$(".my-account-email").text("Currently logged in as: " + loginManager.getProperty("Email"));
+	let printer = getAlertPrinter("my_class");
+	printer("");
+
 	if (loginManager.isStudent()) {
 		(function() {
-			let printer = getAlertPrinter("my_class");
-			printer("");
 			classCommands.hideClassInfo();
 
 			const onNoClass = function() {

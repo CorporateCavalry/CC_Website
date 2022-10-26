@@ -1,0 +1,13 @@
+---
+layout: narrow-page
+title: My Account
+---
+<script>
+	if (!loginManager.isProfessor() && !loginManager.isStudent()) {
+		urlReplaceSafe("/signin/"); // have us sign in if we're signed out
+	}
+</script>
+
+<div class="section">
+	{% include my-account.html %}
+</div>
