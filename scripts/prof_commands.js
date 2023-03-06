@@ -183,6 +183,53 @@ const profCommands = function() {
         );
     }
 
+    function getIsResearchUser(onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        lambdaManager.get(
+            "professor/isResearchUser",
+            {"Email": getEmail(), "Password": getPassword()},
+            function(json) { // on success
+                completeProcessing();
+                onSuccess(json["data"]["value"]);
+            },
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS
+            },
+            onFail(failPrinter)
+        );
+    }
+
+    function getResearchReport(onSuccess, failPrinter) {
+        if (isProcessing) {
+            printBusy(failPrinter);
+            return;
+        }
+        isProcessing = true;
+
+        lambdaManager.get(
+            "professor/getResearchReport",
+            {"Email": getEmail(), "Password": getPassword()},
+            function(json) { // on success
+                completeProcessing();
+                onSuccess(json["data"]["value"]);
+            },
+            { // error translation
+                "INVALID_EMAIL": MSG_INVALID_EMAIL,
+                "ACCOUNT_NOT_FOUND": MSG_ACCOUNT_NOT_FOUND,
+                "INCORRECT_PASSWORD": MSG_INVALID_CREDENTIALS,
+                "NOT_RESEARCH_USER": "You do not have sufficient permissions"
+            },
+            onFail(failPrinter)
+        );
+    }
+
     function getManualAssignData(classCode, onSuccess, failPrinter) {
         if (isProcessing) {
             printBusy(failPrinter);
@@ -251,6 +298,8 @@ const profCommands = function() {
         getCurrentUser:getCurrentUser,
         getClassData:getClassData,
         getProgressReport:getProgressReport,
+        getIsResearchUser:getIsResearchUser,
+        getResearchReport:getResearchReport,
         getManualAssignData:getManualAssignData,
         doClean:doClean
     }

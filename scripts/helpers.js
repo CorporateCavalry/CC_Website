@@ -108,7 +108,7 @@ const dateHelpers = function() {
         parseSlidersDateString:parseSlidersDateString,
         getSlidersFormattedDateString:getSlidersFormattedDateString,
         getWebFormattedDateString:getWebFormattedDateString,
-        getShortFormattedDateString:getShortFormattedDateString
+        getShortFormattedDateString:getShortFormattedDateString,
     }
 }();
 
