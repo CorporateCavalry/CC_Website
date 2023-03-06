@@ -49,7 +49,7 @@ const classCommands = function() {
         if (today < startDate) {
             return {
                 "Status": "unstarted",
-                "Message": "Unstarted: Starts " + dateHelpers.getShortFormattedDateString(startDate)
+                "Message": "Open to Join: Starts " + dateHelpers.getShortFormattedDateString(startDate)
             };
         } else {
             let endDate = dateHelpers.parseSlidersDateString(classData["EndDate"]);
@@ -59,10 +59,17 @@ const classCommands = function() {
                     "Message": "Started: Ends " + dateHelpers.getShortFormattedDateString(endDate)
                 };
             } else {
-                return {
-                    "Status": "completed",
-                    "Message": "Completed"
-                };
+                if (loginManager.isProfessor()) {
+                    return {
+                        "Status": "completed",
+                        "Message": "Closed (Report Ready)"
+                    };
+                } else {
+                    return {
+                        "Status": "completed",
+                        "Message": "Closed"
+                    };
+                }
             }
         }
     }
