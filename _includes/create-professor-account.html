@@ -9,8 +9,12 @@
 </form>
 {% include button.html function="processCreateProfAccount" id="create_professor_account" label="Sign Up" %}
 {% include alert-message.html id="create_professor_account" type="error" %}
+{% include alert-message.html id="general_warning" type="warning" %}
 
 <script>
+	const generalWarning = getAlertPrinter("general_warning");
+	generalWarning("This page is for professors. If you are a student, contact your professor for help.");
+
 	if (!loginManager.isProfessor() && !loginManager.isStudent()) {
 		clearAlertPrinter("create_professor_account");
 
