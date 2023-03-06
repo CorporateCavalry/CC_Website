@@ -32,7 +32,7 @@ const profCommands = function() {
             return;
         }
         isProcessing = true;
-        profData = {"Email": email, "Password": password, "Name": name};
+        profData = {"Email": email, "Password": loginManager.hashPassword(password), "Name": name};
 
         lambdaManager.post(
             "professor/createAccount",
@@ -56,14 +56,15 @@ const profCommands = function() {
             return;
         }
         isProcessing = true;
+        let passwordHash = loginManager.hashPassword(password);
 
         lambdaManager.post(
             "professor/login",
-            {"Email": email, "Password": password},
+            {"Email": email, "Password": passwordHash},
             function(json) { // on success
                 let profData = json["data"];
                 profData["Email"] = email;
-                profData["Password"] = password;
+                profData["Password"] = passwordHash;
 
                 loginManager.loginAsProfessor(profData);
                 completeProcessing();

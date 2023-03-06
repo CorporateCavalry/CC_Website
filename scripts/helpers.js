@@ -205,6 +205,10 @@ const loginManager = function() {
         return cachedLoginData[key];
     }
 
+    function hashPassword(password) {
+        return sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(password));
+    }
+
     return {
         loginAsProfessor:loginAsProfessor,
         loginAsStudent:loginAsStudent,
@@ -213,7 +217,8 @@ const loginManager = function() {
         isStudent:isStudent,
         hasProperty:hasProperty,
         getProperty:getProperty,
-        isPropertyNonEmpty:isPropertyNonEmpty
+        isPropertyNonEmpty:isPropertyNonEmpty,
+        hashPassword:hashPassword
     }
 }();
 
