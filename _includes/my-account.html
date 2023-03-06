@@ -13,10 +13,19 @@
 <div class="my-account-email">
 </div>
 
+<div class="research-report">
+	<br>
+	{% include loading-indicator.html %}
+	<div class="loadable">
+		{% include button.html label="Generate Research Report" id="download_report" function="downloadResearchReport" %}
+	</div>
+</div>
+
 <script>
 	$(".my-account-email").text("Currently logged in as: " + loginManager.getProperty("Email"));
 	let printer = getAlertPrinter("my_class");
 	printer("");
+	$(".research-report").css("display", "none");
 
 	if (loginManager.isStudent()) {
 		(function() {
@@ -75,5 +84,36 @@
 				onComplete
 			);
 		}
+	} else if (loginManager.isProfessor()) {
+		function downloadResearchReport() {
+			profCommands.getResearchReport(
+				function(report) {
+					const element = document.createElement("a");
+				    const file = new Blob([report], {
+				      type: "text/plain",
+				    });
+				    element.href = URL.createObjectURL(file);
+				    element.download = "ResearchReport (" + dateHelpers.getWebFormattedDateString(dateHelpers.getCurrentDate()) + ").csv";
+				    document.body.appendChild(element);
+				    element.click();
+				},
+				function(msg) {
+					printer("Could not download report");
+				}
+			);
+		}
+
+
+		profCommands.getIsResearchUser(
+			function(value) {
+				if (value) {
+					// we are a research user, so show the button
+					$(".research-report").css("display", "");
+				}
+			},
+			function(msg) { // error
+				printer(msg);
+			}
+		);
 	}
 </script>
