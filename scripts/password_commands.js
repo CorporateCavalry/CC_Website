@@ -41,6 +41,11 @@ const passwordCommands = function() {
         }
         isProcessing = true;
 
+        if (accountType == "PROFESSOR") {
+            // hash the password
+            newPassword = loginManager.hashPassword(newPassword);
+        }
+
         lambdaManager.post(
             "general/applyResetPassword",
             {"Email": email, "NewPassword": newPassword, "AccountType": accountType, "Token": token },
