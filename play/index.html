@@ -3,10 +3,8 @@ layout: narrow-page
 title: Play Game
 ---
 <script>
-	if (loginManager.isProfessor()) {
+	if (!loginManager.isStudent()) {
 		urlReplaceSafe("/"); // go there and don't let us come back
-	} else if (!loginManager.isStudent()) {
-		urlReplaceSafe("/signin"); // let us sign up
 	}
 </script>
 
